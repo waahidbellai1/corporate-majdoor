@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Corporate Majdoor</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <div class="header">
+    <h1>Corporate Majdoor</h1>
+  </div>
+
+  <div class="container">
+<div id="authSection">
+  <h2>Login to Corporate Majdoor</h2>
+
+  <input type="email" id="email" placeholder="Email" />
+  <input type="password" id="password" placeholder="Password" />
+
+  <button id="loginBtn">Login</button>
+  <button id="signupBtn">Sign Up</button>
+</div>
+<button id="logoutBtn" style="display:none;">Logout</button>
+  <p id="status"></p>
+  <div id="postSection" style="display:none;">
+
+  <textarea id="postInput" placeholder="What corporate pain are you facing today?"></textarea>
+
+  <button id="postBtn">Post</button>
+
+  <div id="feed"></div>
+
+</div>
+
+</div>
+
+
+  <script type="module" src="app.js"></script>
+</body>
+</html>

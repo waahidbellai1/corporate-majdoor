@@ -1,0 +1,115 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  background: #f0f2f5;
+  font-family: Helvetica, Arial, sans-serif;
+  color: #050505;
+}
+
+/* Header */
+.header {
+  background: #1877f2;
+  color: white;
+  padding: 14px 20px;
+  font-size: 22px;
+  font-weight: bold;
+}
+
+/* Main container */
+.container {
+  max-width: 500px;
+  margin: 60px auto;
+  background: white;
+  padding: 25px;
+  border-radius: 8px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+  text-align: center;
+}
+
+/* Status text */
+#status {
+  font-size: 16px;
+  color: #1c1e21;
+}
+input {
+  width: 100%;
+  padding: 12px;
+  margin: 10px 0;
+  border: 1px solid #dddfe2;
+  border-radius: 6px;
+  font-size: 15px;
+}
+
+button {
+  width: 100%;
+  padding: 12px;
+  margin-top: 10px;
+  border: none;
+  border-radius: 6px;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+#loginBtn {
+  background: #1877f2;
+  color: white;
+}
+
+#signupBtn {
+  background: #42b72a;
+  color: white;
+}
+
+button:hover {
+  opacity: 0.9;
+}
+textarea {
+  width: 100%;
+  min-height: 80px;
+  padding: 10px;
+  border-radius: 6px;
+  border: 1px solid #dddfe2;
+  font-size: 14px;
+  resize: none;
+  margin-top: 15px;
+}
+
+#feed {
+  margin-top: 20px;
+  text-align: left;
+}
+
+.post {
+  background: #f0f2f5;
+  padding: 12px;
+  border-radius: 6px;
+  margin-bottom: 10px;
+}
+
+.post-email {
+  font-size: 12px;
+  color: #65676b;
+  margin-bottom: 4px;
+}
+
+.post-text {
+  font-size: 14px;
+}
+#logoutBtn {
+  background: #e41e3f; /* Facebook red */
+  color: white;
+  margin-bottom: 15px;
+}
+.deleteBtn {
+  background: transparent;
+  color: #e41e3f;
+  border: none;
+  cursor: pointer;
+  font-size: 13px;
+  margin-top: 6px;
+}
