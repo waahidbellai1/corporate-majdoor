@@ -31,11 +31,11 @@ const firebaseConfig = {
   apiKey: "AIzaSyDv8-8o_pd9ZUxxazTbBH5xBb_olbuhyag",
   authDomain: "corporate-majdoor.firebaseapp.com",
   projectId: "corporate-majdoor",
-  storageBucket: "corporate-majdoor.firebasestorage.app",
+  storageBucket: "corporate-majdoor.appspot.com", // ✅ FIXED
   messagingSenderId: "490168158830",
-  appId: "1:490168158830:web:bde232dae0cff6ab8bb47f",
-  measurementId: "G-WKMYY7JZ6N"
+  appId: "1:490168158830:web:bde232dae0cff6ab8bb47f"
 };
+
 
 // Init Firebase
 const app = initializeApp(firebaseConfig);
@@ -154,3 +154,4 @@ onAuthStateChanged(auth, (user) => {
     status.innerText = "🔐 Login to Corporate Majdoor";
   }
 });
+
