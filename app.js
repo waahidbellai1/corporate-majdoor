@@ -29,7 +29,8 @@ import {
   getDoc,
   updateDoc,
   arrayUnion,
-  arrayRemove
+  arrayRemove,
+  increment 
 } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
 // Firebase config
@@ -158,9 +159,9 @@ if (likeBtn && auth.currentUser) {
     }
 
     await updateDoc(postRef, {
-      likedBy: arrayUnion(userId),
-      likesCount: (data.likesCount || 0) + 1
-    });
+  likedBy: arrayUnion(userId),
+  likesCount: increment(1)
+});
   });
 }
 
@@ -242,6 +243,7 @@ onAuthStateChanged(auth, async (user) => {
     status.innerText = "🔐 Login to Corporate Majdoor";
   }
 });
+
 
 
 
