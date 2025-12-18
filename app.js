@@ -112,10 +112,17 @@ onSnapshot(q, (snapshot) => {
     }
 
     postDiv.innerHTML = `
-      <div class="post-email">Loading...</div>
-      <div class="post-text">${data.text}</div>
-      ${deleteBtnHTML}
-    `;
+  <div class="post-email">Loading...</div>
+  <div class="post-text">${data.text}</div>
+
+  <div class="post-actions">
+    <button class="likeBtn">👍 Like</button>
+    <span class="likeCount">${data.likesCount || 0}</span>
+  </div>
+
+  ${deleteBtnHTML}
+`;
+
 
     // Username lookup
     if (data.uid) {
@@ -214,6 +221,7 @@ onAuthStateChanged(auth, async (user) => {
     status.innerText = "🔐 Login to Corporate Majdoor";
   }
 });
+
 
 
 
