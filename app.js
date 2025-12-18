@@ -27,7 +27,7 @@ import {
   doc,
   setDoc,
   getDoc,
-  udateDoc,
+  updateDoc,
   arrayUnion,
   arrayRemove
 } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
@@ -242,6 +242,7 @@ onAuthStateChanged(auth, async (user) => {
     status.innerText = "🔐 Login to Corporate Majdoor";
   }
 });
+
 
 
 
