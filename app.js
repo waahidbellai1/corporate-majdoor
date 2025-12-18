@@ -26,7 +26,10 @@ import {
   deleteDoc,
   doc,
   setDoc,
-  getDoc
+  getDoc,
+  udateDoc,
+  arrayUnion,
+  arrayRemove
 } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
 // Firebase config
@@ -142,6 +145,24 @@ onSnapshot(q, (snapshot) => {
         await deleteDoc(doc(db, "posts", postDoc.id));
       });
     }
+    const likeBtn = postDiv.querySelector(".likeBtn");
+
+if (likeBtn && auth.currentUser) {
+  likeBtn.addEventListener("click", async () => {
+    const postRef = doc(db, "posts", postDoc.id);
+    const userId = auth.currentUser.uid;
+
+    if (data.likedBy && data.likedBy.includes(userId)) {
+      // Already liked → do nothing for now
+      return;
+    }
+
+    await updateDoc(postRef, {
+      likedBy: arrayUnion(userId),
+      likesCount: (data.likesCount || 0) + 1
+    });
+  });
+}
 
     feed.appendChild(postDiv);
   });
@@ -221,6 +242,7 @@ onAuthStateChanged(auth, async (user) => {
     status.innerText = "🔐 Login to Corporate Majdoor";
   }
 });
+
 
 
 
