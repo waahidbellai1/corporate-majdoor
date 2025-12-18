@@ -84,44 +84,35 @@ onSnapshot(q, (snapshot) => {
   feed.innerHTML = "";
 
   snapshot.forEach(postDoc => {
-    const data = postDoc.data();
+    const data = postDoc.data(); // ✅ ONLY ONCE
 
     const postDiv = document.createElement("div");
     postDiv.className = "post";
 
     let deleteBtnHTML = "";
-
     if (auth.currentUser && auth.currentUser.uid === data.uid) {
-  deleteBtnHTML = `<button class="deleteBtn">Delete</button>`;
+      deleteBtnHTML = `<button class="deleteBtn">Delete</button>`;
     }
 
-    const data = postDoc.data();
+    postDiv.innerHTML = `
+      <div class="post-email">Loading...</div>
+      <div class="post-text">${data.text}</div>
+      ${deleteBtnHTML}
+    `;
 
-// Create post container first
-postDiv.innerHTML = `
-  <div class="post-email">Loading...</div>
-  <div class="post-text">${data.text}</div>
-  ${deleteBtnHTML}
-`;
-
-// Fetch username asynchronously
-if (data.uid) {
-  getUsername(data.uid).then(username => {
-    const nameDiv = postDiv.querySelector(".post-email");
-    if (nameDiv) {
-      nameDiv.innerText = `@${username}`;
+    // Username lookup
+    if (data.uid) {
+      getUsername(data.uid).then(username => {
+        const nameDiv = postDiv.querySelector(".post-email");
+        if (nameDiv) nameDiv.innerText = `@${username}`;
+      });
+    } else {
+      const nameDiv = postDiv.querySelector(".post-email");
+      if (nameDiv) nameDiv.innerText = "Unknown";
     }
-  });
-} else {
-  // Fallback for old posts
-  const nameDiv = postDiv.querySelector(".post-email");
-  if (nameDiv) {
-    nameDiv.innerText = "Unknown";
-  }
-}
 
+    // Delete logic
     const deleteBtn = postDiv.querySelector(".deleteBtn");
-
     if (deleteBtn) {
       deleteBtn.addEventListener("click", async () => {
         await deleteDoc(doc(db, "posts", postDoc.id));
@@ -131,7 +122,6 @@ if (data.uid) {
     feed.appendChild(postDiv);
   });
 });
-
 
 
 // Login
@@ -196,4 +186,5 @@ onAuthStateChanged(auth, (user) => {
     status.innerText = "🔐 Login to Corporate Majdoor";
   }
 });
+
 
