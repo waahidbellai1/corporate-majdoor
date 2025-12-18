@@ -66,11 +66,14 @@ postBtn.addEventListener("click", async () => {
   if (!postInput.value.trim()) return;
 
   try {
-    await addDoc(collection(db, "posts"), {
-      text: postInput.value,
-      uid: auth.currentUser.uid,
-      createdAt: serverTimestamp()
-    });
+   await addDoc(collection(db, "posts"), {
+  text: postInput.value,
+  uid: auth.currentUser.uid,
+  createdAt: serverTimestamp(),
+  likesCount: 0,
+  likedBy: []
+});
+
 
     postInput.value = "";
   } catch (err) {
@@ -211,6 +214,7 @@ onAuthStateChanged(auth, async (user) => {
     status.innerText = "🔐 Login to Corporate Majdoor";
   }
 });
+
 
 
 
