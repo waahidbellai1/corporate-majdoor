@@ -44,6 +44,7 @@ const db = getFirestore(app);
 const auth = getAuth(app);
 
 // Elements
+const usernameInput = document.getElementById("username");
 const email = document.getElementById("email");
 const password = document.getElementById("password");
 const status = document.getElementById("status");
@@ -115,22 +116,32 @@ document.getElementById("loginBtn").addEventListener("click", () => {
 });
 
 // Signup
-document.getElementById("signupBtn").addEventListener("click", () => {
-  console.log("EMAIL:", email.value);
-  console.log("PASSWORD:", password.value);
+document.getElementById("signupBtn").addEventListener("click", async () => {
+  if (!usernameInput.value.trim()) {
+    status.innerText = "Username required";
+    return;
+  }
 
-  createUserWithEmailAndPassword(
-    auth,
-    email.value.trim(),
-    password.value
-  )
-    .then(() => {
-      status.innerText = "🎉 Account created";
-    })
-    .catch(err => {
-      console.error(err);
-      status.innerText = err.message;
+  try {
+    const userCred = await createUserWithEmailAndPassword(
+      auth,
+      email.value.trim(),
+      password.value
+    );
+
+    const user = userCred.user;
+
+    // Save username in Firestore
+    await setDoc(doc(db, "users", user.uid), {
+      username: usernameInput.value.trim(),
+      email: user.email
     });
+
+    status.innerText = "🎉 Account created";
+
+  } catch (err) {
+    status.innerText = err.message;
+  }
 });
 const logoutBtn = document.getElementById("logoutBtn");
 
