@@ -125,4 +125,23 @@ textarea {
   color: #1877f2; /* Facebook blue */
 }
 
+.post-actions {
+  margin-top: 8px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.likeBtn {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.likeCount {
+  font-size: 13px;
+  color: #65676b;
+}
+
 
