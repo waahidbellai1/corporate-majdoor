@@ -24,7 +24,8 @@ import {
   serverTimestamp,
   deleteDoc,
   doc,
-  setDoc
+  setDoc,
+  getDoc
 } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
 // Firebase config
@@ -58,7 +59,7 @@ postBtn.addEventListener("click", async () => {
 
   await addDoc(collection(db, "posts"), {
     text: postInput.value,
-    email: auth.currentUser.email,
+    uid: auth.currentUser.uid,
     createdAt: serverTimestamp()
   });
 
@@ -68,7 +69,17 @@ const q = query(
   collection(db, "posts"),
   orderBy("createdAt", "desc")
 );
+async function getUsername(uid) {
+  if (!uid) return "Unknown";
 
+  const userSnap = await getDoc(doc(db, "users", uid));
+
+  if (userSnap.exists()) {
+    return userSnap.data().username;
+  }
+
+  return "Unknown";
+}
 onSnapshot(q, (snapshot) => {
   feed.innerHTML = "";
 
@@ -80,15 +91,34 @@ onSnapshot(q, (snapshot) => {
 
     let deleteBtnHTML = "";
 
-    if (auth.currentUser && auth.currentUser.email === data.email) {
-      deleteBtnHTML = `<button class="deleteBtn">Delete</button>`;
+    if (auth.currentUser && auth.currentUser.uid === data.uid) {
+  deleteBtnHTML = `<button class="deleteBtn">Delete</button>`;
     }
 
-    postDiv.innerHTML = `
-      <div class="post-email">${data.email}</div>
-      <div class="post-text">${data.text}</div>
-      ${deleteBtnHTML}
-    `;
+    const data = postDoc.data();
+
+// Create post container first
+postDiv.innerHTML = `
+  <div class="post-email">Loading...</div>
+  <div class="post-text">${data.text}</div>
+  ${deleteBtnHTML}
+`;
+
+// Fetch username asynchronously
+if (data.uid) {
+  getUsername(data.uid).then(username => {
+    const nameDiv = postDiv.querySelector(".post-email");
+    if (nameDiv) {
+      nameDiv.innerText = `@${username}`;
+    }
+  });
+} else {
+  // Fallback for old posts
+  const nameDiv = postDiv.querySelector(".post-email");
+  if (nameDiv) {
+    nameDiv.innerText = "Unknown";
+  }
+}
 
     const deleteBtn = postDiv.querySelector(".deleteBtn");
 
