@@ -57,16 +57,29 @@ const postBtn = document.getElementById("postBtn");
 const feed = document.getElementById("feed");
 const authSection = document.getElementById("authSection");
 postBtn.addEventListener("click", async () => {
+  console.log("Posting as:", auth.currentUser);
+
+  if (!auth.currentUser) {
+    status.innerText = "Please login again";
+    return;
+  }
+
   if (!postInput.value.trim()) return;
 
-  await addDoc(collection(db, "posts"), {
-    text: postInput.value,
-    uid: auth.currentUser.uid,
-    createdAt: serverTimestamp()
-  });
+  try {
+    await addDoc(collection(db, "posts"), {
+      text: postInput.value,
+      uid: auth.currentUser.uid,
+      createdAt: serverTimestamp()
+    });
 
-  postInput.value = "";
+    postInput.value = "";
+  } catch (err) {
+    console.error(err);
+    status.innerText = err.message;
+  }
 });
+
 const q = query(
   collection(db, "posts"),
   orderBy("createdAt", "desc")
@@ -188,6 +201,7 @@ onAuthStateChanged(auth, (user) => {
     status.innerText = "🔐 Login to Corporate Majdoor";
   }
 });
+
 
 
 
