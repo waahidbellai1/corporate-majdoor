@@ -184,8 +184,19 @@ logoutBtn.addEventListener("click", () => {
   signOut(auth);
 });
 
-onAuthStateChanged(auth, (user) => {
+onAuthStateChanged(auth, async (user) => {
   if (user) {
+    // 🔥 AUTO-CREATE USER PROFILE IF MISSING
+    const userRef = doc(db, "users", user.uid);
+    const snap = await getDoc(userRef);
+
+    if (!snap.exists()) {
+      await setDoc(userRef, {
+        username: user.email.split("@")[0], // fallback username
+        email: user.email
+      });
+    }
+
     // Logged in → FEED
     authSection.style.display = "none";
     postSection.style.display = "block";
@@ -201,7 +212,4 @@ onAuthStateChanged(auth, (user) => {
     status.innerText = "🔐 Login to Corporate Majdoor";
   }
 });
-
-
-
 
