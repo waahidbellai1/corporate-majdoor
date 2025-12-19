@@ -20,8 +20,8 @@ import {
   collection,
   addDoc,
   query,
-  orderBy,
-  onSnapshot,
+    orderBy,
+    onSnapshot,
   serverTimestamp,
   deleteDoc,
   doc,
@@ -74,9 +74,9 @@ postBtn.addEventListener("click", async () => {
   text: postInput.value,
   uid: auth.currentUser.uid,
   createdAt: serverTimestamp(),
-  likesCount: 0,
   likedBy: []
 });
+
 
 
     postInput.value = "";
@@ -123,10 +123,10 @@ onSnapshot(q, (snapshot) => {
 
       <div class="post-text">${data.text}</div>
 
-      <div class="post-actions">
-        <button class="likeBtn">👍 Like</button>
-        <span class="likeCount">${data.likesCount || 0}</span>
-      </div>
+     <div class="post-actions">
+  <button class="likeBtn">👍 Like</button>
+  <span class="likeCount">${(data.likedBy || []).length}</span>
+</div>
 
       ${deleteBtnHTML}
     `;
@@ -173,15 +173,15 @@ onSnapshot(q, (snapshot) => {
         const hasLikedNow = freshLikedBy.includes(userId);
 
         if (hasLikedNow) {
-          await updateDoc(postRef, {
-            likedBy: arrayRemove(userId),
-            likesCount: increment(-1)
-          });
+        await updateDoc(postRef, {
+  likedBy: arrayRemove(userId)
+});
+
         } else {
           await updateDoc(postRef, {
-            likedBy: arrayUnion(userId),
-            likesCount: increment(1)
-          });
+  likedBy: arrayUnion(userId)
+});
+
         }
       };
     }
@@ -264,6 +264,7 @@ onAuthStateChanged(auth, async (user) => {
     status.innerText = "🔐 Login to Corporate Majdoor";
   }
 });
+
 
 
 
