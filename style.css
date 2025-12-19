@@ -251,5 +251,35 @@ body {
   border-radius: 999px;
   cursor: pointer;
 }
+/* POST HEADER */
+.post-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+/* AVATAR */
+.avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #111, #555);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 14px;
+  text-transform: uppercase;
+}
+
+/* USERNAME */
+.post-username {
+  font-weight: 600;
+  font-size: 14px;
+  color: #333;
+}
+
 
 
