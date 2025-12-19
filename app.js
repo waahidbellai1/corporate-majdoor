@@ -115,8 +115,12 @@ onSnapshot(q, (snapshot) => {
       deleteBtnHTML = `<button class="deleteBtn">Delete</button>`;
     }
 
-    postDiv.innerHTML = `
-  <div class="post-email">Loading...</div>
+   postDiv.innerHTML = `
+  <div class="post-header">
+    <div class="avatar">?</div>
+    <div class="post-username">Loading...</div>
+  </div>
+
   <div class="post-text">${data.text}</div>
 
   <div class="post-actions">
@@ -130,10 +134,14 @@ onSnapshot(q, (snapshot) => {
 
     // Username lookup
     if (data.uid) {
-      getUsername(data.uid).then(username => {
-        const nameDiv = postDiv.querySelector(".post-email");
-        if (nameDiv) nameDiv.innerText = `@${username}`;
-      });
+    getUsername(data.uid).then(username => {
+  const nameDiv = postDiv.querySelector(".post-username");
+  const avatar = postDiv.querySelector(".avatar");
+
+  if (nameDiv) nameDiv.innerText = `@${username}`;
+  if (avatar && username) avatar.innerText = username.charAt(0);
+});
+
     } else {
       const nameDiv = postDiv.querySelector(".post-email");
       if (nameDiv) nameDiv.innerText = "Unknown";
@@ -257,6 +265,7 @@ onAuthStateChanged(auth, async (user) => {
     status.innerText = "🔐 Login to Corporate Majdoor";
   }
 });
+
 
 
 
