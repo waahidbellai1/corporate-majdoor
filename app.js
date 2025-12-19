@@ -154,48 +154,28 @@ onSnapshot(q, (snapshot) => {
         await deleteDoc(doc(db, "posts", postDoc.id));
       });
     }
-    const likeBtn = postDiv.querySelector(".likeBtn");
+  const likeBtn = postDiv.querySelector(".likeBtn");
 
 if (likeBtn && auth.currentUser) {
   const userId = auth.currentUser.uid;
   const postRef = doc(db, "posts", postDoc.id);
 
-  // Set initial UI from snapshot
+  // Initial UI from snapshot
   const likedBy = data.likedBy || [];
   const alreadyLiked = likedBy.includes(userId);
 
   likeBtn.innerText = alreadyLiked ? "❤️ Unlike" : "👍 Like";
-  if (alreadyLiked) {
-  likeBtn.classList.add("liked");
-} else {
-  likeBtn.classList.remove("liked");
-}
+  likeBtn.classList.toggle("liked", alreadyLiked);
 
   likeBtn.onclick = async () => {
-  likeBtn.classList.add("pop");
-  setTimeout(() => likeBtn.classList.remove("pop"), 300);
+    // UI animation
+    likeBtn.classList.add("pop");
+    setTimeout(() => likeBtn.classList.remove("pop"), 300);
 
-  // existing like / unlike logic
-};
+    // 🔥 ALWAYS get fresh data
     const freshSnap = await getDoc(postRef);
     const freshData = freshSnap.data();
-
-    const freshLikedBy = freshData.likedBy || [];
-    const hasLikedNow = freshLikedBy.includes(userId);
-
-    if (hasLikedNow) {
-      await updateDoc(postRef, {
-        likedBy: arrayRemove(userId),
-        likesCount: increment(-1)
-      });
-    } else {
-      await updateDoc(postRef, {
-        likedBy: arrayUnion(userId),
-        likesCount: increment(1)
-      });
-    }
-  };
-}
+    const freshLikedBy =
 
     feed.appendChild(postDiv);
   });
@@ -275,6 +255,7 @@ onAuthStateChanged(auth, async (user) => {
     status.innerText = "🔐 Login to Corporate Majdoor";
   }
 });
+
 
 
 
