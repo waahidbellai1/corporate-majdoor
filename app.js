@@ -165,8 +165,18 @@ if (likeBtn && auth.currentUser) {
   const alreadyLiked = likedBy.includes(userId);
 
   likeBtn.innerText = alreadyLiked ? "❤️ Unlike" : "👍 Like";
+  if (alreadyLiked) {
+  likeBtn.classList.add("liked");
+} else {
+  likeBtn.classList.remove("liked");
+}
 
   likeBtn.onclick = async () => {
+  likeBtn.classList.add("pop");
+  setTimeout(() => likeBtn.classList.remove("pop"), 300);
+
+  // existing like / unlike logic
+};
     const freshSnap = await getDoc(postRef);
     const freshData = freshSnap.data();
 
@@ -265,6 +275,7 @@ onAuthStateChanged(auth, async (user) => {
     status.innerText = "🔐 Login to Corporate Majdoor";
   }
 });
+
 
 
 
