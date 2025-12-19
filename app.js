@@ -105,7 +105,7 @@ onSnapshot(q, (snapshot) => {
   feed.innerHTML = "";
 
   snapshot.forEach(postDoc => {
-    const data = postDoc.data(); // ✅ ONLY ONCE
+    const data = postDoc.data();
 
     const postDiv = document.createElement("div");
     postDiv.className = "post";
@@ -115,81 +115,80 @@ onSnapshot(q, (snapshot) => {
       deleteBtnHTML = `<button class="deleteBtn">Delete</button>`;
     }
 
-   postDiv.innerHTML = `
-  <div class="post-header">
-    <div class="avatar">?</div>
-    <div class="post-username">Loading...</div>
-  </div>
+    postDiv.innerHTML = `
+      <div class="post-header">
+        <div class="avatar">?</div>
+        <div class="post-username">Loading...</div>
+      </div>
 
-  <div class="post-text">${data.text}</div>
+      <div class="post-text">${data.text}</div>
 
-  <div class="post-actions">
-    <button class="likeBtn">👍 Like</button>
-    <span class="likeCount">${data.likesCount || 0}</span>
-  </div>
+      <div class="post-actions">
+        <button class="likeBtn">👍 Like</button>
+        <span class="likeCount">${data.likesCount || 0}</span>
+      </div>
 
-  ${deleteBtnHTML}
-`;
+      ${deleteBtnHTML}
+    `;
 
-
-    // Username lookup
+    // Username + avatar
     if (data.uid) {
-    getUsername(data.uid).then(username => {
-  const nameDiv = postDiv.querySelector(".post-username");
-  const avatar = postDiv.querySelector(".avatar");
+      getUsername(data.uid).then(username => {
+        const nameDiv = postDiv.querySelector(".post-username");
+        const avatar = postDiv.querySelector(".avatar");
 
-  if (nameDiv) nameDiv.innerText = `@${username}`;
-  if (avatar && username) avatar.innerText = username.charAt(0);
-});
-
-    } else {
-      const nameDiv = postDiv.querySelector(".post-email");
-      if (nameDiv) nameDiv.innerText = "Unknown";
+        if (nameDiv) nameDiv.innerText = `@${username}`;
+        if (avatar && username) avatar.innerText = username.charAt(0);
+      });
     }
 
-    // Delete logic
+    // Delete post
     const deleteBtn = postDiv.querySelector(".deleteBtn");
     if (deleteBtn) {
-      deleteBtn.addEventListener("click", async () => {
+      deleteBtn.onclick = async () => {
         await deleteDoc(doc(db, "posts", postDoc.id));
-      });
+      };
     }
-const likeBtn = postDiv.querySelector(".likeBtn");
 
-if (likeBtn && auth.currentUser) {
-  const userId = auth.currentUser.uid;
-  const postRef = doc(db, "posts", postDoc.id);
+    // Like button
+    const likeBtn = postDiv.querySelector(".likeBtn");
 
-  const likedBy = data.likedBy || [];
-  const alreadyLiked = likedBy.includes(userId);
+    if (likeBtn && auth.currentUser) {
+      const userId = auth.currentUser.uid;
+      const postRef = doc(db, "posts", postDoc.id);
 
-  likeBtn.innerText = alreadyLiked ? "❤️ Unlike" : "👍 Like";
-  likeBtn.classList.toggle("liked", alreadyLiked);
+      const likedBy = data.likedBy || [];
+      const alreadyLiked = likedBy.includes(userId);
 
-  likeBtn.onclick = async () => {
-    // animation
-    likeBtn.classList.add("pop");
-    setTimeout(() => likeBtn.classList.remove("pop"), 300);
+      likeBtn.innerText = alreadyLiked ? "❤️ Unlike" : "👍 Like";
+      likeBtn.classList.toggle("liked", alreadyLiked);
 
-    // 🔥 fresh Firestore state
-    const freshSnap = await getDoc(postRef);
-    const freshData = freshSnap.data();
-    const freshLikedBy = freshData.likedBy || [];
-    const hasLikedNow = freshLikedBy.includes(userId);
+      likeBtn.onclick = async () => {
+        likeBtn.classList.add("pop");
+        setTimeout(() => likeBtn.classList.remove("pop"), 300);
 
-    if (hasLikedNow) {
-      await updateDoc(postRef, {
-        likedBy: arrayRemove(userId),
-        likesCount: increment(-1)
-      });
-    } else {
-      await updateDoc(postRef, {
-        likedBy: arrayUnion(userId),
-        likesCount: increment(1)
-      });
+        const freshSnap = await getDoc(postRef);
+        const freshData = freshSnap.data();
+        const freshLikedBy = freshData.likedBy || [];
+        const hasLikedNow = freshLikedBy.includes(userId);
+
+        if (hasLikedNow) {
+          await updateDoc(postRef, {
+            likedBy: arrayRemove(userId),
+            likesCount: increment(-1)
+          });
+        } else {
+          await updateDoc(postRef, {
+            likedBy: arrayUnion(userId),
+            likesCount: increment(1)
+          });
+        }
+      };
     }
-  };
-}
+
+    feed.appendChild(postDiv);
+  });
+});
 
 
 // Login
@@ -265,6 +264,7 @@ onAuthStateChanged(auth, async (user) => {
     status.innerText = "🔐 Login to Corporate Majdoor";
   }
 });
+
 
 
 
