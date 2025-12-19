@@ -154,13 +154,12 @@ onSnapshot(q, (snapshot) => {
         await deleteDoc(doc(db, "posts", postDoc.id));
       });
     }
-  const likeBtn = postDiv.querySelector(".likeBtn");
+const likeBtn = postDiv.querySelector(".likeBtn");
 
 if (likeBtn && auth.currentUser) {
   const userId = auth.currentUser.uid;
   const postRef = doc(db, "posts", postDoc.id);
 
-  // Initial UI from snapshot
   const likedBy = data.likedBy || [];
   const alreadyLiked = likedBy.includes(userId);
 
@@ -168,18 +167,29 @@ if (likeBtn && auth.currentUser) {
   likeBtn.classList.toggle("liked", alreadyLiked);
 
   likeBtn.onclick = async () => {
-    // UI animation
+    // animation
     likeBtn.classList.add("pop");
     setTimeout(() => likeBtn.classList.remove("pop"), 300);
 
-    // 🔥 ALWAYS get fresh data
+    // 🔥 fresh Firestore state
     const freshSnap = await getDoc(postRef);
     const freshData = freshSnap.data();
-    const freshLikedBy =
+    const freshLikedBy = freshData.likedBy || [];
+    const hasLikedNow = freshLikedBy.includes(userId);
 
-    feed.appendChild(postDiv);
-  });
-});
+    if (hasLikedNow) {
+      await updateDoc(postRef, {
+        likedBy: arrayRemove(userId),
+        likesCount: increment(-1)
+      });
+    } else {
+      await updateDoc(postRef, {
+        likedBy: arrayUnion(userId),
+        likesCount: increment(1)
+      });
+    }
+  };
+}
 
 
 // Login
@@ -255,6 +265,7 @@ onAuthStateChanged(auth, async (user) => {
     status.innerText = "🔐 Login to Corporate Majdoor";
   }
 });
+
 
 
 
