@@ -151,26 +151,32 @@ onSnapshot(q, (snapshot) => {
 if (likeBtn && auth.currentUser) {
   const userId = auth.currentUser.uid;
   const postRef = doc(db, "posts", postDoc.id);
-  const alreadyLiked = data.likedBy && data.likedBy.includes(userId);
 
-  // Initial button state
+  // Set initial UI from snapshot
+  const likedBy = data.likedBy || [];
+  const alreadyLiked = likedBy.includes(userId);
+
   likeBtn.innerText = alreadyLiked ? "❤️ Unlike" : "👍 Like";
 
-  likeBtn.addEventListener("click", async () => {
-    if (alreadyLiked) {
-      // UNLIKE
+  likeBtn.onclick = async () => {
+    const freshSnap = await getDoc(postRef);
+    const freshData = freshSnap.data();
+
+    const freshLikedBy = freshData.likedBy || [];
+    const hasLikedNow = freshLikedBy.includes(userId);
+
+    if (hasLikedNow) {
       await updateDoc(postRef, {
         likedBy: arrayRemove(userId),
         likesCount: increment(-1)
       });
     } else {
-      // LIKE
       await updateDoc(postRef, {
         likedBy: arrayUnion(userId),
         likesCount: increment(1)
       });
     }
-  });
+  };
 }
 
     feed.appendChild(postDiv);
@@ -251,6 +257,7 @@ onAuthStateChanged(auth, async (user) => {
     status.innerText = "🔐 Login to Corporate Majdoor";
   }
 });
+
 
 
 
