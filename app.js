@@ -139,9 +139,12 @@ onSnapshot(q, (snapshot) => {
 
     postDiv.innerHTML = `
       <div class="post-header">
-        <div class="avatar">?</div>
-        <div class="post-username">Loading...</div>
-      </div>
+  <div class="avatar">?</div>
+  <div>
+    <div class="post-username">Loading...</div>
+    <div class="post-time">${timeAgo(data.createdAt)}</div>
+  </div>
+</div>
 
       <div class="post-text">${data.text}</div>
 
@@ -286,6 +289,7 @@ onAuthStateChanged(auth, async (user) => {
     status.innerText = "🔐 Login to Corporate Majdoor";
   }
 });
+
 
 
 
