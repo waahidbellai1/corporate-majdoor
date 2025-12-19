@@ -303,6 +303,66 @@ body {
   color: #888;
   margin-top: 2px;
 }
+/* MOBILE FIRST */
+@media (max-width: 600px) {
+
+  body {
+    background: #f4f6f8;
+  }
+
+  .header h1 {
+    font-size: 20px;
+  }
+
+  #postSection {
+    margin: 10px auto;
+    padding: 0 10px;
+  }
+
+  #postInput {
+    font-size: 16px; /* prevents iOS zoom */
+    min-height: 90px;
+  }
+
+  #postBtn {
+    width: 100%;
+    padding: 12px;
+    font-size: 16px;
+  }
+
+  .post {
+    border-radius: 12px;
+    padding: 14px;
+  }
+
+  .post-text {
+    font-size: 15px;
+  }
+
+  .post-actions {
+    gap: 16px;
+  }
+
+  .likeBtn {
+    padding: 8px 16px;
+    font-size: 15px;
+  }
+
+  .deleteBtn {
+    font-size: 14px;
+  }
+}
+@media (max-width: 600px) {
+  .header {
+    position: sticky;
+    top: 0;
+    background: #fff;
+    z-index: 10;
+    padding: 10px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+  }
+}
+
 
 
 
