@@ -418,3 +418,20 @@ body.dark .commentInput {
   color: #e5e7eb;
   border-color: #1e293b;
 }
+/* ===== Comment Send Button Fix ===== */
+.sendCommentBtn {
+  background: #2563eb;
+  color: #ffffff;
+  border: none;
+  padding: 10px 16px;
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.sendCommentBtn:hover {
+  opacity: 0.9;
+}
+
