@@ -54,6 +54,9 @@ const email = document.getElementById("email");
 const password = document.getElementById("password");
 const username = document.getElementById("username");
 
+const authSection = document.getElementById("authSection");
+const postSection = document.getElementById("postSection");
+const notifications = document.getElementById("notifications");
 const notificationList = document.getElementById("notificationList");
 
 /* =====================
@@ -69,7 +72,7 @@ function timeAgo(ts) {
 }
 
 /* =====================
-   AUTH
+   AUTH ACTIONS
 ===================== */
 loginBtn.onclick = () => {
   signInWithEmailAndPassword(auth, email.value, password.value)
@@ -101,15 +104,22 @@ signupBtn.onclick = async () => {
 logoutBtn.onclick = () => signOut(auth);
 
 /* =====================
-   AUTH STATE
+   AUTH STATE (FIXED)
 ===================== */
 onAuthStateChanged(auth, user => {
   if (user) {
     status.innerText = `👋 ${user.email}`;
+    authSection.style.display = "none";
+    postSection.style.display = "block";
     logoutBtn.style.display = "block";
+    notifications.style.display = "block";
   } else {
     status.innerText = "🔐 Login to Corporate Majdoor";
+    authSection.style.display = "block";
+    postSection.style.display = "none";
     logoutBtn.style.display = "none";
+    notifications.style.display = "none";
+    feed.innerHTML = "";
   }
 });
 
@@ -132,9 +142,12 @@ postBtn.onclick = async () => {
 /* =====================
    FEED
 ===================== */
-const q = query(collection(db, "posts"), orderBy("createdAt", "desc"));
+const postsQuery = query(
+  collection(db, "posts"),
+  orderBy("createdAt", "desc")
+);
 
-onSnapshot(q, snapshot => {
+onSnapshot(postsQuery, snapshot => {
   feed.innerHTML = "";
 
   snapshot.forEach(async postSnap => {
@@ -145,12 +158,12 @@ onSnapshot(q, snapshot => {
       ? userSnap.data().username
       : "user";
 
-    const post = document.createElement("div");
-    post.className = "post";
-
     const liked =
       auth.currentUser &&
       data.likedBy.includes(auth.currentUser.uid);
+
+    const post = document.createElement("div");
+    post.className = "post";
 
     post.innerHTML = `
       <div class="post-header">
@@ -174,8 +187,12 @@ onSnapshot(q, snapshot => {
       <div class="post-text">${data.text}</div>
 
       <div class="post-actions">
-        <button class="likeBtn ${liked ? "liked" : ""}">👍 Like</button>
-        ${data.likedBy.length ? `<span class="likeCount">${data.likedBy.length}</span>` : ""}
+        <button class="likeBtn ${liked ? "liked" : ""}">
+          👍 Like
+        </button>
+        ${data.likedBy.length
+          ? `<span class="likeCount">${data.likedBy.length}</span>`
+          : ""}
       </div>
 
       <div class="comments">
@@ -185,8 +202,7 @@ onSnapshot(q, snapshot => {
     `;
 
     /* LIKE */
-    const likeBtn = post.querySelector(".likeBtn");
-    likeBtn.onclick = async () => {
+    post.querySelector(".likeBtn").onclick = async () => {
       if (!auth.currentUser) return;
 
       const ref = doc(db, "posts", postSnap.id);
