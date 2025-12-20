@@ -104,7 +104,7 @@ signupBtn.onclick = async () => {
 logoutBtn.onclick = () => signOut(auth);
 
 /* =====================
-   AUTH STATE (FIXED)
+   AUTH STATE
 ===================== */
 onAuthStateChanged(auth, user => {
   if (user) {
@@ -237,7 +237,7 @@ onSnapshot(postsQuery, snapshot => {
       menuBtn.onclick = () => menu.classList.toggle("open");
     }
 
-    /* COMMENTS */
+    /* COMMENTS (FIXED) */
     const commentInput = post.querySelector(".commentInput");
     const commentList = post.querySelector(".commentList");
 
@@ -245,19 +245,24 @@ onSnapshot(postsQuery, snapshot => {
       collection(db, "posts", postSnap.id, "comments"),
       snap => {
         commentList.innerHTML = "";
-        snap.forEach(c =>
+        snap.forEach(c => {
           commentList.innerHTML +=
-            `<div class="comment">${c.data().text}</div>`
-        );
+            `<div class="comment">${c.data().text}</div>`;
+        });
       }
     );
 
-    commentInput.onkeypress = async e => {
-      if (e.key === "Enter" && commentInput.value.trim()) {
+    commentInput.addEventListener("keydown", async (e) => {
+      if (e.key === "Enter") {
+        e.preventDefault();
+
+        const text = commentInput.value.trim();
+        if (!text) return;
+
         await addDoc(
           collection(db, "posts", postSnap.id, "comments"),
           {
-            text: commentInput.value.trim(),
+            text,
             createdAt: serverTimestamp()
           }
         );
@@ -272,7 +277,7 @@ onSnapshot(postsQuery, snapshot => {
           });
         }
       }
-    };
+    });
 
     feed.appendChild(post);
   });
