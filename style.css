@@ -1,64 +1,55 @@
-/* RESET */
+/* =========================
+   RESET
+========================= */
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
 }
 
-/* BASE */
+/* =========================
+   BASE
+========================= */
 body {
   font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
     Roboto, Helvetica, Arial, sans-serif;
   background: linear-gradient(180deg, #fbfdff, #f5f7fb);
   color: #0f172a;
-  min-height: 100vh;
+  line-height: 1.7;
 }
 
-/* HEADER */
+/* =========================
+   HEADER
+========================= */
 .header {
   text-align: center;
-  margin-top: 50px;
-  font-size: 36px;
-  font-weight: 800;
+  padding: 28px 16px 20px;
+  font-size: 32px;
+  font-weight: 700;
 }
 
-/* CONTAINER */
+/* =========================
+   CONTAINER
+========================= */
 .container {
-  max-width: 520px;
-  margin: 40px auto;
-  padding: 0 16px;
+  max-width: 640px;
+  margin: 0 auto;
+  padding: 0 16px 80px;
 }
 
-/* STATUS */
+/* =========================
+   STATUS
+========================= */
 #status {
   text-align: center;
-  margin-bottom: 20px;
+  font-size: 14px;
   color: #64748b;
+  margin-bottom: 18px;
 }
 
-/* CARD */
-.card {
-  background: #ffffff;
-  border-radius: 28px;
-  padding: 28px;
-  box-shadow: 0 18px 50px rgba(0,0,0,0.08);
-  margin-bottom: 28px;
-}
-
-/* AUTH */
-.auth-card input {
-  margin-bottom: 14px;
-}
-
-.auth-actions {
-  display: flex;
-  gap: 12px;
-}
-
-.auth-actions button {
-  flex: 1;
-}
-
+/* =========================
+   INPUTS
+========================= */
 input,
 textarea {
   width: 100%;
@@ -66,114 +57,307 @@ textarea {
   border-radius: 16px;
   border: 1px solid #e2e8f0;
   font-size: 15px;
+  margin-bottom: 14px;
+  background: #ffffff;
+  color: #0f172a;
 }
 
 textarea {
   resize: none;
 }
 
-/* BUTTONS */
+/* =========================
+   BUTTONS
+========================= */
 button {
   cursor: pointer;
-  border: none;
-  padding: 14px;
-  border-radius: 999px;
-  font-weight: 700;
+  font-family: inherit;
 }
 
 #loginBtn {
   background: #2563eb;
-  color: white;
+  color: #ffffff;
+  border: none;
+  padding: 14px;
+  border-radius: 999px;
+  font-weight: 600;
+  width: 100%;
 }
 
 #signupBtn {
   background: #16a34a;
-  color: white;
+  color: #ffffff;
+  border: none;
+  padding: 14px;
+  border-radius: 999px;
+  font-weight: 600;
+  width: 100%;
+}
+
+#logoutBtn {
+  background: transparent;
+  border: 1px solid #fecaca;
+  color: #ef4444;
+  padding: 8px 16px;
+  border-radius: 999px;
+  font-size: 13px;
+  margin: 20px auto;
+  display: block;
+  width: fit-content;
+}
+
+/* =========================
+   POST COMPOSER
+========================= */
+#postSection {
+  margin-top: 30px;
 }
 
 #postBtn {
   background: #0f172a;
-  color: white;
-  width: 100%;
-  margin-top: 10px;
+  color: #ffffff;
+  border: none;
+  padding: 12px 20px;
+  border-radius: 999px;
+  font-size: 14px;
+  font-weight: 600;
+  margin-left: auto;
+  display: block;
+  opacity: 0.9;
 }
 
-#logoutBtn {
-  display: none;
-  margin: 20px auto;
-  border: 1px solid #fecaca;
-  background: transparent;
-  color: #ef4444;
-}
-
-/* FEED */
+/* =========================
+   FEED
+========================= */
 #feed {
-  display: none;
+  margin-top: 40px;
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
 }
 
+/* =========================
+   POST CARD
+========================= */
 .post {
-  background: white;
+  background: #fdfefe;
   border-radius: 26px;
   padding: 22px;
-  margin-bottom: 24px;
+  box-shadow: 0 8px 26px rgba(0, 0, 0, 0.04);
 }
 
-/* COMMENTS */
-.comment-box {
+/* =========================
+   POST HEADER
+========================= */
+.post-header {
   display: flex;
-  gap: 8px;
-  margin-top: 12px;
+  align-items: center;
+  justify-content: space-between;
 }
 
-.sendCommentBtn {
-  background: #2563eb;
-  color: white;
+.post-header-left {
+  display: flex;
+  align-items: center;
+  gap: 14px;
 }
 
-.commentInput:disabled {
-  background: #f1f5f9;
-  cursor: not-allowed;
+.avatar {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #6366f1, #22d3ee);
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 15px;
+  text-transform: uppercase;
 }
 
-/* NOTIFICATIONS */
-#notifications {
-  display: none;
+.post-username {
+  font-weight: 600;
+  font-size: 14.5px;
 }
 
-/* FOOTER */
-#footer {
-  text-align: center;
-  margin-top: 40px;
+.post-time {
+  font-size: 12px;
+  color: #94a3b8;
+  margin-top: 2px;
+}
+
+/* =========================
+   POST CONTENT
+========================= */
+.post-text {
+  margin: 18px 0;
+  font-size: 15.5px;
+  line-height: 1.75;
+}
+
+/* =========================
+   POST ACTIONS
+========================= */
+.post-actions {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.likeBtn {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  padding: 8px 18px;
+  border-radius: 999px;
   font-size: 14px;
+  transition: transform 0.15s ease;
+}
+
+.likeBtn:active {
+  transform: scale(0.95);
+}
+
+.likeBtn.liked {
+  background: #ffe4e6;
+  color: #dc2626;
+  border-color: #fecdd3;
+}
+
+.likeCount {
+  font-size: 13px;
   color: #64748b;
 }
 
-.brand-name {
+/* =========================
+   COMMENTS
+========================= */
+.comments {
+  margin-top: 16px;
+}
+
+.commentInput {
+  padding: 10px 14px;
+  font-size: 14px;
+  border-radius: 999px;
+}
+
+.commentList {
+  margin-top: 8px;
+}
+
+.comment {
+  font-size: 13px;
+  color: #475569;
+  margin-top: 6px;
+}
+
+/* =========================
+   THREE DOT MENU
+========================= */
+.post-menu {
+  position: relative;
+}
+
+.menu-btn {
+  background: none;
+  border: none;
+  font-size: 22px;
+  color: #94a3b8;
+  padding: 4px 8px;
+}
+
+.menu-dropdown {
+  position: absolute;
+  right: 0;
+  top: 28px;
+  background: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+  display: none;
+  z-index: 10;
+}
+
+.post-menu.open .menu-dropdown {
+  display: block;
+}
+
+.deleteBtn {
+  background: none;
+  border: none;
+  color: #ef4444;
+  padding: 10px 16px;
+  font-size: 13px;
+  width: 100%;
+  text-align: left;
+}
+
+/* =========================
+   SKELETON LOADER
+========================= */
+.skeleton {
+  background: #e5e7eb;
+  border-radius: 12px;
+  position: relative;
+  overflow: hidden;
+}
+
+.skeleton::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  left: -100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.7),
+    transparent
+  );
+  animation: shimmer 1.2s infinite;
+}
+
+@keyframes shimmer {
+  100% {
+    left: 100%;
+  }
+}
+
+.skeleton-post {
+  background: #fdfefe;
+  border-radius: 26px;
+  padding: 22px;
+}
+
+/* =========================
+   FOOTER
+========================= */
+#footer {
+  text-align: center;
+  font-size: 13px;
+  color: #64748b;
+  margin-top: 50px;
+  padding-bottom: 30px;
+}
+
+#footer strong {
   color: #2563eb;
-  font-weight: 700;
+  font-weight: 600;
 }
 
-/* THEME TOGGLE */
-.theme-toggle {
-  position: fixed;
-  bottom: 22px;
-  right: 22px;
-  width: 48px;
-  height: 48px;
-  border-radius: 50%;
-  background: white;
-  border: 1px solid #e2e8f0;
-  font-size: 20px;
-}
-
-/* DARK MODE */
+/* =========================
+   DARK MODE
+========================= */
 body.dark {
   background: #020617;
   color: #e5e7eb;
 }
 
-body.dark .card,
 body.dark .post,
+body.dark .skeleton-post {
+  background: #020617;
+  border: 1px solid #1e293b;
+  box-shadow: none;
+}
+
 body.dark input,
 body.dark textarea {
   background: #020617;
@@ -181,11 +365,56 @@ body.dark textarea {
   color: #e5e7eb;
 }
 
-body.dark .brand-name {
-  color: #60a5fa;
+body.dark .menu-dropdown {
+  background: #020617;
+  border: 1px solid #1e293b;
 }
 
-body.dark .theme-toggle {
+body.dark .likeBtn {
+  background: #020617;
+  border-color: #1e293b;
+}
+
+/* =========================
+   THEME TOGGLE
+========================= */
+.theme-toggle {
+  position: fixed;
+  bottom: 22px;
+  right: 22px;
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  font-size: 20px;
+  cursor: pointer;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+  z-index: 100;
+}
+
+/* =========================
+   🔧 FIXES / PATCHES
+========================= */
+
+/* Auth-controlled sections start hidden */
+#postSection,
+#feed,
+#notifications,
+#logoutBtn {
+  display: none;
+}
+
+/* Comment send alignment */
+.comment-box {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* Dark mode comment fix */
+body.dark .commentInput {
   background: #020617;
   color: #e5e7eb;
+  border-color: #1e293b;
 }
