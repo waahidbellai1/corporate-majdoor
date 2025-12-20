@@ -74,9 +74,9 @@ button {
   font-family: inherit;
 }
 
-#loginBtn {
-  background: #2563eb;
-  color: #ffffff;
+#loginBtn,
+#signupBtn,
+#postBtn {
   border: none;
   padding: 14px;
   border-radius: 999px;
@@ -84,15 +84,8 @@ button {
   width: 100%;
 }
 
-#signupBtn {
-  background: #16a34a;
-  color: #ffffff;
-  border: none;
-  padding: 14px;
-  border-radius: 999px;
-  font-weight: 600;
-  width: 100%;
-}
+#loginBtn { background: #2563eb; color: white; }
+#signupBtn { background: #16a34a; color: white; }
 
 #logoutBtn {
   background: transparent;
@@ -103,37 +96,16 @@ button {
   font-size: 13px;
   margin: 20px auto;
   display: block;
-  width: fit-content;
-}
-
-/* =========================
-   POST COMPOSER
-========================= */
-#postSection {
-  margin-top: 30px;
-}
-
-#postBtn {
-  background: #0f172a;
-  color: #ffffff;
-  border: none;
-  padding: 12px 20px;
-  border-radius: 999px;
-  font-size: 14px;
-  font-weight: 600;
-  margin-left: auto;
-  display: block;
-  opacity: 0.9;
 }
 
 /* =========================
    FEED
 ========================= */
 #feed {
-  margin-top: 40px;
+  margin-top: 24px;
   display: flex;
   flex-direction: column;
-  gap: 28px;
+  gap: 24px;
 }
 
 /* =========================
@@ -151,14 +123,14 @@ button {
 ========================= */
 .post-header {
   display: flex;
-  align-items: center;
   justify-content: space-between;
+  align-items: center;
 }
 
 .post-header-left {
   display: flex;
-  align-items: center;
   gap: 14px;
+  align-items: center;
 }
 
 .avatar {
@@ -166,33 +138,22 @@ button {
   height: 42px;
   border-radius: 50%;
   background: linear-gradient(135deg, #6366f1, #22d3ee);
-  color: #ffffff;
+  color: white;
   display: flex;
   align-items: center;
   justify-content: center;
   font-weight: 700;
-  font-size: 15px;
-  text-transform: uppercase;
 }
 
-.post-username {
-  font-weight: 600;
-  font-size: 14.5px;
-}
-
-.post-time {
-  font-size: 12px;
-  color: #94a3b8;
-  margin-top: 2px;
-}
+.post-username { font-weight: 600; }
+.post-time { font-size: 12px; color: #94a3b8; }
 
 /* =========================
    POST CONTENT
 ========================= */
 .post-text {
-  margin: 18px 0;
+  margin: 14px 0;
   font-size: 15.5px;
-  line-height: 1.75;
 }
 
 /* =========================
@@ -200,8 +161,8 @@ button {
 ========================= */
 .post-actions {
   display: flex;
+  gap: 12px;
   align-items: center;
-  gap: 16px;
 }
 
 .likeBtn {
@@ -209,12 +170,6 @@ button {
   border: 1px solid #e2e8f0;
   padding: 8px 18px;
   border-radius: 999px;
-  font-size: 14px;
-  transition: transform 0.15s ease;
-}
-
-.likeBtn:active {
-  transform: scale(0.95);
 }
 
 .likeBtn.liked {
@@ -223,22 +178,32 @@ button {
   border-color: #fecdd3;
 }
 
-.likeCount {
-  font-size: 13px;
-  color: #64748b;
-}
-
 /* =========================
    COMMENTS
 ========================= */
 .comments {
-  margin-top: 16px;
+  margin-top: 12px;
+}
+
+.comment-box {
+  display: flex;
+  gap: 8px;
 }
 
 .commentInput {
+  flex: 1;
   padding: 10px 14px;
   font-size: 14px;
   border-radius: 999px;
+}
+
+.sendCommentBtn {
+  background: #2563eb;
+  color: white;
+  border: none;
+  padding: 10px 16px;
+  border-radius: 999px;
+  font-size: 13px;
 }
 
 .commentList {
@@ -252,102 +217,29 @@ button {
 }
 
 /* =========================
-   THREE DOT MENU
+   THEME TOGGLE
 ========================= */
-.post-menu {
-  position: relative;
-}
-
-.menu-btn {
-  background: none;
-  border: none;
-  font-size: 22px;
-  color: #94a3b8;
-  padding: 4px 8px;
-}
-
-.menu-dropdown {
-  position: absolute;
-  right: 0;
-  top: 28px;
-  background: #ffffff;
-  border-radius: 12px;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
-  display: none;
-  z-index: 10;
-}
-
-.post-menu.open .menu-dropdown {
-  display: block;
-}
-
-.deleteBtn {
-  background: none;
-  border: none;
-  color: #ef4444;
-  padding: 10px 16px;
-  font-size: 13px;
-  width: 100%;
-  text-align: left;
+.theme-toggle {
+  position: fixed;
+  bottom: 22px;
+  right: 22px;
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  background: white;
+  border: 1px solid #e2e8f0;
+  font-size: 20px;
 }
 
 /* =========================
-   SKELETON LOADER
+   FOOTER
 ========================= */
-.skeleton {
-  background: #e5e7eb;
-  border-radius: 12px;
-  position: relative;
-  overflow: hidden;
+#footer {
+  text-align: center;
+  font-size: 13px;
+  color: #64748b;
+  margin-top: 50px;
 }
-
-.skeleton::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  left: -100%;
-  background: linear-gradient(
-    90deg,
-    transparent,
-    rgba(255, 255, 255, 0.7),
-    transparent
-  );
-  animation: shimmer 1.2s infinite;
-}
-
-@keyframes shimmer {
-  100% {
-    left: 100%;
-  }
-}
-
-.skeleton-post {
-  background: #fdfefe;
-  border-radius: 26px;
-  padding: 22px;
-}
-
-.skeleton-header {
-  display: flex;
-  gap: 14px;
-  margin-bottom: 16px;
-}
-
-.skeleton-avatar {
-  width: 42px;
-  height: 42px;
-  border-radius: 50%;
-}
-
-.skeleton-line {
-  height: 12px;
-  border-radius: 6px;
-  margin-bottom: 10px;
-}
-
-.skeleton-line.short { width: 40%; }
-.skeleton-line.medium { width: 70%; }
-.skeleton-line.full { width: 100%; }
 
 /* =========================
    DARK MODE
@@ -358,12 +250,6 @@ body.dark {
 }
 
 body.dark .post,
-body.dark .skeleton-post {
-  background: #020617;
-  border: 1px solid #1e293b;
-  box-shadow: none;
-}
-
 body.dark input,
 body.dark textarea {
   background: #020617;
@@ -371,96 +257,17 @@ body.dark textarea {
   color: #e5e7eb;
 }
 
-body.dark .menu-dropdown {
-  background: #020617;
-  border: 1px solid #1e293b;
-}
-
 body.dark .likeBtn {
   background: #020617;
   border-color: #1e293b;
 }
 
-/* =========================
-   THEME TOGGLE
-========================= */
-.theme-toggle {
-  position: fixed;
-  bottom: 22px;
-  right: 22px;
-  width: 46px;
-  height: 46px;
-  border-radius: 50%;
-  background: #ffffff;
-  border: 1px solid #e2e8f0;
-  font-size: 20px;
-  cursor: pointer;
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
-  z-index: 100;
-}
-/* =========================
-   LAYOUT FIXES
-========================= */
-
-/* Reduce empty vertical space */
-#feed {
-  margin-top: 24px;
+body.dark .commentInput {
+  background: #020617;
 }
 
-/* Tighten post content */
-.post-text {
-  margin: 14px 0;
+body.dark .theme-toggle {
+  background: #020617;
+  color: #e5e7eb;
+  border-color: #1e293b;
 }
-
-/* Group actions + comments */
-.comments {
-  margin-top: 10px;
-}
-
-.commentInput {
-  margin-top: 6px;
-  background: #f8fafc;
-}
-
-/* Notifications shouldn't scream */
-#notifications {
-  margin-top: 40px;
-  opacity: 0.9;
-}
-
-#notifications h3 {
-  font-size: 16px;
-  margin-bottom: 10px;
-  color: #475569;
-}
-
-/* Auth section should feel like a card */
-#authSection {
-  background: #ffffff;
-  padding: 28px;
-  border-radius: 28px;
-  box-shadow: 0 12px 40px rgba(0,0,0,0.06);
-  margin-top: 30px;
-}
-/* =========================
-   FOOTER
-========================= */
-#footer {
-  text-align: center;
-  font-size: 13px;
-  color: #64748b;
-  margin-top: 50px;
-  padding-bottom: 30px;
-}
-
-#footer strong {
-  color: #2563eb;
-  font-weight: 600;
-}
-
-body.dark #footer {
-  color: #94a3b8;
-}
-
-
-
