@@ -1325,6 +1325,43 @@ body.dark .profile-menu {
 #authSection:not([style*="display: none"]) ~ .profile-menu {
   display: none !important;
 }
+/* =========================
+   🛑 AUTH SCREEN UI GUARD
+   Hide profile & menus on login
+   APPEND-ONLY | SAFE
+========================= */
+
+/* When auth section is visible, kill profile UI */
+#authSection:not([style*="display: none"]) ~ * #profileBtn,
+#authSection:not([style*="display: none"]) ~ * #profileMenu {
+  display: none !important;
+}
+
+/* Extra safety for Safari early paint */
+body #authSection:not([style*="display: none"]) #profileMenu {
+  display: none !important;
+}
+
+/* Header stays clean on login */
+#authSection:not([style*="display: none"]) ~ .header {
+  pointer-events: none;
+}
+
+/* But logo remains visible */
+#authSection:not([style*="display: none"]) ~ .header span {
+  pointer-events: auto;
+}
+
+/* =========================
+   📱 MOBILE REFINEMENT
+========================= */
+
+@media (max-width: 768px) {
+  #authSection:not([style*="display: none"]) ~ .header {
+    margin-bottom: 8px;
+  }
+}
+
 
 
 
