@@ -767,4 +767,41 @@ textarea:focus {
     right: 12px;
   }
 }
+/* =========================
+   📱 MOBILE LOGIN HEADER FIX
+   (APPEND ONLY – SAFE)
+========================= */
+
+@media (max-width: 768px) {
+
+  /* Let header flow naturally on mobile */
+  .header {
+    flex-direction: column;
+    justify-content: center !important;
+    padding-top: 28px;
+    padding-bottom: 12px;
+  }
+
+  /* Remove absolute positioning on mobile */
+  .header span {
+    position: static !important;
+    transform: none !important;
+    display: block;
+    text-align: center;
+    margin-bottom: 14px;
+  }
+
+  /* Hide bell spacing issues on login */
+  #notifBell {
+    position: static;
+    margin-top: 8px;
+  }
+
+  /* Push auth form down slightly */
+  #authSection {
+    margin-top: 12px;
+  }
+}
+
+
 
