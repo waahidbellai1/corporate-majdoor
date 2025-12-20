@@ -2,8 +2,12 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+
+  <!-- Mobile & iPhone friendly viewport -->
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+
   <title>Corporate Majdoor</title>
+
   <link rel="stylesheet" href="style.css" />
 </head>
 
@@ -12,34 +16,58 @@
   <!-- HEADER -->
   <div class="header">
     <span>Corporate Majdoor</span>
-    <button id="notifBell">🔔</button>
+
+    <!-- Notification Bell (hidden via JS on login screen) -->
+    <button id="notifBell" type="button" aria-label="Notifications">
+      🔔
+    </button>
   </div>
 
   <!-- MAIN CONTAINER -->
   <div class="container">
 
     <!-- STATUS -->
-    <div id="status"></div>
+    <div id="status" aria-live="polite"></div>
 
     <!-- AUTH SECTION -->
     <div id="authSection">
-      <input id="username" placeholder="Username (signup only)" />
-      <input id="email" placeholder="Email" />
-      <input id="password" type="password" placeholder="Password" />
-      <button id="loginBtn">Login</button>
-      <button id="signupBtn">Sign Up</button>
+      <input
+        id="username"
+        placeholder="Username (signup only)"
+        autocomplete="username"
+      />
+
+      <input
+        id="email"
+        placeholder="Email"
+        type="email"
+        autocomplete="email"
+      />
+
+      <input
+        id="password"
+        type="password"
+        placeholder="Password"
+        autocomplete="current-password"
+      />
+
+      <!-- Prevent accidental form submit on mobile -->
+      <button id="loginBtn" type="button">Login</button>
+      <button id="signupBtn" type="button">Sign Up</button>
     </div>
 
     <!-- LOGOUT -->
-    <button id="logoutBtn">Logout</button>
+    <button id="logoutBtn" type="button">Logout</button>
 
     <!-- POST COMPOSER -->
     <div id="postSection">
       <textarea
         id="postInput"
         placeholder="What corporate pain are you facing today?"
+        rows="3"
       ></textarea>
-      <button id="postBtn">Post</button>
+
+      <button id="postBtn" type="button">Post</button>
     </div>
 
     <!-- FEED -->
@@ -59,7 +87,14 @@
   </div>
 
   <!-- THEME TOGGLE -->
-  <button class="theme-toggle" id="themeToggle">🌙</button>
+  <button
+    class="theme-toggle"
+    id="themeToggle"
+    type="button"
+    aria-label="Toggle dark mode"
+  >
+    🌙
+  </button>
 
   <script type="module" src="app.js"></script>
 </body>
