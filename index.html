@@ -8,12 +8,17 @@
 </head>
 
 <body>
+
+  <!-- HEADER -->
   <div class="header">Corporate Majdoor</div>
 
+  <!-- MAIN CONTAINER -->
   <div class="container">
+
+    <!-- STATUS -->
     <div id="status"></div>
 
-    <!-- AUTH -->
+    <!-- AUTH SECTION -->
     <div id="authSection">
       <input id="username" placeholder="Username (signup only)" />
       <input id="email" placeholder="Email" />
@@ -25,31 +30,31 @@
     <!-- LOGOUT -->
     <button id="logoutBtn" style="display:none;">Logout</button>
 
-    <!-- POST -->
+    <!-- POST COMPOSER -->
     <div id="postSection" style="display:none;">
-      <textarea id="postInput" placeholder="What corporate pain are you facing today?"></textarea>
+      <textarea
+        id="postInput"
+        placeholder="What corporate pain are you facing today?"
+      ></textarea>
       <button id="postBtn">Post</button>
     </div>
 
     <!-- FEED -->
     <div id="feed"></div>
 
-    <!-- PROFILE -->
-    <div id="profileSection" style="display:none;">
-      <h2 id="profileName"></h2>
-      <div id="profilePosts"></div>
-    </div>
-
     <!-- NOTIFICATIONS -->
-    <div id="notifications" style="display:none;">
+    <div id="notifications">
       <h3>Notifications</h3>
       <div id="notificationList"></div>
     </div>
+
   </div>
 
-  <!-- THEME -->
+  <!-- THEME TOGGLE -->
   <button class="theme-toggle" id="themeToggle">🌙</button>
 
+  <!-- APP SCRIPT -->
   <script type="module" src="app.js"></script>
+
 </body>
 </html>
