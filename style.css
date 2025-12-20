@@ -472,3 +472,148 @@ body.dark #notifBell {
   border-color: #1e293b;
   color: #e5e7eb;
 }
+/* =========================
+   📱 MOBILE POLISH (APPEND ONLY)
+========================= */
+
+@media (max-width: 768px) {
+
+  /* Prevent iOS input zoom */
+  input,
+  textarea,
+  button {
+    font-size: 16px;
+  }
+
+  /* Header spacing */
+  .header {
+    padding: 20px 16px;
+    font-size: 26px;
+  }
+
+  /* Container breathing room */
+  .container {
+    padding: 0 14px 120px;
+  }
+
+  /* Auth inputs spacing */
+  #authSection input {
+    margin-bottom: 12px;
+  }
+
+  /* Post composer */
+  #postInput {
+    min-height: 90px;
+  }
+
+  #postBtn {
+    margin-top: 6px;
+    padding: 14px 22px;
+  }
+
+  /* Post card */
+  .post {
+    padding: 18px;
+    border-radius: 22px;
+  }
+
+  /* Username & avatar */
+  .avatar {
+    width: 38px;
+    height: 38px;
+    font-size: 14px;
+  }
+
+  .post-username {
+    font-size: 14px;
+  }
+
+  .post-time {
+    font-size: 11px;
+  }
+
+  /* Post text readability */
+  .post-text {
+    font-size: 15px;
+    line-height: 1.65;
+  }
+
+  /* Like button tap target */
+  .likeBtn {
+    padding: 10px 20px;
+    font-size: 14px;
+  }
+
+  /* Comments layout */
+  .comment-box {
+    gap: 6px;
+  }
+
+  .commentInput {
+    padding: 12px 16px;
+  }
+
+  .sendCommentBtn {
+    padding: 12px 18px;
+  }
+
+  /* Notification panel */
+  #notifications {
+    margin-top: 24px;
+  }
+
+  #notifications h3 {
+    font-size: 15px;
+  }
+
+  /* Footer spacing */
+  #footer {
+    margin-top: 40px;
+    padding-bottom: 24px;
+  }
+
+  /* Theme toggle reposition (thumb friendly) */
+  .theme-toggle {
+    bottom: 18px;
+    right: 18px;
+    width: 44px;
+    height: 44px;
+  }
+}
+
+/* =========================
+   📱 iOS SMOOTHNESS
+========================= */
+
+/* Momentum scrolling */
+body {
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Tap highlight removal */
+button,
+input,
+textarea {
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Better focus visibility */
+input:focus,
+textarea:focus {
+  outline: none;
+  border-color: #2563eb;
+}
+
+/* =========================
+   📱 SAFE AREA (iPhone notch)
+========================= */
+
+@supports (padding: env(safe-area-inset-bottom)) {
+  .container {
+    padding-bottom: calc(120px + env(safe-area-inset-bottom));
+  }
+
+  .theme-toggle {
+    bottom: calc(18px + env(safe-area-inset-bottom));
+  }
+}
