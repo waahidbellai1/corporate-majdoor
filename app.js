@@ -302,6 +302,30 @@ onAuthStateChanged(auth, async (user) => {
     status.innerText = "🔐 Login to Corporate Majdoor";
   }
 });
+// =====================
+// DARK MODE LOGIC
+// =====================
+const toggleBtn = document.getElementById("themeToggle");
+
+// Load saved theme or system preference
+const savedTheme = localStorage.getItem("theme");
+const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+
+if (savedTheme === "dark" || (!savedTheme && prefersDark)) {
+  document.body.classList.add("dark");
+  toggleBtn.innerText = "☀️";
+}
+
+// Toggle manually
+toggleBtn.addEventListener("click", () => {
+  document.body.classList.toggle("dark");
+  const isDark = document.body.classList.contains("dark");
+
+  localStorage.setItem("theme", isDark ? "dark" : "light");
+  toggleBtn.innerText = isDark ? "☀️" : "🌙";
+});
+
+
 
 
 
