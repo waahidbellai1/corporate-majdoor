@@ -14,7 +14,6 @@ import {
   orderBy,
   onSnapshot,
   serverTimestamp,
-  deleteDoc,
   doc,
   setDoc,
   getDoc,
@@ -23,45 +22,39 @@ import {
   arrayRemove
 } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-/* =====================
-   FIREBASE INIT
-===================== */
 const firebaseConfig = {
   apiKey: "AIzaSyDv8-8o_pd9ZUxxazTbBH5xBb_olbuhyag",
   authDomain: "corporate-majdoor.firebaseapp.com",
-  projectId: "corporate-majdoor",
-  storageBucket: "corporate-majdoor.appspot.com",
-  messagingSenderId: "490168158830",
-  appId: "1:490168158830:web:bde232dae0cff6ab8bb47f"
+  projectId: "corporate-majdoor"
 };
 
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
 
-/* =====================
-   ELEMENTS
-===================== */
 const feed = document.getElementById("feed");
-const postInput = document.getElementById("postInput");
-const postBtn = document.getElementById("postBtn");
-const status = document.getElementById("status");
-const logoutBtn = document.getElementById("logoutBtn");
+const postSection = document.getElementById("postSection");
+const authSection = document.getElementById("authSection");
+const notifications = document.getElementById("notifications");
+const notificationList = document.getElementById("notificationList");
+
 const loginBtn = document.getElementById("loginBtn");
 const signupBtn = document.getElementById("signupBtn");
+const logoutBtn = document.getElementById("logoutBtn");
+
 const email = document.getElementById("email");
 const password = document.getElementById("password");
 const username = document.getElementById("username");
+const postInput = document.getElementById("postInput");
+const postBtn = document.getElementById("postBtn");
+const status = document.getElementById("status");
 
-/* =====================
-   AUTH
-===================== */
+/* AUTH */
 loginBtn.onclick = () =>
   signInWithEmailAndPassword(auth, email.value, password.value)
-    .catch(err => status.innerText = err.message);
+    .catch(e => status.innerText = e.message);
 
 signupBtn.onclick = async () => {
-  if (!username.value.trim()) return;
   const cred = await createUserWithEmailAndPassword(auth, email.value, password.value);
   await setDoc(doc(db, "users", cred.user.uid), {
     username: username.value.trim()
@@ -70,119 +63,88 @@ signupBtn.onclick = async () => {
 
 logoutBtn.onclick = () => signOut(auth);
 
+/* AUTH STATE */
 onAuthStateChanged(auth, user => {
-  logoutBtn.style.display = user ? "block" : "none";
+  if (user) {
+    authSection.style.display = "none";
+    postSection.style.display = "block";
+    feed.style.display = "block";
+    notifications.style.display = "block";
+    logoutBtn.style.display = "block";
+    loadPosts(user);
+    loadNotifications(user);
+  } else {
+    authSection.style.display = "block";
+    postSection.style.display = "none";
+    feed.style.display = "none";
+    notifications.style.display = "none";
+    logoutBtn.style.display = "none";
+    feed.innerHTML = "";
+  }
 });
 
-/* =====================
-   POST
-===================== */
-postBtn.onclick = async () => {
-  if (!auth.currentUser || !postInput.value.trim()) return;
-  await addDoc(collection(db, "posts"), {
-    text: postInput.value.trim(),
-    uid: auth.currentUser.uid,
-    createdAt: serverTimestamp(),
-    likedBy: []
-  });
-  postInput.value = "";
-};
+/* POSTS */
+function loadPosts(user) {
+  onSnapshot(
+    query(collection(db, "posts"), orderBy("createdAt", "desc")),
+    async snap => {
+      feed.innerHTML = "";
+      for (const p of snap.docs) {
+        const data = p.data();
+        const u = await getDoc(doc(db, "users", data.uid));
+        const name = u.exists() ? u.data().username : "user";
 
-/* =====================
-   FEED
-===================== */
-onSnapshot(
-  query(collection(db, "posts"), orderBy("createdAt", "desc")),
-  snapshot => {
-    feed.innerHTML = "";
-
-    snapshot.forEach(async snap => {
-      const data = snap.data();
-      const userSnap = await getDoc(doc(db, "users", data.uid));
-      const name = userSnap.exists() ? userSnap.data().username : "user";
-
-      const post = document.createElement("div");
-      post.className = "post";
-
-      post.innerHTML = `
-        <div class="post-header">
-          <div class="post-header-left">
+        const post = document.createElement("div");
+        post.className = "post";
+        post.innerHTML = `
+          <div class="post-header">
             <div class="avatar">${name[0]}</div>
-            <div>
-              <div class="post-username">${name}</div>
+            <strong>${name}</strong>
+          </div>
+          <div class="post-text">${data.text}</div>
+          <button class="likeBtn">👍 ${data.likedBy.length}</button>
+          <div class="comments">
+            <div class="comment-box">
+              <input class="commentInput" placeholder="Add comment..." />
+              <button class="sendCommentBtn">Send</button>
             </div>
+            <div class="commentList"></div>
           </div>
-        </div>
+        `;
 
-        <div class="post-text">${data.text}</div>
+        const input = post.querySelector(".commentInput");
+        const btn = post.querySelector(".sendCommentBtn");
 
-        <div class="post-actions">
-          <button class="likeBtn">👍 Like</button>
-          <span>${data.likedBy.length || ""}</span>
-        </div>
+        btn.onclick = async () => {
+          if (!input.value.trim()) return;
+          await addDoc(collection(db, "posts", p.id, "comments"), {
+            text: input.value,
+            createdAt: serverTimestamp()
+          });
+          input.value = "";
+        };
 
-        <div class="comments">
-          <div class="comment-box">
-            <input class="commentInput" placeholder="Add comment…" />
-            <button class="sendCommentBtn">Send</button>
-          </div>
-          <div class="commentList"></div>
-        </div>
-      `;
-
-      const likeBtn = post.querySelector(".likeBtn");
-      likeBtn.onclick = async () => {
-        const ref = doc(db, "posts", snap.id);
-        const liked = data.likedBy.includes(auth.currentUser.uid);
-        await updateDoc(ref, {
-          likedBy: liked
-            ? arrayRemove(auth.currentUser.uid)
-            : arrayUnion(auth.currentUser.uid)
-        });
-      };
-
-      const input = post.querySelector(".commentInput");
-      const sendBtn = post.querySelector(".sendCommentBtn");
-      const list = post.querySelector(".commentList");
-
-      onSnapshot(
-        query(collection(db, "posts", snap.id, "comments"), orderBy("createdAt")),
-        s => {
-          list.innerHTML = "";
-          s.forEach(c => list.innerHTML += `<div class="comment">${c.data().text}</div>`);
-        }
-      );
-
-      async function sendComment() {
-        if (!input.value.trim()) return;
-        await addDoc(collection(db, "posts", snap.id, "comments"), {
-          text: input.value.trim(),
-          createdAt: serverTimestamp()
-        });
-        input.value = "";
+        feed.appendChild(post);
       }
-
-      sendBtn.onclick = sendComment;
-      input.onkeydown = e => e.key === "Enter" && sendComment();
-
-      feed.appendChild(post);
-    });
-  }
-);
-
-/* =====================
-   THEME TOGGLE
-===================== */
-const themeToggle = document.getElementById("themeToggle");
-
-if (localStorage.getItem("theme") === "dark") {
-  document.body.classList.add("dark");
-  themeToggle.textContent = "☀️";
+    }
+  );
 }
 
-themeToggle.onclick = () => {
-  document.body.classList.toggle("dark");
-  const dark = document.body.classList.contains("dark");
-  themeToggle.textContent = dark ? "☀️" : "🌙";
-  localStorage.setItem("theme", dark ? "dark" : "light");
-};
+/* NOTIFICATIONS */
+function loadNotifications(user) {
+  onSnapshot(
+    query(collection(db, "notifications"), orderBy("createdAt", "desc")),
+    snap => {
+      notificationList.innerHTML = "";
+      snap.forEach(n => {
+        if (n.data().to === user.uid) {
+          notificationList.innerHTML += `<div>${n.data().text}</div>`;
+        }
+      });
+    }
+  );
+}
+
+/* THEME */
+const toggle = document.getElementById("themeToggle");
+toggle.onclick = () => document.body.classList.toggle("dark");
