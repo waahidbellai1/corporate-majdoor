@@ -1107,6 +1107,64 @@ body.dark .header span {
     transform: translateZ(0);
   }
 }
+/* =========================
+   🖥 DESKTOP HEADER CENTER FIX
+   (APPEND ONLY – SAFE)
+========================= */
+
+/* Use grid for true centering on desktop */
+@media (min-width: 769px) {
+  .header {
+    display: grid !important;
+    grid-template-columns: 1fr auto 1fr;
+    align-items: center;
+    position: relative;
+  }
+
+  /* Center title properly */
+  .header span {
+    position: static !important;
+    transform: none !important;
+    grid-column: 2;
+    justify-self: center;
+  }
+
+  /* Bell stays right but doesn't affect centering */
+  #notifBell {
+    position: static !important;
+    grid-column: 3;
+    justify-self: end;
+  }
+}
+/* =========================
+   🛠 iOS DARK MODE LOGO BUG FIX
+   (PREVENT BLUE RECTANGLE)
+========================= */
+
+/* Disable gradient clipping in dark mode */
+body.dark .header span {
+  background: none !important;
+  -webkit-background-clip: initial !important;
+  -webkit-text-fill-color: #e5e7eb !important;
+  color: #e5e7eb !important;
+  text-shadow:
+    0 0 12px rgba(99,102,241,0.35),
+    0 0 28px rgba(34,211,238,0.25);
+}
+
+/* Remove glow layer that causes repaint blocks */
+body.dark .header span::after {
+  content: none !important;
+}
+
+/* Extra WebKit stability */
+@supports (-webkit-touch-callout: none) {
+  body.dark .header span {
+    transform: translateZ(0);
+    will-change: auto;
+  }
+}
+
 
 
 
