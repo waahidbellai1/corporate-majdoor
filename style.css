@@ -1383,6 +1383,43 @@ body.is-authenticated .profile-btn {
   visibility: visible !important;
   pointer-events: auto !important;
 }
+/* =========================
+   🔐 HEADER AUTH GATING
+   FINAL FIX (PC + MOBILE)
+========================= */
+
+/* Hide profile when logged out */
+body.is-logged-out .profile-btn {
+  display: none !important;
+}
+
+/* Show profile only when logged in */
+body.is-authenticated .profile-btn {
+  display: inline-flex;
+}
+
+/* Profile button styling */
+.profile-btn {
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+}
+
+/* Avatar circle */
+.profile-avatar {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #2563eb, #22d3ee);
+  color: #fff;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 15px;
+}
+
 
 
 
