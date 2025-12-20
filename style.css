@@ -1616,6 +1616,67 @@ body.is-authenticated .profile-btn {
     text-overflow: ellipsis;
   }
 }
+/* =========================
+   📱 MOBILE BOTTOM BAR (INSTAGRAM STYLE)
+========================= */
+
+.bottom-bar {
+  display: none;
+}
+
+@media (max-width: 768px) {
+
+  .bottom-bar {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: env(safe-area-inset-bottom);
+    height: 64px;
+    background: rgba(255, 255, 255, 0.75);
+    backdrop-filter: blur(18px);
+    -webkit-backdrop-filter: blur(18px);
+    border-top: 1px solid rgba(0,0,0,0.06);
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    z-index: 200;
+  }
+
+  body.dark .bottom-bar {
+    background: rgba(2, 6, 23, 0.75);
+    border-top: 1px solid rgba(255,255,255,0.08);
+  }
+
+  .bottom-btn {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    border: none;
+    background: transparent;
+    font-size: 22px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+  }
+
+  .bottom-btn:active {
+    transform: scale(0.92);
+  }
+
+  /* Push content above bar */
+  .container {
+    padding-bottom: calc(140px + env(safe-area-inset-bottom));
+  }
+
+  /* Hide TOP buttons on mobile */
+  .header .profile-btn,
+  .header #notifBell,
+  .theme-toggle {
+    display: none !important;
+  }
+}
+
 
 
 
