@@ -123,6 +123,19 @@ async function getUsername(uid) {
 
   return "Unknown";
 }
+feed.innerHTML = `
+  <div class="skeleton-post">
+    <div class="skeleton-header">
+      <div class="skeleton skeleton-avatar"></div>
+      <div style="flex:1">
+        <div class="skeleton skeleton-line medium"></div>
+        <div class="skeleton skeleton-line short"></div>
+      </div>
+    </div>
+    <div class="skeleton skeleton-line full"></div>
+    <div class="skeleton skeleton-line medium"></div>
+  </div>
+`;
 onSnapshot(q, (snapshot) => {
   feed.innerHTML = "";
 
@@ -289,6 +302,7 @@ onAuthStateChanged(auth, async (user) => {
     status.innerText = "🔐 Login to Corporate Majdoor";
   }
 });
+
 
 
 
