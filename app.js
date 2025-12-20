@@ -14,7 +14,6 @@ import {
   orderBy,
   onSnapshot,
   serverTimestamp,
-  deleteDoc,
   doc,
   setDoc,
   getDoc,
@@ -42,8 +41,6 @@ const feed = document.getElementById("feed");
 const postInput = document.getElementById("postInput");
 const postBtn = document.getElementById("postBtn");
 const status = document.getElementById("status");
-const logoutBtn = document.getElementById("logoutBtn");
-const notifBell = document.getElementById("notifBell");
 
 const loginBtn = document.getElementById("loginBtn");
 const signupBtn = document.getElementById("signupBtn");
@@ -53,6 +50,8 @@ const username = document.getElementById("username");
 
 const authSection = document.getElementById("authSection");
 const postSection = document.getElementById("postSection");
+
+const notifBell = document.getElementById("notifBell");
 const notifications = document.getElementById("notifications");
 const notificationList = document.getElementById("notificationList");
 
@@ -60,11 +59,13 @@ const profileBtn = document.getElementById("profileBtn");
 const profileMenu = document.getElementById("profileMenu");
 const profileLogout = document.getElementById("profileLogout");
 
-/* =====================
-   LISTENER HANDLES
-===================== */
-let unsubPosts = null;
-let unsubNotifs = null;
+const themeToggle = document.getElementById("themeToggle");
+
+/* Mobile bottom bar */
+const bottomBar = document.querySelector(".bottom-bar");
+const bottomProfileBtn = document.getElementById("bottomProfileBtn");
+const bottomNotifBtn = document.getElementById("bottomNotifBtn");
+const bottomThemeBtn = document.getElementById("bottomThemeBtn");
 
 /* =====================
    HELPERS
@@ -81,28 +82,36 @@ function timeAgo(ts) {
 /* =====================
    AUTH ACTIONS
 ===================== */
-loginBtn.onclick = () =>
+loginBtn.onclick = () => {
   signInWithEmailAndPassword(auth, email.value, password.value)
     .catch(e => status.innerText = e.message);
+};
 
 signupBtn.onclick = async () => {
-  if (!username.value.trim()) return;
+  if (!username.value.trim()) {
+    status.innerText = "Username required";
+    return;
+  }
+
   const cred = await createUserWithEmailAndPassword(
     auth,
     email.value,
     password.value
   );
+
   await setDoc(doc(db, "users", cred.user.uid), {
     username: username.value.trim()
   });
 };
 
-logoutBtn.onclick = () => signOut(auth);
 profileLogout.onclick = () => signOut(auth);
 
 /* =====================
-   AUTH STATE (SINGLE SOURCE OF TRUTH)
+   AUTH STATE — SINGLE SOURCE
 ===================== */
+let unsubPosts = null;
+let unsubNotifs = null;
+
 onAuthStateChanged(auth, user => {
 
   if (unsubPosts) unsubPosts();
@@ -115,9 +124,10 @@ onAuthStateChanged(auth, user => {
     authSection.style.display = "none";
     postSection.style.display = "block";
     feed.style.display = "flex";
-    logoutBtn.style.display = "none";
-    notifBell.style.display = "block";
-    profileBtn.style.display = "block";
+
+    if (notifBell) notifBell.style.display = "block";
+    if (profileBtn) profileBtn.style.display = "block";
+    if (bottomBar) bottomBar.style.display = "flex";
 
     unsubPosts = listenToPosts(user);
     unsubNotifs = listenToNotifications(user);
@@ -130,11 +140,12 @@ onAuthStateChanged(auth, user => {
     postSection.style.display = "none";
     feed.style.display = "none";
     notifications.style.display = "none";
-    logoutBtn.style.display = "none";
-    notifBell.style.display = "none";
-    profileBtn.style.display = "none";
-    profileMenu.classList.remove("open");
 
+    if (notifBell) notifBell.style.display = "none";
+    if (profileBtn) profileBtn.style.display = "none";
+    if (bottomBar) bottomBar.style.display = "none";
+
+    profileMenu.classList.remove("open");
     feed.innerHTML = "";
   }
 });
@@ -189,9 +200,7 @@ function listenToPosts(user) {
 
           <div class="post-actions">
             <button class="likeBtn ${liked ? "liked" : ""}">👍 Like</button>
-            ${data.likedBy.length
-              ? `<span class="likeCount">${data.likedBy.length}</span>`
-              : ""}
+            ${data.likedBy.length ? `<span class="likeCount">${data.likedBy.length}</span>` : ""}
           </div>
 
           <div class="comments">
@@ -205,9 +214,8 @@ function listenToPosts(user) {
 
         post.querySelector(".likeBtn").onclick = async () => {
           const ref = doc(db, "posts", docSnap.id);
-          const hasLiked = data.likedBy.includes(user.uid);
           await updateDoc(ref, {
-            likedBy: hasLiked
+            likedBy: liked
               ? arrayRemove(user.uid)
               : arrayUnion(user.uid)
           });
@@ -224,9 +232,9 @@ function listenToPosts(user) {
           ),
           snap => {
             list.innerHTML = "";
-            snap.forEach(c =>
-              list.innerHTML += `<div class="comment">${c.data().text}</div>`
-            );
+            snap.forEach(c => {
+              list.innerHTML += `<div class="comment">${c.data().text}</div>`;
+            });
           }
         );
 
@@ -267,67 +275,46 @@ function listenToNotifications(user) {
 /* =====================
    UI CONTROLS
 ===================== */
-notifBell.onclick = () => {
-  notifications.style.display =
-    notifications.style.display === "block" ? "none" : "block";
-};
-
-profileBtn.onclick = (e) => {
-  e.stopPropagation();
-  profileMenu.classList.toggle("open");
-};
-
-document.addEventListener("click", () => {
-  profileMenu.classList.remove("open");
-});
-
-document.getElementById("themeToggle").onclick =
-  () => document.body.classList.toggle("dark");
-/* =====================
-   📱 MOBILE BOTTOM BAR WIRING
-   APPEND ONLY — SAFE
-===================== */
-
-const profileBtnMobile = document.getElementById("profileBtnMobile");
-const notifBellMobile = document.getElementById("notifBellMobile");
-const themeToggleMobile = document.getElementById("themeToggleMobile");
-
-/* Profile menu (mobile uses same menu) */
-if (profileBtnMobile) {
-  profileBtnMobile.onclick = (e) => {
-    e.stopPropagation();
-    profileMenu.classList.toggle("open");
-  };
-}
-
-/* Notifications (mobile mirrors top bell) */
-if (notifBellMobile) {
-  notifBellMobile.onclick = () => {
+if (notifBell) {
+  notifBell.onclick = () => {
     notifications.style.display =
       notifications.style.display === "block" ? "none" : "block";
   };
 }
 
-/* Dark mode (mobile mirrors desktop toggle) */
-if (themeToggleMobile) {
-  themeToggleMobile.onclick = () => {
+if (profileBtn) {
+  profileBtn.onclick = (e) => {
+    e.stopPropagation();
+    profileMenu.classList.toggle("open");
+  };
+}
+
+if (bottomProfileBtn) {
+  bottomProfileBtn.onclick = (e) => {
+    e.stopPropagation();
+    profileMenu.classList.toggle("open");
+  };
+}
+
+if (bottomNotifBtn) {
+  bottomNotifBtn.onclick = () => {
+    notifications.style.display =
+      notifications.style.display === "block" ? "none" : "block";
+  };
+}
+
+if (themeToggle) {
+  themeToggle.onclick = () => {
     document.body.classList.toggle("dark");
   };
 }
 
-/* =====================
-   📱 AUTH VISIBILITY (BOTTOM BAR)
-===================== */
-const bottomBar = document.querySelector(".bottom-bar");
+if (bottomThemeBtn) {
+  bottomThemeBtn.onclick = () => {
+    document.body.classList.toggle("dark");
+  };
+}
 
-onAuthStateChanged(auth, (user) => {
-  if (!bottomBar) return;
-
-  if (user) {
-    bottomBar.style.display = "flex";
-  } else {
-    bottomBar.style.display = "none";
-  }
+document.addEventListener("click", () => {
+  profileMenu.classList.remove("open");
 });
-
-
