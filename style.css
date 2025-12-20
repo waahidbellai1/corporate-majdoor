@@ -1164,6 +1164,168 @@ body.dark .header span::after {
     will-change: auto;
   }
 }
+/* =========================
+   🧭 TOP APP BAR (APPEND ONLY)
+========================= */
+
+.app-bar {
+  position: sticky;
+  top: 0;
+  z-index: 200;
+  height: 64px;
+  padding: 0 16px;
+
+  background: rgba(255,255,255,0.75);
+  backdrop-filter: blur(14px) saturate(140%);
+  -webkit-backdrop-filter: blur(14px) saturate(140%);
+
+  border-bottom: 1px solid rgba(0,0,0,0.06);
+
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+}
+
+/* Dark mode bar */
+body.dark .app-bar {
+  background: rgba(2,6,23,0.75);
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+}
+
+/* =========================
+   👤 PROFILE BUTTON (LEFT)
+========================= */
+
+.profile-btn {
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+}
+
+.profile-avatar {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+
+  background: linear-gradient(135deg, #2563eb, #22d3ee);
+  color: #ffffff;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  font-weight: 700;
+  font-size: 14px;
+}
+
+/* Dark mode avatar */
+body.dark .profile-avatar {
+  background: linear-gradient(135deg, #93c5fd, #67e8f9);
+  color: #020617;
+}
+
+/* =========================
+   📂 PROFILE MENU
+========================= */
+
+.profile-menu {
+  position: fixed;
+  top: 64px;
+  left: 16px;
+  z-index: 300;
+
+  min-width: 200px;
+  border-radius: 16px;
+
+  background: rgba(255,255,255,0.9);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+
+  box-shadow: 0 20px 50px rgba(0,0,0,0.15);
+  border: 1px solid rgba(0,0,0,0.08);
+
+  padding: 8px;
+  display: none;
+}
+
+body.dark .profile-menu {
+  background: rgba(2,6,23,0.92);
+  border-color: rgba(255,255,255,0.08);
+}
+
+/* Menu items */
+.profile-item {
+  width: 100%;
+  background: none;
+  border: none;
+  padding: 12px 14px;
+  text-align: left;
+  font-size: 14px;
+  border-radius: 10px;
+  cursor: pointer;
+}
+
+.profile-item:hover {
+  background: rgba(37,99,235,0.1);
+}
+
+.profile-item.logout {
+  color: #ef4444;
+}
+
+/* =========================
+   🔄 PROFILE MENU OPEN STATE
+========================= */
+
+.profile-menu.open {
+  display: block;
+  animation: profileDrop 0.25s ease both;
+}
+
+@keyframes profileDrop {
+  from {
+    opacity: 0;
+    transform: translateY(-6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* =========================
+   📱 MOBILE TUNING
+========================= */
+
+@media (max-width: 768px) {
+
+  .app-bar {
+    height: 60px;
+    padding: 0 14px;
+  }
+
+  .profile-avatar {
+    width: 36px;
+    height: 36px;
+  }
+
+  .profile-menu {
+    left: 12px;
+    right: 12px;
+  }
+}
+
+/* =========================
+   🔐 LOGIN SCREEN
+   Hide app bar completely
+========================= */
+
+#authSection:not([style*="display: none"]) ~ .app-bar,
+#authSection:not([style*="display: none"]) ~ .profile-menu {
+  display: none !important;
+}
+
 
 
 
