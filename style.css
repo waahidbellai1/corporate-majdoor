@@ -1,133 +1,75 @@
-/* =========================
-   RESET
-========================= */
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
 }
 
-/* =========================
-   BASE
-========================= */
 body {
-  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
-    Roboto, Helvetica, Arial, sans-serif;
+  font-family: system-ui, sans-serif;
   background: linear-gradient(180deg, #fbfdff, #f5f7fb);
   color: #0f172a;
-  line-height: 1.7;
 }
 
-/* =========================
-   HEADER
-========================= */
 .header {
   text-align: center;
-  padding: 28px 16px 20px;
+  padding: 28px;
   font-size: 32px;
   font-weight: 700;
 }
 
-/* =========================
-   CONTAINER
-========================= */
 .container {
   max-width: 640px;
-  margin: 0 auto;
+  margin: auto;
   padding: 0 16px 80px;
 }
 
-/* =========================
-   STATUS
-========================= */
 #status {
   text-align: center;
-  font-size: 14px;
-  color: #64748b;
   margin-bottom: 18px;
+  color: #64748b;
 }
 
-/* =========================
-   INPUTS
-========================= */
-input,
-textarea {
+input, textarea {
   width: 100%;
   padding: 16px;
   border-radius: 16px;
   border: 1px solid #e2e8f0;
-  font-size: 15px;
   margin-bottom: 14px;
-  background: #ffffff;
-  color: #0f172a;
 }
 
-textarea {
-  resize: none;
-}
-
-/* =========================
-   BUTTONS
-========================= */
 button {
   cursor: pointer;
-  font-family: inherit;
-}
-
-#loginBtn,
-#signupBtn,
-#postBtn {
   border: none;
   padding: 14px;
   border-radius: 999px;
   font-weight: 600;
-  width: 100%;
 }
 
 #loginBtn { background: #2563eb; color: white; }
 #signupBtn { background: #16a34a; color: white; }
 
 #logoutBtn {
-  background: transparent;
-  border: 1px solid #fecaca;
-  color: #ef4444;
-  padding: 8px 16px;
-  border-radius: 999px;
-  font-size: 13px;
+  display: none;
   margin: 20px auto;
-  display: block;
+  border: 1px solid #fecaca;
+  background: transparent;
+  color: #ef4444;
 }
 
-/* =========================
-   FEED
-========================= */
-#feed {
-  margin-top: 24px;
-  display: flex;
-  flex-direction: column;
-  gap: 24px;
+#postSection,
+#feed,
+#notifications {
+  display: none;
 }
 
-/* =========================
-   POST CARD
-========================= */
 .post {
-  background: #fdfefe;
+  background: white;
   border-radius: 26px;
   padding: 22px;
-  box-shadow: 0 8px 26px rgba(0, 0, 0, 0.04);
+  margin-top: 24px;
 }
 
-/* =========================
-   POST HEADER
-========================= */
 .post-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.post-header-left {
   display: flex;
   gap: 14px;
   align-items: center;
@@ -142,83 +84,37 @@ button {
   display: flex;
   align-items: center;
   justify-content: center;
-  font-weight: 700;
 }
 
-.post-username { font-weight: 600; }
-.post-time { font-size: 12px; color: #94a3b8; }
-
-/* =========================
-   POST CONTENT
-========================= */
 .post-text {
   margin: 14px 0;
-  font-size: 15.5px;
-}
-
-/* =========================
-   POST ACTIONS
-========================= */
-.post-actions {
-  display: flex;
-  gap: 12px;
-  align-items: center;
 }
 
 .likeBtn {
   background: #f8fafc;
   border: 1px solid #e2e8f0;
-  padding: 8px 18px;
-  border-radius: 999px;
 }
 
-.likeBtn.liked {
-  background: #ffe4e6;
-  color: #dc2626;
-  border-color: #fecdd3;
-}
-
-/* =========================
-   COMMENTS
-========================= */
 .comments {
-  margin-top: 12px;
+  margin-top: 10px;
 }
 
 .comment-box {
   display: flex;
   gap: 8px;
-}
-
-.commentInput {
-  flex: 1;
-  padding: 10px 14px;
-  font-size: 14px;
-  border-radius: 999px;
+  align-items: center;
 }
 
 .sendCommentBtn {
   background: #2563eb;
   color: white;
-  border: none;
-  padding: 10px 16px;
-  border-radius: 999px;
-  font-size: 13px;
 }
 
-.commentList {
-  margin-top: 8px;
+.commentInput:disabled {
+  background: #f1f5f9;
+  cursor: not-allowed;
 }
 
-.comment {
-  font-size: 13px;
-  color: #475569;
-  margin-top: 6px;
-}
-
-/* =========================
-   THEME TOGGLE
-========================= */
 .theme-toggle {
   position: fixed;
   bottom: 22px;
@@ -226,24 +122,9 @@ button {
   width: 46px;
   height: 46px;
   border-radius: 50%;
-  background: white;
-  border: 1px solid #e2e8f0;
-  font-size: 20px;
 }
 
-/* =========================
-   FOOTER
-========================= */
-#footer {
-  text-align: center;
-  font-size: 13px;
-  color: #64748b;
-  margin-top: 50px;
-}
-
-/* =========================
-   DARK MODE
-========================= */
+/* DARK MODE */
 body.dark {
   background: #020617;
   color: #e5e7eb;
@@ -257,17 +138,7 @@ body.dark textarea {
   color: #e5e7eb;
 }
 
-body.dark .likeBtn {
-  background: #020617;
-  border-color: #1e293b;
-}
-
-body.dark .commentInput {
-  background: #020617;
-}
-
 body.dark .theme-toggle {
   background: #020617;
   color: #e5e7eb;
-  border-color: #1e293b;
 }
