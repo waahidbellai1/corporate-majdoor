@@ -23,30 +23,23 @@ import {
   arrayRemove
 } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-/* =====================
-   FIREBASE INIT
-===================== */
-const firebaseConfig = {
+/* FIREBASE INIT */
+const app = initializeApp({
   apiKey: "AIzaSyDv8-8o_pd9ZUxxazTbBH5xBb_olbuhyag",
   authDomain: "corporate-majdoor.firebaseapp.com",
-  projectId: "corporate-majdoor",
-  storageBucket: "corporate-majdoor.appspot.com",
-  messagingSenderId: "490168158830",
-  appId: "1:490168158830:web:bde232dae0cff6ab8bb47f"
-};
+  projectId: "corporate-majdoor"
+});
 
-const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
 
-/* =====================
-   ELEMENTS
-===================== */
+/* ELEMENTS */
 const feed = document.getElementById("feed");
 const postInput = document.getElementById("postInput");
 const postBtn = document.getElementById("postBtn");
 const status = document.getElementById("status");
 const logoutBtn = document.getElementById("logoutBtn");
+const notifBell = document.getElementById("notifBell");
 
 const loginBtn = document.getElementById("loginBtn");
 const signupBtn = document.getElementById("signupBtn");
@@ -59,107 +52,60 @@ const postSection = document.getElementById("postSection");
 const notifications = document.getElementById("notifications");
 const notificationList = document.getElementById("notificationList");
 
-/* =====================
-   LISTENER HANDLES (CRITICAL)
-===================== */
-let unsubscribePosts = null;
-let unsubscribeNotifications = null;
+/* LISTENER HANDLES */
+let unsubPosts = null;
+let unsubNotifs = null;
 
-/* =====================
-   HELPERS
-===================== */
-function timeAgo(ts) {
-  if (!ts) return "";
-  const seconds = Math.floor((Date.now() - ts.toMillis()) / 1000);
-  if (seconds < 60) return "Just now";
-  if (seconds < 3600) return `${Math.floor(seconds / 60)}m ago`;
-  if (seconds < 86400) return `${Math.floor(seconds / 3600)}h ago`;
-  return `${Math.floor(seconds / 86400)}d ago`;
-}
-
-/* =====================
-   AUTH ACTIONS
-===================== */
-loginBtn.onclick = () => {
+/* AUTH ACTIONS */
+loginBtn.onclick = () =>
   signInWithEmailAndPassword(auth, email.value, password.value)
-    .catch(err => status.innerText = err.message);
-};
+    .catch(e => status.innerText = e.message);
 
 signupBtn.onclick = async () => {
-  if (!username.value.trim()) {
-    status.innerText = "Username required";
-    return;
-  }
-
-  const cred = await createUserWithEmailAndPassword(
-    auth,
-    email.value,
-    password.value
-  );
-
+  if (!username.value.trim()) return;
+  const cred = await createUserWithEmailAndPassword(auth, email.value, password.value);
   await setDoc(doc(db, "users", cred.user.uid), {
-    username: username.value.trim(),
-    email: cred.user.email
+    username: username.value.trim()
   });
 };
 
 logoutBtn.onclick = () => signOut(auth);
 
-/* =====================
-   AUTH STATE (FIXED & STABLE)
-===================== */
+/* AUTH STATE */
 onAuthStateChanged(auth, user => {
 
-  // CLEAN UP OLD LISTENERS
-  if (unsubscribePosts) {
-    unsubscribePosts();
-    unsubscribePosts = null;
-  }
-
-  if (unsubscribeNotifications) {
-    unsubscribeNotifications();
-    unsubscribeNotifications = null;
-  }
+  if (unsubPosts) unsubPosts();
+  if (unsubNotifs) unsubNotifs();
 
   if (user) {
-    status.innerText = `👋 ${user.email}`;
-
     authSection.style.display = "none";
     postSection.style.display = "block";
     feed.style.display = "flex";
-    notifications.style.display = "block";
+    notifications.style.display = "none";
     logoutBtn.style.display = "block";
+    notifBell.style.display = "block";
 
-    unsubscribePosts = listenToPosts(user);
-    unsubscribeNotifications = listenToNotifications(user);
+    unsubPosts = listenToPosts(user);
+    unsubNotifs = listenToNotifications(user);
 
   } else {
-    status.innerText = "🔐 Login to Corporate Majdoor";
-
     authSection.style.display = "block";
     postSection.style.display = "none";
     feed.style.display = "none";
     notifications.style.display = "none";
     logoutBtn.style.display = "none";
+    notifBell.style.display = "none";
     feed.innerHTML = "";
   }
 });
 
-/* =====================
-   CREATE POST (FIXED)
-===================== */
+/* POST */
 postBtn.onclick = async () => {
   const user = auth.currentUser;
-  if (!user) {
-    status.innerText = "Please login again";
-    return;
-  }
-
-  const text = postInput.value.trim();
-  if (!text) return;
+  if (!user || !postInput.value.trim()) return;
 
   await addDoc(collection(db, "posts"), {
-    text,
+    text: postInput.value.trim(),
     uid: user.uid,
     createdAt: serverTimestamp(),
     likedBy: []
@@ -168,56 +114,23 @@ postBtn.onclick = async () => {
   postInput.value = "";
 };
 
-/* =====================
-   POSTS LISTENER
-===================== */
+/* POSTS */
 function listenToPosts(user) {
   return onSnapshot(
     query(collection(db, "posts"), orderBy("createdAt", "desc")),
-    async snapshot => {
+    async snap => {
       feed.innerHTML = "";
 
-      for (const postSnap of snapshot.docs) {
-        const data = postSnap.data();
-
-        const userSnap = await getDoc(doc(db, "users", data.uid));
-        const name = userSnap.exists()
-          ? userSnap.data().username
-          : "user";
-
-        const liked = data.likedBy.includes(user.uid);
+      for (const docSnap of snap.docs) {
+        const data = docSnap.data();
+        const u = await getDoc(doc(db, "users", data.uid));
+        const name = u.exists() ? u.data().username : "user";
 
         const post = document.createElement("div");
         post.className = "post";
 
         post.innerHTML = `
-          <div class="post-header">
-            <div class="post-header-left">
-              <div class="avatar">${name[0]}</div>
-              <div>
-                <div class="post-username">${name}</div>
-                <div class="post-time">${timeAgo(data.createdAt)}</div>
-              </div>
-            </div>
-
-            ${user.uid === data.uid ? `
-              <div class="post-menu">
-                <button class="menu-btn">⋯</button>
-                <div class="menu-dropdown">
-                  <button class="deleteBtn">Delete</button>
-                </div>
-              </div>` : ""}
-          </div>
-
           <div class="post-text">${data.text}</div>
-
-          <div class="post-actions">
-            <button class="likeBtn ${liked ? "liked" : ""}">👍 Like</button>
-            ${data.likedBy.length
-              ? `<span class="likeCount">${data.likedBy.length}</span>`
-              : ""}
-          </div>
-
           <div class="comments">
             <div class="comment-box">
               <input class="commentInput" placeholder="Add comment…" />
@@ -227,69 +140,18 @@ function listenToPosts(user) {
           </div>
         `;
 
-        /* LIKE */
-        post.querySelector(".likeBtn").onclick = async () => {
-          const ref = doc(db, "posts", postSnap.id);
-          const hasLiked = data.likedBy.includes(user.uid);
-
-          await updateDoc(ref, {
-            likedBy: hasLiked
-              ? arrayRemove(user.uid)
-              : arrayUnion(user.uid)
-          });
-        };
-
-        /* DELETE */
-        const delBtn = post.querySelector(".deleteBtn");
-        if (delBtn) {
-          delBtn.onclick = () =>
-            deleteDoc(doc(db, "posts", postSnap.id));
-        }
-
-        /* MENU */
-        const menuBtn = post.querySelector(".menu-btn");
-        const menu = post.querySelector(".post-menu");
-        if (menuBtn && menu) {
-          menuBtn.onclick = () => menu.classList.toggle("open");
-        }
-
-        /* COMMENTS */
         const input = post.querySelector(".commentInput");
-        const sendBtn = post.querySelector(".sendCommentBtn");
-        const list = post.querySelector(".commentList");
+        const btn = post.querySelector(".sendCommentBtn");
 
-        onSnapshot(
-          query(
-            collection(db, "posts", postSnap.id, "comments"),
-            orderBy("createdAt", "asc")
-          ),
-          snap => {
-            list.innerHTML = "";
-            snap.forEach(c =>
-              list.innerHTML +=
-                `<div class="comment">${c.data().text}</div>`
-            );
-          }
-        );
-
-        async function sendComment() {
-          const text = input.value.trim();
-          if (!text) return;
-
-          await addDoc(
-            collection(db, "posts", postSnap.id, "comments"),
-            {
-              text,
-              uid: user.uid,
-              createdAt: serverTimestamp()
-            }
-          );
+        btn.onclick = async () => {
+          if (!input.value.trim()) return;
+          await addDoc(collection(db, "posts", docSnap.id, "comments"), {
+            text: input.value.trim(),
+            createdAt: serverTimestamp(),
+            uid: user.uid
+          });
           input.value = "";
-        }
-
-        sendBtn.onclick = sendComment;
-        input.onkeydown = e =>
-          e.key === "Enter" && sendComment();
+        };
 
         feed.appendChild(post);
       }
@@ -297,9 +159,7 @@ function listenToPosts(user) {
   );
 }
 
-/* =====================
-   NOTIFICATIONS
-===================== */
+/* NOTIFICATIONS */
 function listenToNotifications(user) {
   return onSnapshot(
     query(collection(db, "notifications"), orderBy("createdAt", "desc")),
@@ -307,27 +167,19 @@ function listenToNotifications(user) {
       notificationList.innerHTML = "";
       snap.forEach(n => {
         if (n.data().to === user.uid) {
-          notificationList.innerHTML +=
-            `<div class="notification">${n.data().text}</div>`;
+          notificationList.innerHTML += `<div>${n.data().text}</div>`;
         }
       });
     }
   );
 }
 
-/* =====================
-   THEME TOGGLE
-===================== */
-const themeToggle = document.getElementById("themeToggle");
-
-if (localStorage.getItem("theme") === "dark") {
-  document.body.classList.add("dark");
-  themeToggle.textContent = "☀️";
-}
-
-themeToggle.onclick = () => {
-  document.body.classList.toggle("dark");
-  const dark = document.body.classList.contains("dark");
-  themeToggle.textContent = dark ? "☀️" : "🌙";
-  localStorage.setItem("theme", dark ? "dark" : "light");
+/* BELL TOGGLE */
+notifBell.onclick = () => {
+  notifications.style.display =
+    notifications.style.display === "block" ? "none" : "block";
 };
+
+/* THEME */
+const themeToggle = document.getElementById("themeToggle");
+themeToggle.onclick = () => document.body.classList.toggle("dark");
