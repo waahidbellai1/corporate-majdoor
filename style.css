@@ -802,6 +802,77 @@ textarea:focus {
     margin-top: 12px;
   }
 }
+/* =========================
+   🎨 FUNKY DOODLE BACKGROUND (LOGIN ONLY)
+   CSS-ONLY | APPEND-ONLY
+========================= */
+
+/* Base doodle layer */
+body::before,
+body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  opacity: 0;
+  transition: opacity 0.4s ease;
+}
+
+/* Show doodles ONLY when login screen is visible */
+body:not(.dark) #authSection:not([style*="display: none"]) ~ * ,
+body #authSection:not([style*="display: none"]) {
+  position: relative;
+  z-index: 2;
+}
+
+body #authSection:not([style*="display: none"]) ~ body::before,
+body #authSection:not([style*="display: none"]) ~ body::after {
+  opacity: 1;
+}
+
+/* Doodle Layer 1 */
+body::before {
+  background:
+    radial-gradient(circle at 20% 30%, rgba(37,99,235,0.12) 0 20px, transparent 22px),
+    radial-gradient(circle at 80% 20%, rgba(34,211,238,0.14) 0 18px, transparent 20px),
+    radial-gradient(circle at 60% 70%, rgba(99,102,241,0.12) 0 24px, transparent 26px),
+    radial-gradient(circle at 30% 80%, rgba(22,163,74,0.12) 0 16px, transparent 18px);
+  animation: doodleFloatSlow 18s linear infinite;
+}
+
+/* Doodle Layer 2 */
+body::after {
+  background:
+    radial-gradient(circle at 70% 40%, rgba(14,165,233,0.10) 0 14px, transparent 16px),
+    radial-gradient(circle at 40% 60%, rgba(236,72,153,0.10) 0 20px, transparent 22px),
+    radial-gradient(circle at 85% 75%, rgba(234,179,8,0.10) 0 12px, transparent 14px);
+  animation: doodleFloatFast 12s ease-in-out infinite;
+}
+
+/* Floating animations */
+@keyframes doodleFloatSlow {
+  0% { transform: translateY(0) translateX(0); }
+  50% { transform: translateY(-20px) translateX(10px); }
+  100% { transform: translateY(0) translateX(0); }
+}
+
+@keyframes doodleFloatFast {
+  0% { transform: translateY(0) translateX(0); }
+  50% { transform: translateY(15px) translateX(-12px); }
+  100% { transform: translateY(0) translateX(0); }
+}
+
+/* =========================
+   📱 MOBILE TUNING
+========================= */
+@media (max-width: 768px) {
+  body::before,
+  body::after {
+    opacity: 0.6;
+  }
+}
+
 
 
 
