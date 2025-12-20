@@ -247,3 +247,21 @@ notifBell.onclick = () => {
 /* THEME */
 const themeToggle = document.getElementById("themeToggle");
 themeToggle.onclick = () => document.body.classList.toggle("dark");
+/* =====================
+   PROFILE MENU TOGGLE
+===================== */
+
+const profileBtn = document.getElementById("profileBtn");
+const profileMenu = document.getElementById("profileMenu");
+
+if (profileBtn && profileMenu) {
+  profileBtn.onclick = (e) => {
+    e.stopPropagation();
+    profileMenu.classList.toggle("open");
+  };
+
+  document.addEventListener("click", () => {
+    profileMenu.classList.remove("open");
+  });
+}
+
