@@ -398,3 +398,49 @@ body.dark .likeBtn {
   box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
   z-index: 100;
 }
+/* =========================
+   LAYOUT FIXES
+========================= */
+
+/* Reduce empty vertical space */
+#feed {
+  margin-top: 24px;
+}
+
+/* Tighten post content */
+.post-text {
+  margin: 14px 0;
+}
+
+/* Group actions + comments */
+.comments {
+  margin-top: 10px;
+}
+
+.commentInput {
+  margin-top: 6px;
+  background: #f8fafc;
+}
+
+/* Notifications shouldn't scream */
+#notifications {
+  margin-top: 40px;
+  opacity: 0.9;
+}
+
+#notifications h3 {
+  font-size: 16px;
+  margin-bottom: 10px;
+  color: #475569;
+}
+
+/* Auth section should feel like a card */
+#authSection {
+  background: #ffffff;
+  padding: 28px;
+  border-radius: 28px;
+  box-shadow: 0 12px 40px rgba(0,0,0,0.06);
+  margin-top: 30px;
+}
+
+
