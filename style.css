@@ -962,6 +962,123 @@ body.dark #authSection input {
     background: rgba(2, 6, 23, 0.92);
   }
 }
+/* =========================
+   🧠 LOGO UPGRADE – CORPORATE MAJDOOR
+   APPEND-ONLY | BRAND POLISH
+========================= */
+
+/* Base logo text */
+.header span {
+  font-weight: 800;
+  font-size: clamp(26px, 4vw, 34px);
+  letter-spacing: -0.6px;
+  text-align: center;
+  white-space: nowrap;
+  position: relative;
+  display: inline-block;
+  line-height: 1.05;
+
+  /* Apple-ish feel */
+  font-family:
+    -apple-system,
+    BlinkMacSystemFont,
+    "SF Pro Display",
+    "Segoe UI",
+    system-ui,
+    sans-serif;
+
+  /* Liquid gradient */
+  background: linear-gradient(
+    120deg,
+    #2563eb,
+    #22d3ee,
+    #6366f1,
+    #2563eb
+  );
+  background-size: 300% 300%;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+
+  animation:
+    logoShimmer 8s ease-in-out infinite,
+    logoFadeIn 0.8s ease both;
+}
+
+/* Subtle glow */
+.header span::after {
+  content: "";
+  position: absolute;
+  inset: -6px;
+  background: radial-gradient(
+    circle at center,
+    rgba(37,99,235,0.18),
+    transparent 60%
+  );
+  filter: blur(14px);
+  opacity: 0.6;
+  z-index: -1;
+  transition: opacity 0.3s ease;
+}
+
+/* Hover / tap feedback */
+.header span:hover::after,
+.header span:active::after {
+  opacity: 1;
+}
+
+/* Fade-in */
+@keyframes logoFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Liquid shimmer */
+@keyframes logoShimmer {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+/* =========================
+   🌙 DARK MODE LOGO
+========================= */
+
+body.dark .header span {
+  background: linear-gradient(
+    120deg,
+    #93c5fd,
+    #67e8f9,
+    #a5b4fc,
+    #93c5fd
+  );
+  background-size: 300% 300%;
+}
+
+body.dark .header span::after {
+  background: radial-gradient(
+    circle at center,
+    rgba(147,197,253,0.18),
+    transparent 60%
+  );
+}
+
+/* =========================
+   📱 MOBILE REFINEMENT
+========================= */
+
+@media (max-width: 768px) {
+  .header span {
+    font-size: 28px;
+    letter-spacing: -0.4px;
+  }
+}
+
 
 
 
