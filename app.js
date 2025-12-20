@@ -47,257 +47,142 @@ const postInput = document.getElementById("postInput");
 const postBtn = document.getElementById("postBtn");
 const status = document.getElementById("status");
 const logoutBtn = document.getElementById("logoutBtn");
-
 const loginBtn = document.getElementById("loginBtn");
 const signupBtn = document.getElementById("signupBtn");
 const email = document.getElementById("email");
 const password = document.getElementById("password");
 const username = document.getElementById("username");
 
-const authSection = document.getElementById("authSection");
-const postSection = document.getElementById("postSection");
-const notifications = document.getElementById("notifications");
-const notificationList = document.getElementById("notificationList");
-
 /* =====================
-   HELPERS
+   AUTH
 ===================== */
-function timeAgo(ts) {
-  if (!ts) return "";
-  const seconds = Math.floor((Date.now() - ts.toMillis()) / 1000);
-  if (seconds < 60) return "Just now";
-  if (seconds < 3600) return `${Math.floor(seconds / 60)}m ago`;
-  if (seconds < 86400) return `${Math.floor(seconds / 3600)}h ago`;
-  return `${Math.floor(seconds / 86400)}d ago`;
-}
-
-/* =====================
-   AUTH ACTIONS
-===================== */
-loginBtn.onclick = () => {
+loginBtn.onclick = () =>
   signInWithEmailAndPassword(auth, email.value, password.value)
     .catch(err => status.innerText = err.message);
-};
 
 signupBtn.onclick = async () => {
-  if (!username.value.trim()) {
-    status.innerText = "Username required";
-    return;
-  }
-
-  try {
-    const cred = await createUserWithEmailAndPassword(
-      auth,
-      email.value,
-      password.value
-    );
-
-    await setDoc(doc(db, "users", cred.user.uid), {
-      username: username.value.trim(),
-      email: cred.user.email
-    });
-  } catch (err) {
-    status.innerText = err.message;
-  }
+  if (!username.value.trim()) return;
+  const cred = await createUserWithEmailAndPassword(auth, email.value, password.value);
+  await setDoc(doc(db, "users", cred.user.uid), {
+    username: username.value.trim()
+  });
 };
 
 logoutBtn.onclick = () => signOut(auth);
 
-/* =====================
-   AUTH STATE
-===================== */
 onAuthStateChanged(auth, user => {
-  if (user) {
-    status.innerText = `👋 ${user.email}`;
-    authSection.style.display = "none";
-    postSection.style.display = "block";
-    logoutBtn.style.display = "block";
-    notifications.style.display = "block";
-  } else {
-    status.innerText = "🔐 Login to Corporate Majdoor";
-    authSection.style.display = "block";
-    postSection.style.display = "none";
-    logoutBtn.style.display = "none";
-    notifications.style.display = "none";
-    feed.innerHTML = "";
-  }
+  logoutBtn.style.display = user ? "block" : "none";
 });
 
 /* =====================
-   CREATE POST
+   POST
 ===================== */
 postBtn.onclick = async () => {
   if (!auth.currentUser || !postInput.value.trim()) return;
-
   await addDoc(collection(db, "posts"), {
     text: postInput.value.trim(),
     uid: auth.currentUser.uid,
     createdAt: serverTimestamp(),
     likedBy: []
   });
-
   postInput.value = "";
 };
 
 /* =====================
    FEED
 ===================== */
-const postsQuery = query(
-  collection(db, "posts"),
-  orderBy("createdAt", "desc")
-);
+onSnapshot(
+  query(collection(db, "posts"), orderBy("createdAt", "desc")),
+  snapshot => {
+    feed.innerHTML = "";
 
-onSnapshot(postsQuery, snapshot => {
-  feed.innerHTML = "";
+    snapshot.forEach(async snap => {
+      const data = snap.data();
+      const userSnap = await getDoc(doc(db, "users", data.uid));
+      const name = userSnap.exists() ? userSnap.data().username : "user";
 
-  snapshot.forEach(async postSnap => {
-    const data = postSnap.data();
+      const post = document.createElement("div");
+      post.className = "post";
 
-    const userSnap = await getDoc(doc(db, "users", data.uid));
-    const name = userSnap.exists()
-      ? userSnap.data().username
-      : "user";
-
-    const liked =
-      auth.currentUser &&
-      data.likedBy.includes(auth.currentUser.uid);
-
-    const post = document.createElement("div");
-    post.className = "post";
-
-    post.innerHTML = `
-      <div class="post-header">
-        <div class="post-header-left">
-          <div class="avatar">${name[0]}</div>
-          <div>
-            <div class="post-username">${name}</div>
-            <div class="post-time">${timeAgo(data.createdAt)}</div>
+      post.innerHTML = `
+        <div class="post-header">
+          <div class="post-header-left">
+            <div class="avatar">${name[0]}</div>
+            <div>
+              <div class="post-username">${name}</div>
+            </div>
           </div>
         </div>
 
-        ${auth.currentUser && auth.currentUser.uid === data.uid ? `
-          <div class="post-menu">
-            <button class="menu-btn">⋯</button>
-            <div class="menu-dropdown">
-              <button class="deleteBtn">Delete</button>
-            </div>
-          </div>` : ""}
-      </div>
+        <div class="post-text">${data.text}</div>
 
-      <div class="post-text">${data.text}</div>
+        <div class="post-actions">
+          <button class="likeBtn">👍 Like</button>
+          <span>${data.likedBy.length || ""}</span>
+        </div>
 
-      <div class="post-actions">
-        <button class="likeBtn ${liked ? "liked" : ""}">
-          👍 Like
-        </button>
-        ${data.likedBy.length
-          ? `<span class="likeCount">${data.likedBy.length}</span>`
-          : ""}
-      </div>
+        <div class="comments">
+          <div class="comment-box">
+            <input class="commentInput" placeholder="Add comment…" />
+            <button class="sendCommentBtn">Send</button>
+          </div>
+          <div class="commentList"></div>
+        </div>
+      `;
 
-      <div class="comments">
-        <input class="commentInput" placeholder="Add comment…" />
-        <div class="commentList"></div>
-      </div>
-    `;
+      const likeBtn = post.querySelector(".likeBtn");
+      likeBtn.onclick = async () => {
+        const ref = doc(db, "posts", snap.id);
+        const liked = data.likedBy.includes(auth.currentUser.uid);
+        await updateDoc(ref, {
+          likedBy: liked
+            ? arrayRemove(auth.currentUser.uid)
+            : arrayUnion(auth.currentUser.uid)
+        });
+      };
 
-    /* LIKE */
-    post.querySelector(".likeBtn").onclick = async () => {
-      if (!auth.currentUser) return;
+      const input = post.querySelector(".commentInput");
+      const sendBtn = post.querySelector(".sendCommentBtn");
+      const list = post.querySelector(".commentList");
 
-      const ref = doc(db, "posts", postSnap.id);
-      const hasLiked = data.likedBy.includes(auth.currentUser.uid);
+      onSnapshot(
+        query(collection(db, "posts", snap.id, "comments"), orderBy("createdAt")),
+        s => {
+          list.innerHTML = "";
+          s.forEach(c => list.innerHTML += `<div class="comment">${c.data().text}</div>`);
+        }
+      );
 
-      await updateDoc(ref, {
-        likedBy: hasLiked
-          ? arrayRemove(auth.currentUser.uid)
-          : arrayUnion(auth.currentUser.uid)
-      });
-
-      if (!hasLiked && data.uid !== auth.currentUser.uid) {
-        await addDoc(collection(db, "notifications"), {
-          to: data.uid,
-          text: `${auth.currentUser.email} liked your post`,
+      async function sendComment() {
+        if (!input.value.trim()) return;
+        await addDoc(collection(db, "posts", snap.id, "comments"), {
+          text: input.value.trim(),
           createdAt: serverTimestamp()
         });
+        input.value = "";
       }
-    };
 
-    /* DELETE */
-    const delBtn = post.querySelector(".deleteBtn");
-    if (delBtn) {
-      delBtn.onclick = () =>
-        deleteDoc(doc(db, "posts", postSnap.id));
-    }
+      sendBtn.onclick = sendComment;
+      input.onkeydown = e => e.key === "Enter" && sendComment();
 
-    /* MENU */
-    const menuBtn = post.querySelector(".menu-btn");
-    const menu = post.querySelector(".post-menu");
-    if (menuBtn && menu) {
-      menuBtn.onclick = () => menu.classList.toggle("open");
-    }
-
-    /* COMMENTS (FIXED) */
-    const commentInput = post.querySelector(".commentInput");
-    const commentList = post.querySelector(".commentList");
-
-    onSnapshot(
-      collection(db, "posts", postSnap.id, "comments"),
-      snap => {
-        commentList.innerHTML = "";
-        snap.forEach(c => {
-          commentList.innerHTML +=
-            `<div class="comment">${c.data().text}</div>`;
-        });
-      }
-    );
-
-    commentInput.addEventListener("keydown", async (e) => {
-      if (e.key === "Enter") {
-        e.preventDefault();
-
-        const text = commentInput.value.trim();
-        if (!text) return;
-
-        await addDoc(
-          collection(db, "posts", postSnap.id, "comments"),
-          {
-            text,
-            createdAt: serverTimestamp()
-          }
-        );
-
-        commentInput.value = "";
-
-        if (auth.currentUser && data.uid !== auth.currentUser.uid) {
-          await addDoc(collection(db, "notifications"), {
-            to: data.uid,
-            text: "New comment on your post",
-            createdAt: serverTimestamp()
-          });
-        }
-      }
-    });
-
-    feed.appendChild(post);
-  });
-});
-
-/* =====================
-   NOTIFICATIONS
-===================== */
-onSnapshot(
-  query(collection(db, "notifications"), orderBy("createdAt", "desc")),
-  snap => {
-    if (!auth.currentUser) return;
-
-    notificationList.innerHTML = "";
-
-    snap.forEach(n => {
-      if (n.data().to === auth.currentUser.uid) {
-        notificationList.innerHTML +=
-          `<div class="notification">${n.data().text}</div>`;
-      }
+      feed.appendChild(post);
     });
   }
 );
+
+/* =====================
+   THEME TOGGLE
+===================== */
+const themeToggle = document.getElementById("themeToggle");
+
+if (localStorage.getItem("theme") === "dark") {
+  document.body.classList.add("dark");
+  themeToggle.textContent = "☀️";
+}
+
+themeToggle.onclick = () => {
+  document.body.classList.toggle("dark");
+  const dark = document.body.classList.contains("dark");
+  themeToggle.textContent = dark ? "☀️" : "🌙";
+  localStorage.setItem("theme", dark ? "dark" : "light");
+};
