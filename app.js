@@ -264,4 +264,22 @@ if (profileBtn && profileMenu) {
     profileMenu.classList.remove("open");
   });
 }
+/* =====================
+   AUTH STATE CLASS FLAG
+   APPEND ONLY
+===================== */
+
+import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+
+onAuthStateChanged(auth, (user) => {
+  if (user) {
+    document.body.classList.add("is-authenticated");
+    document.body.classList.remove("is-logged-out");
+  } else {
+    document.body.classList.add("is-logged-out");
+    document.body.classList.remove("is-authenticated");
+  }
+});
+
+
 
