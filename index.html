@@ -9,28 +9,29 @@
 
 <body>
 
-  <h1 class="header">Corporate Majdoor</h1>
+  <!-- HEADER -->
+  <div class="header">Corporate Majdoor</div>
 
+  <!-- MAIN CONTAINER -->
   <div class="container">
 
+    <!-- STATUS -->
     <div id="status"></div>
 
-    <!-- AUTH CARD -->
-    <div id="authSection" class="card auth-card">
+    <!-- AUTH SECTION -->
+    <div id="authSection">
       <input id="username" placeholder="Username (signup only)" />
       <input id="email" placeholder="Email" />
       <input id="password" type="password" placeholder="Password" />
-
-      <div class="auth-actions">
-        <button id="loginBtn">Login</button>
-        <button id="signupBtn">Sign Up</button>
-      </div>
+      <button id="loginBtn">Login</button>
+      <button id="signupBtn">Sign Up</button>
     </div>
 
+    <!-- LOGOUT -->
     <button id="logoutBtn">Logout</button>
 
-    <!-- POST -->
-    <div id="postSection" class="card">
+    <!-- POST COMPOSER -->
+    <div id="postSection">
       <textarea
         id="postInput"
         placeholder="What corporate pain are you facing today?"
@@ -42,19 +43,22 @@
     <div id="feed"></div>
 
     <!-- NOTIFICATIONS -->
-    <div id="notifications" class="card">
+    <div id="notifications">
       <h3>Notifications</h3>
       <div id="notificationList"></div>
     </div>
 
-    <footer id="footer">
-      Developed by <strong class="brand-name">Waahid Ishak</strong>
-    </footer>
+    <!-- FOOTER -->
+    <div id="footer">
+      Developed by <strong>Waahid Ishak</strong>
+    </div>
 
   </div>
 
+  <!-- THEME TOGGLE -->
   <button class="theme-toggle" id="themeToggle">🌙</button>
 
+  <!-- APP SCRIPT -->
   <script type="module" src="app.js"></script>
 </body>
 </html>
