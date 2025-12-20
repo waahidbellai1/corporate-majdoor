@@ -1547,6 +1547,41 @@ body.is-authenticated .profile-btn {
     min-height: -webkit-fill-available;
   }
 }
+/* =========================
+   🍎 iOS SAFARI – FINAL HEADER ALIGNMENT FIX
+   ABSOLUTE CENTERING (APPLE WAY)
+========================= */
+
+@media (max-width: 768px) {
+
+  /* Header becomes positioning context */
+  .header.app-bar {
+    justify-content: space-between !important;
+  }
+
+  /* FORCE logo to true visual center */
+  .header.app-bar span {
+    position: absolute !important;
+    left: 50% !important;
+    top: calc(env(safe-area-inset-top) + 36px);
+    transform: translateX(-50%) !important;
+    margin: 0 !important;
+    pointer-events: none;
+  }
+
+  /* Left profile button */
+  .profile-btn {
+    position: relative;
+    z-index: 2;
+  }
+
+  /* Right notification bell */
+  #notifBell {
+    position: relative;
+    z-index: 2;
+  }
+}
+
 
 
 
