@@ -617,3 +617,154 @@ textarea:focus {
     bottom: calc(18px + env(safe-area-inset-bottom));
   }
 }
+/* =========================
+   ✨ MICRO-ANIMATIONS & POLISH (APPEND ONLY)
+========================= */
+
+/* ---------- GLOBAL TRANSITIONS ---------- */
+button,
+input,
+textarea {
+  transition: background-color 0.25s ease,
+              border-color 0.25s ease,
+              transform 0.15s ease,
+              box-shadow 0.25s ease,
+              opacity 0.25s ease;
+}
+
+/* ---------- HEADER POLISH ---------- */
+.header {
+  position: relative;
+  justify-content: center !important;
+}
+
+/* Center title even with bell */
+.header span {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  letter-spacing: -0.4px;
+  background: linear-gradient(135deg, #2563eb, #22d3ee);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: titleFade 0.9s ease both;
+}
+
+/* Bell stays right */
+#notifBell {
+  position: absolute;
+  right: 16px;
+}
+
+/* Title entrance */
+@keyframes titleFade {
+  from {
+    opacity: 0;
+    transform: translateX(-50%) translateY(-6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+}
+
+/* ---------- POST ENTRANCE ---------- */
+.post {
+  animation: postIn 0.45s ease both;
+}
+
+@keyframes postIn {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ---------- BUTTON PRESS FEEDBACK ---------- */
+button:active {
+  transform: scale(0.96);
+}
+
+/* ---------- LIKE BUTTON POP ---------- */
+.likeBtn.liked {
+  animation: likePop 0.25s ease;
+}
+
+@keyframes likePop {
+  0%   { transform: scale(1); }
+  50%  { transform: scale(1.15); }
+  100% { transform: scale(1); }
+}
+
+/* ---------- COMMENT SEND BOUNCE ---------- */
+.sendCommentBtn:active {
+  transform: scale(0.94);
+}
+
+/* ---------- INPUT FOCUS GLOW ---------- */
+input:focus,
+textarea:focus {
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+}
+
+/* ---------- NOTIFICATION BELL PULSE ---------- */
+#notifBell {
+  animation: bellIdle 4s ease-in-out infinite;
+}
+
+@keyframes bellIdle {
+  0%, 90%, 100% { transform: scale(1); }
+  95% { transform: scale(1.12); }
+}
+
+/* ---------- NOTIFICATION PANEL FADE ---------- */
+#notifications {
+  animation: fadeSlide 0.3s ease both;
+}
+
+@keyframes fadeSlide {
+  from {
+    opacity: 0;
+    transform: translateY(-6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ---------- THEME TOGGLE FLOAT ---------- */
+.theme-toggle {
+  animation: floatToggle 3.5s ease-in-out infinite;
+}
+
+@keyframes floatToggle {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-4px); }
+}
+
+/* ---------- SKELETON SMOOTH ---------- */
+.skeleton::after {
+  animation: shimmer 1.4s infinite;
+}
+
+/* ---------- MOBILE TOUCH POLISH ---------- */
+@media (max-width: 768px) {
+
+  .header span {
+    font-size: 26px;
+  }
+
+  .post {
+    animation-duration: 0.35s;
+  }
+
+  #notifBell {
+    right: 12px;
+  }
+}
+
