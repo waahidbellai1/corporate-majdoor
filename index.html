@@ -13,14 +13,38 @@
 
 <body>
 
-  <!-- HEADER -->
-  <div class="header">
+  <!-- HEADER / APP BAR -->
+  <div class="header app-bar">
+
+    <!-- Profile button (left) -->
+    <button
+      id="profileBtn"
+      class="profile-btn"
+      type="button"
+      aria-label="Profile menu"
+    >
+      <div class="profile-avatar">W</div>
+    </button>
+
+    <!-- Center logo (UNCHANGED TEXT) -->
     <span>Corporate Majdoor</span>
 
-    <!-- Notification Bell (hidden via JS on login screen) -->
-    <button id="notifBell" type="button" aria-label="Notifications">
+    <!-- Notification Bell (right, hidden via JS on login screen) -->
+    <button
+      id="notifBell"
+      type="button"
+      aria-label="Notifications"
+    >
       🔔
     </button>
+
+  </div>
+
+  <!-- PROFILE MENU (hidden by default) -->
+  <div id="profileMenu" class="profile-menu">
+    <button class="profile-item" type="button">My Profile</button>
+    <button class="profile-item" type="button">Settings</button>
+    <button class="profile-item logout" type="button">Logout</button>
   </div>
 
   <!-- MAIN CONTAINER -->
