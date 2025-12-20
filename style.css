@@ -1676,6 +1676,91 @@ body.is-authenticated .profile-btn {
     display: none !important;
   }
 }
+/* =========================
+   📱 BOTTOM APP BAR (INSTAGRAM STYLE)
+   MOBILE ONLY | APPEND-ONLY
+========================= */
+
+.bottom-bar {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: env(safe-area-inset-bottom);
+  height: 64px;
+  display: none;
+  align-items: center;
+  justify-content: space-around;
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  border-top: 1px solid rgba(0,0,0,0.06);
+  z-index: 999;
+}
+
+/* Dark mode */
+body.dark .bottom-bar {
+  background: rgba(2, 6, 23, 0.75);
+  border-top: 1px solid rgba(255,255,255,0.08);
+}
+
+/* Buttons */
+.bottom-btn {
+  background: none;
+  border: none;
+  font-size: 22px;
+  cursor: pointer;
+  padding: 8px;
+}
+
+/* Avatar */
+.bottom-avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #2563eb, #22d3ee);
+  color: #fff;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Show ONLY on mobile + logged in */
+@media (max-width: 768px) {
+  body.is-authenticated .bottom-bar {
+    display: flex;
+  }
+}
+
+/* Never show on login */
+body.is-logged-out .bottom-bar {
+  display: none !important;
+}
+
+/* Push content above bar */
+@media (max-width: 768px) {
+  .container {
+    padding-bottom: calc(140px + env(safe-area-inset-bottom));
+  }
+}
+/* =========================
+   📱 LOGIN HEADER SAFETY FIX
+========================= */
+
+@media (max-width: 768px) {
+  body.is-logged-out .header {
+    padding-top: calc(24px + env(safe-area-inset-top));
+    padding-bottom: 20px;
+  }
+}
+/* Hide top controls on mobile (use bottom bar instead) */
+@media (max-width: 768px) {
+  .profile-btn,
+  #notifBell {
+    display: none !important;
+  }
+}
+
 
 
 
