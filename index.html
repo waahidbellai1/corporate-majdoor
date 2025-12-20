@@ -9,25 +9,28 @@
 
 <body>
 
-  <div class="header">Corporate Majdoor</div>
+  <h1 class="header">Corporate Majdoor</h1>
 
   <div class="container">
 
     <div id="status"></div>
 
-    <!-- AUTH -->
-    <div id="authSection">
+    <!-- AUTH CARD -->
+    <div id="authSection" class="card auth-card">
       <input id="username" placeholder="Username (signup only)" />
       <input id="email" placeholder="Email" />
       <input id="password" type="password" placeholder="Password" />
-      <button id="loginBtn">Login</button>
-      <button id="signupBtn">Sign Up</button>
+
+      <div class="auth-actions">
+        <button id="loginBtn">Login</button>
+        <button id="signupBtn">Sign Up</button>
+      </div>
     </div>
 
     <button id="logoutBtn">Logout</button>
 
     <!-- POST -->
-    <div id="postSection">
+    <div id="postSection" class="card">
       <textarea
         id="postInput"
         placeholder="What corporate pain are you facing today?"
@@ -39,14 +42,14 @@
     <div id="feed"></div>
 
     <!-- NOTIFICATIONS -->
-    <div id="notifications">
+    <div id="notifications" class="card">
       <h3>Notifications</h3>
       <div id="notificationList"></div>
     </div>
 
-    <div id="footer">
-      Developed by <strong>Waahid Ishak</strong>
-    </div>
+    <footer id="footer">
+      Developed by <strong class="brand-name">Waahid Ishak</strong>
+    </footer>
 
   </div>
 
