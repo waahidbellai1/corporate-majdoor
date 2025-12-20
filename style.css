@@ -22,9 +22,7 @@ body {
    HEADER
 ========================= */
 .header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
+  text-align: center;
   padding: 28px 16px 20px;
   font-size: 32px;
   font-weight: 700;
@@ -76,11 +74,60 @@ button {
   font-family: inherit;
 }
 
-/* login / signup / logout etc remain unchanged */
-/* (keeping your original intent) */
+#loginBtn {
+  background: #2563eb;
+  color: #ffffff;
+  border: none;
+  padding: 14px;
+  border-radius: 999px;
+  font-weight: 600;
+  width: 100%;
+}
+
+#signupBtn {
+  background: #16a34a;
+  color: #ffffff;
+  border: none;
+  padding: 14px;
+  border-radius: 999px;
+  font-weight: 600;
+  width: 100%;
+}
+
+#logoutBtn {
+  background: transparent;
+  border: 1px solid #fecaca;
+  color: #ef4444;
+  padding: 8px 16px;
+  border-radius: 999px;
+  font-size: 13px;
+  margin: 20px auto;
+  display: block;
+  width: fit-content;
+}
 
 /* =========================
-   FEED + POSTS
+   POST COMPOSER
+========================= */
+#postSection {
+  margin-top: 30px;
+}
+
+#postBtn {
+  background: #0f172a;
+  color: #ffffff;
+  border: none;
+  padding: 12px 20px;
+  border-radius: 999px;
+  font-size: 14px;
+  font-weight: 600;
+  margin-left: auto;
+  display: block;
+  opacity: 0.9;
+}
+
+/* =========================
+   FEED
 ========================= */
 #feed {
   margin-top: 40px;
@@ -89,6 +136,9 @@ button {
   gap: 28px;
 }
 
+/* =========================
+   POST CARD
+========================= */
 .post {
   background: #fdfefe;
   border-radius: 26px;
@@ -97,16 +147,92 @@ button {
 }
 
 /* =========================
+   POST HEADER
+========================= */
+.post-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.post-header-left {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.avatar {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #6366f1, #22d3ee);
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 15px;
+  text-transform: uppercase;
+}
+
+.post-username {
+  font-weight: 600;
+  font-size: 14.5px;
+}
+
+.post-time {
+  font-size: 12px;
+  color: #94a3b8;
+  margin-top: 2px;
+}
+
+/* =========================
+   POST CONTENT
+========================= */
+.post-text {
+  margin: 18px 0;
+  font-size: 15.5px;
+  line-height: 1.75;
+}
+
+/* =========================
+   POST ACTIONS
+========================= */
+.post-actions {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.likeBtn {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  padding: 8px 18px;
+  border-radius: 999px;
+  font-size: 14px;
+  transition: transform 0.15s ease;
+}
+
+.likeBtn:active {
+  transform: scale(0.95);
+}
+
+.likeBtn.liked {
+  background: #ffe4e6;
+  color: #dc2626;
+  border-color: #fecdd3;
+}
+
+.likeCount {
+  font-size: 13px;
+  color: #64748b;
+}
+
+/* =========================
    COMMENTS
 ========================= */
 .comments {
   margin-top: 16px;
-}
-
-.comment-box {
-  display: flex;
-  align-items: center;
-  gap: 8px;
 }
 
 .commentInput {
@@ -126,34 +252,95 @@ button {
 }
 
 /* =========================
-   SEND BUTTON (RESTORED STYLE)
+   THREE DOT MENU
 ========================= */
-.sendCommentBtn {
-  background: #2563eb;
-  color: #ffffff;
-  border: none;
-  padding: 10px 16px;
-  border-radius: 999px;
-  font-size: 13px;
-  font-weight: 600;
-  cursor: pointer;
-  white-space: nowrap;
+.post-menu {
+  position: relative;
 }
 
-.sendCommentBtn:hover {
-  opacity: 0.9;
+.menu-btn {
+  background: none;
+  border: none;
+  font-size: 22px;
+  color: #94a3b8;
+  padding: 4px 8px;
+}
+
+.menu-dropdown {
+  position: absolute;
+  right: 0;
+  top: 28px;
+  background: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+  display: none;
+  z-index: 10;
+}
+
+.post-menu.open .menu-dropdown {
+  display: block;
+}
+
+.deleteBtn {
+  background: none;
+  border: none;
+  color: #ef4444;
+  padding: 10px 16px;
+  font-size: 13px;
+  width: 100%;
+  text-align: left;
 }
 
 /* =========================
-   NOTIFICATION BELL
+   SKELETON LOADER
 ========================= */
-.notif-bell {
-  background: #ffffff;
-  border: 1px solid #e2e8f0;
-  border-radius: 50%;
-  width: 42px;
-  height: 42px;
-  font-size: 18px;
+.skeleton {
+  background: #e5e7eb;
+  border-radius: 12px;
+  position: relative;
+  overflow: hidden;
+}
+
+.skeleton::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  left: -100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.7),
+    transparent
+  );
+  animation: shimmer 1.2s infinite;
+}
+
+@keyframes shimmer {
+  100% {
+    left: 100%;
+  }
+}
+
+.skeleton-post {
+  background: #fdfefe;
+  border-radius: 26px;
+  padding: 22px;
+}
+
+/* =========================
+   FOOTER
+========================= */
+#footer {
+  text-align: center;
+  font-size: 13px;
+  color: #64748b;
+  margin-top: 50px;
+  padding-bottom: 30px;
+}
+
+#footer strong {
+  color: #2563eb;
+  font-weight: 600;
 }
 
 /* =========================
@@ -164,6 +351,13 @@ body.dark {
   color: #e5e7eb;
 }
 
+body.dark .post,
+body.dark .skeleton-post {
+  background: #020617;
+  border: 1px solid #1e293b;
+  box-shadow: none;
+}
+
 body.dark input,
 body.dark textarea {
   background: #020617;
@@ -171,22 +365,110 @@ body.dark textarea {
   color: #e5e7eb;
 }
 
-body.dark .sendCommentBtn {
-  background: #2563eb;
+body.dark .menu-dropdown {
+  background: #020617;
+  border: 1px solid #1e293b;
 }
 
-body.dark .notif-bell {
+body.dark .likeBtn {
   background: #020617;
   border-color: #1e293b;
-  color: #e5e7eb;
 }
 
 /* =========================
-   VISIBILITY PATCHES
+   THEME TOGGLE
 ========================= */
+.theme-toggle {
+  position: fixed;
+  bottom: 22px;
+  right: 22px;
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  font-size: 20px;
+  cursor: pointer;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+  z-index: 100;
+}
+
+/* =========================
+   🔧 FIXES / PATCHES
+========================= */
+
+/* Auth-controlled sections start hidden */
 #postSection,
 #feed,
 #notifications,
 #logoutBtn {
   display: none;
+}
+
+/* Comment send alignment */
+.comment-box {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* Dark mode comment fix */
+body.dark .commentInput {
+  background: #020617;
+  color: #e5e7eb;
+  border-color: #1e293b;
+}
+/* =========================
+   🔥 APPENDED PATCHES (DO NOT DELETE)
+   Purpose: restore lost UX without touching original CSS
+========================= */
+
+/* --- Send Comment Button (was missing style) --- */
+.sendCommentBtn {
+  background: #2563eb !important;
+  color: #ffffff !important;
+  border: none !important;
+  padding: 10px 16px !important;
+  border-radius: 999px !important;
+  font-size: 13px !important;
+  font-weight: 600 !important;
+  cursor: pointer !important;
+  white-space: nowrap;
+  line-height: 1;
+}
+
+.sendCommentBtn:hover {
+  opacity: 0.9;
+}
+
+/* --- Ensure comment input is usable --- */
+.commentInput {
+  pointer-events: auto !important;
+  opacity: 1 !important;
+}
+
+/* --- Notification bell (top-right) --- */
+.header {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+}
+
+/* Bell hidden by default, JS will control */
+#notifBell {
+  display: none;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 50%;
+  width: 42px;
+  height: 42px;
+  font-size: 18px;
+  cursor: pointer;
+}
+
+/* Dark mode bell */
+body.dark #notifBell {
+  background: #020617;
+  border-color: #1e293b;
+  color: #e5e7eb;
 }
