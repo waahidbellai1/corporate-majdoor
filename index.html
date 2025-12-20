@@ -9,16 +9,13 @@
 
 <body>
 
-  <!-- HEADER -->
   <div class="header">Corporate Majdoor</div>
 
-  <!-- MAIN CONTAINER -->
   <div class="container">
 
-    <!-- STATUS -->
     <div id="status"></div>
 
-    <!-- AUTH SECTION -->
+    <!-- AUTH -->
     <div id="authSection">
       <input id="username" placeholder="Username (signup only)" />
       <input id="email" placeholder="Email" />
@@ -27,11 +24,10 @@
       <button id="signupBtn">Sign Up</button>
     </div>
 
-    <!-- LOGOUT -->
-    <button id="logoutBtn" style="display:none;">Logout</button>
+    <button id="logoutBtn">Logout</button>
 
-    <!-- POST COMPOSER -->
-    <div id="postSection" style="display:none;">
+    <!-- POST -->
+    <div id="postSection">
       <textarea
         id="postInput"
         placeholder="What corporate pain are you facing today?"
@@ -47,19 +43,15 @@
       <h3>Notifications</h3>
       <div id="notificationList"></div>
     </div>
-    <!-- FOOTER -->
-<div id="footer">
-  Developed by <strong>Waahid Ishak</strong>
-</div>
+
+    <div id="footer">
+      Developed by <strong>Waahid Ishak</strong>
+    </div>
 
   </div>
 
-  <!-- THEME TOGGLE -->
   <button class="theme-toggle" id="themeToggle">🌙</button>
 
-  <!-- APP SCRIPT -->
   <script type="module" src="app.js"></script>
-
 </body>
 </html>
-
