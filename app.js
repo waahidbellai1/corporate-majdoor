@@ -23,7 +23,9 @@ import {
   arrayRemove
 } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-/* FIREBASE INIT */
+/* =====================
+   FIREBASE INIT
+===================== */
 const app = initializeApp({
   apiKey: "AIzaSyDv8-8o_pd9ZUxxazTbBH5xBb_olbuhyag",
   authDomain: "corporate-majdoor.firebaseapp.com",
@@ -33,7 +35,9 @@ const app = initializeApp({
 const auth = getAuth(app);
 const db = getFirestore(app);
 
-/* ELEMENTS */
+/* =====================
+   ELEMENTS
+===================== */
 const feed = document.getElementById("feed");
 const postInput = document.getElementById("postInput");
 const postBtn = document.getElementById("postBtn");
@@ -52,11 +56,19 @@ const postSection = document.getElementById("postSection");
 const notifications = document.getElementById("notifications");
 const notificationList = document.getElementById("notificationList");
 
-/* LISTENER HANDLES */
+const profileBtn = document.getElementById("profileBtn");
+const profileMenu = document.getElementById("profileMenu");
+const profileLogout = document.getElementById("profileLogout");
+
+/* =====================
+   LISTENER HANDLES
+===================== */
 let unsubPosts = null;
 let unsubNotifs = null;
 
-/* HELPERS */
+/* =====================
+   HELPERS
+===================== */
 function timeAgo(ts) {
   if (!ts) return "";
   const s = Math.floor((Date.now() - ts.toMillis()) / 1000);
@@ -66,7 +78,9 @@ function timeAgo(ts) {
   return `${Math.floor(s / 86400)}d ago`;
 }
 
-/* AUTH ACTIONS */
+/* =====================
+   AUTH ACTIONS
+===================== */
 loginBtn.onclick = () =>
   signInWithEmailAndPassword(auth, email.value, password.value)
     .catch(e => status.innerText = e.message);
@@ -84,36 +98,50 @@ signupBtn.onclick = async () => {
 };
 
 logoutBtn.onclick = () => signOut(auth);
+profileLogout.onclick = () => signOut(auth);
 
-/* AUTH STATE */
+/* =====================
+   AUTH STATE (SINGLE SOURCE OF TRUTH)
+===================== */
 onAuthStateChanged(auth, user => {
 
   if (unsubPosts) unsubPosts();
   if (unsubNotifs) unsubNotifs();
 
   if (user) {
+    document.body.classList.remove("is-logged-out");
+    document.body.classList.add("is-authenticated");
+
     authSection.style.display = "none";
     postSection.style.display = "block";
     feed.style.display = "flex";
-    notifications.style.display = "none";
-    logoutBtn.style.display = "block";
+    logoutBtn.style.display = "none";
     notifBell.style.display = "block";
+    profileBtn.style.display = "block";
 
     unsubPosts = listenToPosts(user);
     unsubNotifs = listenToNotifications(user);
 
   } else {
+    document.body.classList.add("is-logged-out");
+    document.body.classList.remove("is-authenticated");
+
     authSection.style.display = "block";
     postSection.style.display = "none";
     feed.style.display = "none";
     notifications.style.display = "none";
     logoutBtn.style.display = "none";
     notifBell.style.display = "none";
+    profileBtn.style.display = "none";
+    profileMenu.classList.remove("open");
+
     feed.innerHTML = "";
   }
 });
 
-/* POST */
+/* =====================
+   POST
+===================== */
 postBtn.onclick = async () => {
   const user = auth.currentUser;
   if (!user || !postInput.value.trim()) return;
@@ -128,7 +156,9 @@ postBtn.onclick = async () => {
   postInput.value = "";
 };
 
-/* POSTS */
+/* =====================
+   POSTS
+===================== */
 function listenToPosts(user) {
   return onSnapshot(
     query(collection(db, "posts"), orderBy("createdAt", "desc")),
@@ -173,7 +203,6 @@ function listenToPosts(user) {
           </div>
         `;
 
-        /* LIKE */
         post.querySelector(".likeBtn").onclick = async () => {
           const ref = doc(db, "posts", docSnap.id);
           const hasLiked = data.likedBy.includes(user.uid);
@@ -184,7 +213,6 @@ function listenToPosts(user) {
           });
         };
 
-        /* COMMENTS */
         const input = post.querySelector(".commentInput");
         const btn = post.querySelector(".sendCommentBtn");
         const list = post.querySelector(".commentList");
@@ -197,22 +225,18 @@ function listenToPosts(user) {
           snap => {
             list.innerHTML = "";
             snap.forEach(c =>
-              list.innerHTML +=
-                `<div class="comment">${c.data().text}</div>`
+              list.innerHTML += `<div class="comment">${c.data().text}</div>`
             );
           }
         );
 
         btn.onclick = async () => {
           if (!input.value.trim()) return;
-          await addDoc(
-            collection(db, "posts", docSnap.id, "comments"),
-            {
-              text: input.value.trim(),
-              uid: user.uid,
-              createdAt: serverTimestamp()
-            }
-          );
+          await addDoc(collection(db, "posts", docSnap.id, "comments"), {
+            text: input.value.trim(),
+            uid: user.uid,
+            createdAt: serverTimestamp()
+          });
           input.value = "";
         };
 
@@ -222,7 +246,9 @@ function listenToPosts(user) {
   );
 }
 
-/* NOTIFICATIONS */
+/* =====================
+   NOTIFICATIONS
+===================== */
 function listenToNotifications(user) {
   return onSnapshot(
     query(collection(db, "notifications"), orderBy("createdAt", "desc")),
@@ -238,48 +264,22 @@ function listenToNotifications(user) {
   );
 }
 
-/* BELL TOGGLE */
+/* =====================
+   UI CONTROLS
+===================== */
 notifBell.onclick = () => {
   notifications.style.display =
     notifications.style.display === "block" ? "none" : "block";
 };
 
-/* THEME */
-const themeToggle = document.getElementById("themeToggle");
-themeToggle.onclick = () => document.body.classList.toggle("dark");
-/* =====================
-   PROFILE MENU TOGGLE
-===================== */
+profileBtn.onclick = (e) => {
+  e.stopPropagation();
+  profileMenu.classList.toggle("open");
+};
 
-const profileBtn = document.getElementById("profileBtn");
-const profileMenu = document.getElementById("profileMenu");
-
-if (profileBtn && profileMenu) {
-  profileBtn.onclick = (e) => {
-    e.stopPropagation();
-    profileMenu.classList.toggle("open");
-  };
-
-  document.addEventListener("click", () => {
-    profileMenu.classList.remove("open");
-  });
-}
-/* =====================
-   AUTH STATE CLASS FLAG
-   APPEND ONLY
-===================== */
-
-import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-
-onAuthStateChanged(auth, (user) => {
-  if (user) {
-    document.body.classList.add("is-authenticated");
-    document.body.classList.remove("is-logged-out");
-  } else {
-    document.body.classList.add("is-logged-out");
-    document.body.classList.remove("is-authenticated");
-  }
+document.addEventListener("click", () => {
+  profileMenu.classList.remove("open");
 });
 
-
-
+document.getElementById("themeToggle").onclick =
+  () => document.body.classList.toggle("dark");
