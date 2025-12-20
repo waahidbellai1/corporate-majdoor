@@ -1078,6 +1078,37 @@ body.dark .header span::after {
     letter-spacing: -0.4px;
   }
 }
+/* =========================
+   🛠 LOGO DARK MODE GLITCH FIX
+   SAFARI / iOS SAFE — APPEND ONLY
+========================= */
+
+/* Stop shimmer animation in dark mode (prevents flicker) */
+body.dark .header span {
+  animation: logoFadeIn 0.8s ease both !important;
+  background-size: 100% 100% !important;
+}
+
+/* Reduce glow repaint in dark mode */
+body.dark .header span::after {
+  opacity: 0.35;
+  filter: blur(10px);
+}
+
+/* Force stable text rendering */
+body.dark .header span {
+  -webkit-text-fill-color: transparent;
+  will-change: auto;
+}
+
+/* Extra Safari stability */
+@supports (-webkit-touch-callout: none) {
+  body.dark .header span {
+    transform: translateZ(0);
+  }
+}
+
+
 
 
 
