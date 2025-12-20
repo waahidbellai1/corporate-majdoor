@@ -268,3 +268,76 @@ body {
     font-size: 15px;
   }
 }
+/* =====================
+   SKELETON LOADER
+===================== */
+.skeleton {
+  background: #e5e7eb;
+  border-radius: 12px;
+  position: relative;
+  overflow: hidden;
+}
+
+.skeleton::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  left: -100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255,255,255,0.7),
+    transparent
+  );
+  animation: shimmer 1.2s infinite;
+}
+
+@keyframes shimmer {
+  100% {
+    left: 100%;
+  }
+}
+
+/* Skeleton post card */
+.skeleton-post {
+  background: #ffffff;
+  border-radius: 18px;
+  padding: 16px;
+  box-shadow: 0 12px 30px rgba(0,0,0,0.06);
+  margin-bottom: 14px;
+}
+
+/* Header */
+.skeleton-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+
+.skeleton-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+}
+
+/* Lines */
+.skeleton-line {
+  height: 12px;
+  border-radius: 6px;
+  margin-bottom: 10px;
+}
+
+.skeleton-line.short {
+  width: 40%;
+}
+
+.skeleton-line.medium {
+  width: 70%;
+}
+
+.skeleton-line.full {
+  width: 100%;
+}
+
+
