@@ -11,12 +11,12 @@
   <link rel="stylesheet" href="style.css" />
 </head>
 
-<body>
+<body class="is-logged-out">
 
   <!-- HEADER / APP BAR -->
   <div class="header app-bar">
 
-    <!-- Profile button (left) -->
+    <!-- Profile button (left | AUTH ONLY via JS) -->
     <button
       id="profileBtn"
       class="profile-btn"
@@ -26,10 +26,10 @@
       <div class="profile-avatar">W</div>
     </button>
 
-    <!-- Center logo (UNCHANGED TEXT) -->
+    <!-- Center logo (TEXT UNCHANGED) -->
     <span>Corporate Majdoor</span>
 
-    <!-- Notification Bell (right, hidden via JS on login screen) -->
+    <!-- Notification Bell (right | AUTH ONLY via JS) -->
     <button
       id="notifBell"
       type="button"
@@ -40,11 +40,13 @@
 
   </div>
 
-  <!-- PROFILE MENU (hidden by default) -->
+  <!-- PROFILE MENU (AUTH ONLY) -->
   <div id="profileMenu" class="profile-menu">
     <button class="profile-item" type="button">My Profile</button>
     <button class="profile-item" type="button">Settings</button>
-    <button class="profile-item logout" type="button">Logout</button>
+    <button class="profile-item logout" type="button" id="profileLogout">
+      Logout
+    </button>
   </div>
 
   <!-- MAIN CONTAINER -->
@@ -75,12 +77,11 @@
         autocomplete="current-password"
       />
 
-      <!-- Prevent accidental form submit on mobile -->
       <button id="loginBtn" type="button">Login</button>
       <button id="signupBtn" type="button">Sign Up</button>
     </div>
 
-    <!-- LOGOUT -->
+    <!-- LOGOUT (fallback, kept) -->
     <button id="logoutBtn" type="button">Logout</button>
 
     <!-- POST COMPOSER -->
