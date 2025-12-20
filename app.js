@@ -283,3 +283,51 @@ document.addEventListener("click", () => {
 
 document.getElementById("themeToggle").onclick =
   () => document.body.classList.toggle("dark");
+/* =====================
+   📱 MOBILE BOTTOM BAR WIRING
+   APPEND ONLY — SAFE
+===================== */
+
+const profileBtnMobile = document.getElementById("profileBtnMobile");
+const notifBellMobile = document.getElementById("notifBellMobile");
+const themeToggleMobile = document.getElementById("themeToggleMobile");
+
+/* Profile menu (mobile uses same menu) */
+if (profileBtnMobile) {
+  profileBtnMobile.onclick = (e) => {
+    e.stopPropagation();
+    profileMenu.classList.toggle("open");
+  };
+}
+
+/* Notifications (mobile mirrors top bell) */
+if (notifBellMobile) {
+  notifBellMobile.onclick = () => {
+    notifications.style.display =
+      notifications.style.display === "block" ? "none" : "block";
+  };
+}
+
+/* Dark mode (mobile mirrors desktop toggle) */
+if (themeToggleMobile) {
+  themeToggleMobile.onclick = () => {
+    document.body.classList.toggle("dark");
+  };
+}
+
+/* =====================
+   📱 AUTH VISIBILITY (BOTTOM BAR)
+===================== */
+const bottomBar = document.querySelector(".bottom-bar");
+
+onAuthStateChanged(auth, (user) => {
+  if (!bottomBar) return;
+
+  if (user) {
+    bottomBar.style.display = "flex";
+  } else {
+    bottomBar.style.display = "none";
+  }
+});
+
+
