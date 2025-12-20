@@ -1,27 +1,25 @@
-/* RESET */
-* { margin:0; padding:0; box-sizing:border-box; }
+*{margin:0;padding:0;box-sizing:border-box}
 
-body {
-  font-family: system-ui, sans-serif;
-  background: linear-gradient(180deg,#fbfdff,#f5f7fb);
+body{
+  font-family:system-ui;
+  background:#fbfdff;
   color:#0f172a;
 }
 
-.header {
+.header{
   text-align:center;
   padding:28px;
   font-size:32px;
   font-weight:700;
 }
 
-.container {
+.container{
   max-width:620px;
   margin:auto;
   padding:0 16px 80px;
 }
 
-/* AUTH */
-input, textarea {
+textarea,input{
   width:100%;
   padding:16px;
   border-radius:16px;
@@ -29,25 +27,9 @@ input, textarea {
   margin-bottom:14px;
 }
 
-button {
-  cursor:pointer;
-}
+button{cursor:pointer}
 
-#loginBtn { background:#2563eb;color:#fff;padding:14px;border-radius:999px;border:none; }
-#signupBtn { background:#16a34a;color:#fff;padding:14px;border-radius:999px;border:none; }
-
-#logoutBtn {
-  background:none;
-  border:1px solid #fecaca;
-  color:#ef4444;
-  padding:8px 16px;
-  border-radius:999px;
-  margin:20px auto;
-  display:block;
-}
-
-/* POST */
-#postBtn {
+#postBtn{
   background:#0f172a;
   color:#fff;
   border:none;
@@ -57,95 +39,98 @@ button {
   display:block;
 }
 
-/* FEED */
-#feed { margin-top:36px; display:flex; flex-direction:column; gap:28px; }
+#feed{
+  margin-top:36px;
+  display:flex;
+  flex-direction:column;
+  gap:28px;
+}
 
-.post {
+.post{
   background:#fdfefe;
   border-radius:26px;
   padding:22px;
   box-shadow:0 8px 26px rgba(0,0,0,.04);
 }
 
-/* HEADER */
-.post-header {
+.post-header{
   display:flex;
   justify-content:space-between;
-  align-items:center;
 }
 
-.post-header-left {
+.post-header-left{
   display:flex;
   gap:14px;
 }
 
-.avatar {
-  width:42px;height:42px;border-radius:50%;
+.avatar{
+  width:42px;height:42px;
+  border-radius:50%;
   background:linear-gradient(135deg,#6366f1,#22d3ee);
-  color:#fff;display:flex;align-items:center;justify-content:center;
+  color:#fff;
+  display:flex;
+  align-items:center;
+  justify-content:center;
   font-weight:700;
 }
 
-.post-username { font-weight:600; }
-.post-time { font-size:12px;color:#94a3b8; }
-
-/* CONTENT */
-.post-text {
+.post-text{
   margin:16px 0;
   font-size:15.5px;
   line-height:1.75;
 }
 
-/* ACTIONS */
-.post-actions { display:flex; gap:16px; align-items:center; }
+.post-actions{
+  display:flex;
+  gap:16px;
+}
 
-.likeBtn {
+.likeBtn{
   background:#f8fafc;
   border:1px solid #e2e8f0;
   padding:8px 18px;
   border-radius:999px;
 }
 
-.likeBtn.liked { background:#ffe4e6;color:#dc2626; }
+.likeBtn.liked{
+  background:#ffe4e6;
+  color:#dc2626;
+}
+
+.comments{
+  margin-top:14px;
+}
+
+.comment{
+  font-size:13px;
+  margin-top:6px;
+  color:#475569;
+}
 
 /* MENU */
-.post-menu { position:relative; }
-.menu-btn {
-  background:none;border:none;font-size:22px;color:#94a3b8;
-}
-.menu-dropdown {
-  position:absolute;right:0;top:26px;
-  background:#fff;border-radius:12px;
+.post-menu{position:relative}
+.menu-btn{background:none;border:none;font-size:22px;color:#94a3b8}
+.menu-dropdown{
+  position:absolute;
+  right:0;
+  top:26px;
+  background:#fff;
+  border-radius:12px;
   box-shadow:0 8px 24px rgba(0,0,0,.08);
   display:none;
 }
-.post-menu.open .menu-dropdown { display:block; }
+.post-menu.open .menu-dropdown{display:block}
 
-.deleteBtn {
-  background:none;border:none;color:#ef4444;
+.deleteBtn{
+  background:none;
+  border:none;
+  color:#ef4444;
   padding:10px 16px;
 }
 
-/* SKELETON */
-.skeleton { background:#e5e7eb; border-radius:12px; }
-.skeleton-post { padding:22px;border-radius:26px;background:#fdfefe; }
-.skeleton-header { display:flex;gap:14px;margin-bottom:14px; }
-.skeleton-avatar { width:42px;height:42px;border-radius:50%; }
-.skeleton-line { height:12px;border-radius:6px;margin-bottom:10px; }
-.short{width:40%} .medium{width:70%} .full{width:100%}
-
-/* DARK MODE */
-body.dark {
-  background:#020617;
-  color:#e5e7eb;
-}
-body.dark .post { background:#020617;border:1px solid #1e293b;box-shadow:none; }
-body.dark input, body.dark textarea { background:#020617;border-color:#1e293b;color:#e5e7eb; }
-
-/* TOGGLE */
-.theme-toggle {
-  position:fixed;bottom:22px;right:22px;
-  width:46px;height:46px;border-radius:50%;
-  border:1px solid #e2e8f0;
-  background:#fff;font-size:20px;
+/* NOTIFICATIONS */
+.notification{
+  padding:12px;
+  font-size:14px;
+  border-bottom:1px solid #e2e8f0;
 }
