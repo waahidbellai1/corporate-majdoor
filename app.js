@@ -56,6 +56,16 @@ const notificationList = document.getElementById("notificationList");
 let unsubPosts = null;
 let unsubNotifs = null;
 
+/* HELPERS */
+function timeAgo(ts) {
+  if (!ts) return "";
+  const s = Math.floor((Date.now() - ts.toMillis()) / 1000);
+  if (s < 60) return "Just now";
+  if (s < 3600) return `${Math.floor(s / 60)}m ago`;
+  if (s < 86400) return `${Math.floor(s / 3600)}h ago`;
+  return `${Math.floor(s / 86400)}d ago`;
+}
+
 /* AUTH ACTIONS */
 loginBtn.onclick = () =>
   signInWithEmailAndPassword(auth, email.value, password.value)
@@ -63,7 +73,11 @@ loginBtn.onclick = () =>
 
 signupBtn.onclick = async () => {
   if (!username.value.trim()) return;
-  const cred = await createUserWithEmailAndPassword(auth, email.value, password.value);
+  const cred = await createUserWithEmailAndPassword(
+    auth,
+    email.value,
+    password.value
+  );
   await setDoc(doc(db, "users", cred.user.uid), {
     username: username.value.trim()
   });
@@ -125,12 +139,31 @@ function listenToPosts(user) {
         const data = docSnap.data();
         const u = await getDoc(doc(db, "users", data.uid));
         const name = u.exists() ? u.data().username : "user";
+        const liked = data.likedBy.includes(user.uid);
 
         const post = document.createElement("div");
         post.className = "post";
 
         post.innerHTML = `
+          <div class="post-header">
+            <div class="post-header-left">
+              <div class="avatar">${name[0]}</div>
+              <div>
+                <div class="post-username">${name}</div>
+                <div class="post-time">${timeAgo(data.createdAt)}</div>
+              </div>
+            </div>
+          </div>
+
           <div class="post-text">${data.text}</div>
+
+          <div class="post-actions">
+            <button class="likeBtn ${liked ? "liked" : ""}">👍 Like</button>
+            ${data.likedBy.length
+              ? `<span class="likeCount">${data.likedBy.length}</span>`
+              : ""}
+          </div>
+
           <div class="comments">
             <div class="comment-box">
               <input class="commentInput" placeholder="Add comment…" />
@@ -140,16 +173,46 @@ function listenToPosts(user) {
           </div>
         `;
 
+        /* LIKE */
+        post.querySelector(".likeBtn").onclick = async () => {
+          const ref = doc(db, "posts", docSnap.id);
+          const hasLiked = data.likedBy.includes(user.uid);
+          await updateDoc(ref, {
+            likedBy: hasLiked
+              ? arrayRemove(user.uid)
+              : arrayUnion(user.uid)
+          });
+        };
+
+        /* COMMENTS */
         const input = post.querySelector(".commentInput");
         const btn = post.querySelector(".sendCommentBtn");
+        const list = post.querySelector(".commentList");
+
+        onSnapshot(
+          query(
+            collection(db, "posts", docSnap.id, "comments"),
+            orderBy("createdAt", "asc")
+          ),
+          snap => {
+            list.innerHTML = "";
+            snap.forEach(c =>
+              list.innerHTML +=
+                `<div class="comment">${c.data().text}</div>`
+            );
+          }
+        );
 
         btn.onclick = async () => {
           if (!input.value.trim()) return;
-          await addDoc(collection(db, "posts", docSnap.id, "comments"), {
-            text: input.value.trim(),
-            createdAt: serverTimestamp(),
-            uid: user.uid
-          });
+          await addDoc(
+            collection(db, "posts", docSnap.id, "comments"),
+            {
+              text: input.value.trim(),
+              uid: user.uid,
+              createdAt: serverTimestamp()
+            }
+          );
           input.value = "";
         };
 
@@ -167,7 +230,8 @@ function listenToNotifications(user) {
       notificationList.innerHTML = "";
       snap.forEach(n => {
         if (n.data().to === user.uid) {
-          notificationList.innerHTML += `<div>${n.data().text}</div>`;
+          notificationList.innerHTML +=
+            `<div class="notification">${n.data().text}</div>`;
         }
       });
     }
