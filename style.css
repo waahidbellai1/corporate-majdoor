@@ -1361,6 +1361,28 @@ body #authSection:not([style*="display: none"]) #profileMenu {
     margin-bottom: 8px;
   }
 }
+/* =========================
+   🔐 AUTH STATE UI CONTROL
+   UNIVERSAL FIX (PC + MOBILE)
+   APPEND ONLY
+========================= */
+
+/* LOGGED OUT — HIDE PROFILE COMPLETELY */
+body.is-logged-out .profile-btn,
+body.is-logged-out .profile-avatar,
+body.is-logged-out #profileBtn,
+body.is-logged-out #profileMenu {
+  display: none !important;
+  visibility: hidden !important;
+  pointer-events: none !important;
+}
+
+/* LOGGED IN — ALLOW PROFILE */
+body.is-authenticated .profile-btn {
+  display: inline-flex !important;
+  visibility: visible !important;
+  pointer-events: auto !important;
+}
 
 
 
