@@ -1,27 +1,21 @@
-
 import { initializeApp } from
   "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
 
 import {
   getAuth,
   signInWithEmailAndPassword,
-  createUserWithEmailAndPassword
-} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-
-import {
+  createUserWithEmailAndPassword,
   onAuthStateChanged,
   signOut
 } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-
-
 
 import {
   getFirestore,
   collection,
   addDoc,
   query,
-    orderBy,
-    onSnapshot,
+  orderBy,
+  onSnapshot,
   serverTimestamp,
   deleteDoc,
   doc,
@@ -29,101 +23,112 @@ import {
   getDoc,
   updateDoc,
   arrayUnion,
-  arrayRemove,
-  increment 
+  arrayRemove
 } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-function timeAgo(timestamp) {
-  if (!timestamp) return "";
-
-  const now = Date.now();
-  const seconds = Math.floor((now - timestamp.toMillis()) / 1000);
-
-  if (seconds < 10) return "Just now";
-  if (seconds < 60) return `${seconds}s ago`;
-
-  const minutes = Math.floor(seconds / 60);
-  if (minutes < 60) return `${minutes}m ago`;
-
-  const hours = Math.floor(minutes / 60);
-  if (hours < 24) return `${hours}h ago`;
-
-  const days = Math.floor(hours / 24);
-  if (days === 1) return "Yesterday";
-
-  return `${days}d ago`;
-}
-
-
-// Firebase config
+/* =====================
+   FIREBASE INIT
+===================== */
 const firebaseConfig = {
   apiKey: "AIzaSyDv8-8o_pd9ZUxxazTbBH5xBb_olbuhyag",
   authDomain: "corporate-majdoor.firebaseapp.com",
   projectId: "corporate-majdoor",
-  storageBucket: "corporate-majdoor.appspot.com", // ✅ FIXED
+  storageBucket: "corporate-majdoor.appspot.com",
   messagingSenderId: "490168158830",
   appId: "1:490168158830:web:bde232dae0cff6ab8bb47f"
 };
 
-
-// Init Firebase
 const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
 const auth = getAuth(app);
+const db = getFirestore(app);
 
-// Elements
+/* =====================
+   ELEMENTS
+===================== */
 const usernameInput = document.getElementById("username");
 const email = document.getElementById("email");
 const password = document.getElementById("password");
 const status = document.getElementById("status");
+const authSection = document.getElementById("authSection");
 const postSection = document.getElementById("postSection");
 const postInput = document.getElementById("postInput");
 const postBtn = document.getElementById("postBtn");
 const feed = document.getElementById("feed");
-const authSection = document.getElementById("authSection");
-postBtn.addEventListener("click", async () => {
-  console.log("Posting as:", auth.currentUser);
+const logoutBtn = document.getElementById("logoutBtn");
 
-  if (!auth.currentUser) {
-    status.innerText = "Please login again";
-    return;
-  }
-
-  if (!postInput.value.trim()) return;
-
-  try {
-   await addDoc(collection(db, "posts"), {
-  text: postInput.value,
-  uid: auth.currentUser.uid,
-  createdAt: serverTimestamp(),
-  likedBy: []
-});
-
-
-
-    postInput.value = "";
-  } catch (err) {
-    console.error(err);
-    status.innerText = err.message;
-  }
-});
-
-const q = query(
-  collection(db, "posts"),
-  orderBy("createdAt", "desc")
-);
-async function getUsername(uid) {
-  if (!uid) return "Unknown";
-
-  const userSnap = await getDoc(doc(db, "users", uid));
-
-  if (userSnap.exists()) {
-    return userSnap.data().username;
-  }
-
-  return "Unknown";
+/* =====================
+   HELPERS
+===================== */
+function timeAgo(ts) {
+  if (!ts) return "";
+  const s = Math.floor((Date.now() - ts.toMillis()) / 1000);
+  if (s < 60) return "Just now";
+  if (s < 3600) return `${Math.floor(s/60)}m ago`;
+  if (s < 86400) return `${Math.floor(s/3600)}h ago`;
+  return `${Math.floor(s/86400)}d ago`;
 }
-feed.innerHTML = `
+
+async function getUsername(uid) {
+  const snap = await getDoc(doc(db, "users", uid));
+  return snap.exists() ? snap.data().username : "user";
+}
+
+/* =====================
+   AUTH
+===================== */
+document.getElementById("loginBtn").onclick = () => {
+  signInWithEmailAndPassword(auth, email.value, password.value)
+    .catch(err => status.innerText = err.message);
+};
+
+document.getElementById("signupBtn").onclick = async () => {
+  if (!usernameInput.value.trim()) return;
+  const cred = await createUserWithEmailAndPassword(
+    auth, email.value, password.value
+  );
+  await setDoc(doc(db, "users", cred.user.uid), {
+    username: usernameInput.value.trim(),
+    email: cred.user.email
+  });
+};
+
+logoutBtn.onclick = () => signOut(auth);
+
+/* =====================
+   AUTH STATE
+===================== */
+onAuthStateChanged(auth, async user => {
+  if (user) {
+    authSection.style.display = "none";
+    postSection.style.display = "block";
+    logoutBtn.style.display = "block";
+    status.innerText = `👋 ${user.email}`;
+  } else {
+    authSection.style.display = "block";
+    postSection.style.display = "none";
+    logoutBtn.style.display = "none";
+    status.innerText = "🔐 Login to Corporate Majdoor";
+  }
+});
+
+/* =====================
+   CREATE POST
+===================== */
+postBtn.onclick = async () => {
+  if (!postInput.value.trim()) return;
+  await addDoc(collection(db, "posts"), {
+    text: postInput.value,
+    uid: auth.currentUser.uid,
+    createdAt: serverTimestamp(),
+    likedBy: []
+  });
+  postInput.value = "";
+};
+
+/* =====================
+   FEED + SKELETON
+===================== */
+feed.innerHTML = Array(3).fill(`
   <div class="skeleton-post">
     <div class="skeleton-header">
       <div class="skeleton skeleton-avatar"></div>
@@ -133,215 +138,84 @@ feed.innerHTML = `
       </div>
     </div>
     <div class="skeleton skeleton-line full"></div>
-    <div class="skeleton skeleton-line medium"></div>
   </div>
-`;
-onSnapshot(q, (snapshot) => {
+`).join("");
+
+const q = query(collection(db, "posts"), orderBy("createdAt", "desc"));
+
+onSnapshot(q, snapshot => {
   feed.innerHTML = "";
 
-  snapshot.forEach(postDoc => {
-    const data = postDoc.data();
+  snapshot.forEach(async docSnap => {
+    const d = docSnap.data();
+    const username = await getUsername(d.uid);
 
-    const postDiv = document.createElement("div");
-    postDiv.className = "post";
+    const post = document.createElement("div");
+    post.className = "post";
 
-    let deleteBtnHTML = "";
-    if (auth.currentUser && auth.currentUser.uid === data.uid) {
-      deleteBtnHTML = `<button class="deleteBtn">Delete</button>`;
-    }
-
-    postDiv.innerHTML = `
+    post.innerHTML = `
       <div class="post-header">
-  <div class="avatar">?</div>
-  <div>
-    <div class="post-username">Loading...</div>
-    <div class="post-time">${timeAgo(data.createdAt)}</div>
-  </div>
-</div>
+        <div class="post-header-left">
+          <div class="avatar">${username[0]}</div>
+          <div>
+            <div class="post-username">@${username}</div>
+            <div class="post-time">${timeAgo(d.createdAt)}</div>
+          </div>
+        </div>
 
-      <div class="post-text">${data.text}</div>
+        ${auth.currentUser?.uid === d.uid ? `
+        <div class="post-menu">
+          <button class="menu-btn">⋯</button>
+          <div class="menu-dropdown">
+            <button class="deleteBtn">Delete</button>
+          </div>
+        </div>` : ""}
+      </div>
 
-     <div class="post-actions">
-  <button class="likeBtn">👍 Like</button>
-  <span class="likeCount">${(data.likedBy || []).length}</span>
-</div>
+      <div class="post-text">${d.text}</div>
 
-      ${deleteBtnHTML}
+      <div class="post-actions">
+        <button class="likeBtn ${d.likedBy.includes(auth.currentUser?.uid) ? "liked":""}">
+          👍 Like
+        </button>
+        ${d.likedBy.length ? `<span class="likeCount">${d.likedBy.length}</span>` : ""}
+      </div>
     `;
 
-    // Username + avatar
-    if (data.uid) {
-      getUsername(data.uid).then(username => {
-        const nameDiv = postDiv.querySelector(".post-username");
-        const avatar = postDiv.querySelector(".avatar");
-
-        if (nameDiv) nameDiv.innerText = `@${username}`;
-        if (avatar && username) avatar.innerText = username.charAt(0);
-      });
-    }
-
-    // Delete post
-    const deleteBtn = postDiv.querySelector(".deleteBtn");
-    if (deleteBtn) {
-      deleteBtn.onclick = async () => {
-        await deleteDoc(doc(db, "posts", postDoc.id));
-      };
-    }
-
-    // Like button
-    const likeBtn = postDiv.querySelector(".likeBtn");
-
-    if (likeBtn && auth.currentUser) {
-      const userId = auth.currentUser.uid;
-      const postRef = doc(db, "posts", postDoc.id);
-
-      const likedBy = data.likedBy || [];
-      const alreadyLiked = likedBy.includes(userId);
-
-      likeBtn.innerText = alreadyLiked ? "❤️ Unlike" : "👍 Like";
-      likeBtn.classList.toggle("liked", alreadyLiked);
-
+    const likeBtn = post.querySelector(".likeBtn");
+    if (likeBtn) {
       likeBtn.onclick = async () => {
-        likeBtn.classList.add("pop");
-        setTimeout(() => likeBtn.classList.remove("pop"), 300);
-
-        const freshSnap = await getDoc(postRef);
-        const freshData = freshSnap.data();
-        const freshLikedBy = freshData.likedBy || [];
-        const hasLikedNow = freshLikedBy.includes(userId);
-
-        if (hasLikedNow) {
-        await updateDoc(postRef, {
-  likedBy: arrayRemove(userId)
-});
-
-        } else {
-          await updateDoc(postRef, {
-  likedBy: arrayUnion(userId)
-});
-
-        }
+        const ref = doc(db, "posts", docSnap.id);
+        const liked = d.likedBy.includes(auth.currentUser.uid);
+        await updateDoc(ref, {
+          likedBy: liked
+            ? arrayRemove(auth.currentUser.uid)
+            : arrayUnion(auth.currentUser.uid)
+        });
       };
     }
 
-    feed.appendChild(postDiv);
+    const del = post.querySelector(".deleteBtn");
+    if (del) del.onclick = () => deleteDoc(doc(db, "posts", docSnap.id));
+
+    const menuBtn = post.querySelector(".menu-btn");
+    const menu = post.querySelector(".post-menu");
+    if (menuBtn) menuBtn.onclick = () => menu.classList.toggle("open");
+
+    feed.appendChild(post);
   });
 });
 
+/* =====================
+   DARK MODE
+===================== */
+const toggle = document.getElementById("themeToggle");
+const saved = localStorage.getItem("theme");
+if (saved === "dark") document.body.classList.add("dark");
 
-// Login
-document.getElementById("loginBtn").addEventListener("click", () => {
-  signInWithEmailAndPassword(auth, email.value, password.value)
-    .then(() => {
-      status.innerText = "✅ Logged in successfully";
-    })
-    .catch(err => {
-      status.innerText = err.message;
-    });
-});
-
-// Signup
-document.getElementById("signupBtn").addEventListener("click", async () => {
-  if (!usernameInput.value.trim()) {
-    status.innerText = "Username required";
-    return;
-  }
-
-  try {
-    const userCred = await createUserWithEmailAndPassword(
-      auth,
-      email.value.trim(),
-      password.value
-    );
-
-    const user = userCred.user;
-
-    // Save username in Firestore
-    await setDoc(doc(db, "users", user.uid), {
-      username: usernameInput.value.trim(),
-      email: user.email
-    });
-
-    status.innerText = "🎉 Account created";
-
-  } catch (err) {
-    status.innerText = err.message;
-  }
-});
-const logoutBtn = document.getElementById("logoutBtn");
-
-logoutBtn.addEventListener("click", () => {
-  signOut(auth);
-});
-
-onAuthStateChanged(auth, async (user) => {
-  if (user) {
-    // 🔥 AUTO-CREATE USER PROFILE IF MISSING
-    const userRef = doc(db, "users", user.uid);
-    const snap = await getDoc(userRef);
-
-    if (!snap.exists()) {
-      await setDoc(userRef, {
-        username: user.email.split("@")[0], // fallback username
-        email: user.email
-      });
-    }
-
-    // Logged in → FEED
-    authSection.style.display = "none";
-    postSection.style.display = "block";
-    logoutBtn.style.display = "block";
-
-    status.innerText = `👋 ${user.email}`;
-  } else {
-    // Logged out → LOGIN
-    authSection.style.display = "block";
-    postSection.style.display = "none";
-    logoutBtn.style.display = "none";
-
-    status.innerText = "🔐 Login to Corporate Majdoor";
-  }
-});
-// =====================
-// DARK MODE LOGIC
-// =====================
-const toggleBtn = document.getElementById("themeToggle");
-
-// Load saved theme or system preference
-const savedTheme = localStorage.getItem("theme");
-const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
-
-if (savedTheme === "dark" || (!savedTheme && prefersDark)) {
-  document.body.classList.add("dark");
-  toggleBtn.innerText = "☀️";
-}
-
-// Toggle manually
-toggleBtn.addEventListener("click", () => {
+toggle.onclick = () => {
   document.body.classList.toggle("dark");
-  const isDark = document.body.classList.contains("dark");
-
-  localStorage.setItem("theme", isDark ? "dark" : "light");
-  toggleBtn.innerText = isDark ? "☀️" : "🌙";
-});
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+  localStorage.setItem("theme",
+    document.body.classList.contains("dark") ? "dark" : "light"
+  );
+};
