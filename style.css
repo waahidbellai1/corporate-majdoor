@@ -339,5 +339,81 @@ body {
 .skeleton-line.full {
   width: 100%;
 }
+/* =====================
+   DARK MODE
+===================== */
+:root {
+  --bg: linear-gradient(180deg, #f8fafc, #eef2f7);
+  --card: #ffffff;
+  --text: #0f172a;
+  --muted: #64748b;
+  --border: #e5e7eb;
+  --pill: #f1f5f9;
+}
 
+body.dark {
+  --bg: #020617;
+  --card: #020617;
+  --text: #e5e7eb;
+  --muted: #94a3b8;
+  --border: #1e293b;
+  --pill: #020617;
+}
+
+body {
+  background: var(--bg);
+  color: var(--text);
+}
+
+/* Apply vars */
+.post,
+.skeleton-post {
+  background: var(--card);
+}
+
+.post-time,
+.likeCount,
+#status {
+  color: var(--muted);
+}
+
+.likeBtn {
+  background: var(--pill);
+  border: 1px solid var(--border);
+}
+
+/* Header dark */
+.header {
+  background: var(--card);
+  border-bottom: 1px solid var(--border);
+}
+
+/* Inputs */
+input,
+textarea {
+  background: var(--card);
+  color: var(--text);
+  border: 1px solid var(--border);
+}
+
+/* =====================
+   DARK MODE TOGGLE
+===================== */
+.theme-toggle {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  background: var(--card);
+  border: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  cursor: pointer;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+  z-index: 100;
+}
 
