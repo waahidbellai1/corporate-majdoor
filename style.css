@@ -1419,6 +1419,63 @@ body.is-authenticated .profile-btn {
   justify-content: center;
   font-size: 15px;
 }
+/* =========================
+   📱 iOS APP BAR FIX (FINAL)
+   APPEND ONLY – SAFE
+========================= */
+
+/* Define app bar height */
+:root {
+  --app-bar-height: 72px;
+}
+
+/* App bar spacing for mobile */
+@media (max-width: 768px) {
+
+  /* Make header a true app bar */
+  .header.app-bar {
+    height: var(--app-bar-height);
+    padding-top: env(safe-area-inset-top);
+    padding-bottom: 8px;
+    align-items: flex-end;
+  }
+
+  /* Center logo optically (Apple-style) */
+  .header.app-bar span {
+    margin-top: 2px;
+    line-height: 1;
+  }
+
+  /* Notification bell optical alignment */
+  #notifBell {
+    align-self: center;
+    transform: translateY(-2px);
+  }
+
+  /* Profile avatar alignment */
+  .profile-btn {
+    align-self: center;
+    transform: translateY(-2px);
+  }
+
+  /* Push main content below app bar */
+  .container {
+    padding-top: calc(var(--app-bar-height) + 12px);
+  }
+}
+
+/* =========================
+   📱 iOS SAFARI EXTRA FIX
+========================= */
+
+/* Prevent Safari from compressing layout */
+@supports (-webkit-touch-callout: none) {
+  body {
+    min-height: 100vh;
+    min-height: -webkit-fill-available;
+  }
+}
+
 
 
 
