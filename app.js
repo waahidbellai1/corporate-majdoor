@@ -60,6 +60,12 @@ const notifications = document.getElementById("notifications");
 const notificationList = document.getElementById("notificationList");
 
 /* =====================
+   LISTENER HANDLES (CRITICAL)
+===================== */
+let unsubscribePosts = null;
+let unsubscribeNotifications = null;
+
+/* =====================
    HELPERS
 ===================== */
 function timeAgo(ts) {
@@ -100,9 +106,21 @@ signupBtn.onclick = async () => {
 logoutBtn.onclick = () => signOut(auth);
 
 /* =====================
-   AUTH STATE (FIXED)
+   AUTH STATE (FIXED & STABLE)
 ===================== */
 onAuthStateChanged(auth, user => {
+
+  // CLEAN UP OLD LISTENERS
+  if (unsubscribePosts) {
+    unsubscribePosts();
+    unsubscribePosts = null;
+  }
+
+  if (unsubscribeNotifications) {
+    unsubscribeNotifications();
+    unsubscribeNotifications = null;
+  }
+
   if (user) {
     status.innerText = `👋 ${user.email}`;
 
@@ -112,8 +130,9 @@ onAuthStateChanged(auth, user => {
     notifications.style.display = "block";
     logoutBtn.style.display = "block";
 
-    listenToPosts(user);
-    listenToNotifications(user);
+    unsubscribePosts = listenToPosts(user);
+    unsubscribeNotifications = listenToNotifications(user);
+
   } else {
     status.innerText = "🔐 Login to Corporate Majdoor";
 
@@ -127,14 +146,21 @@ onAuthStateChanged(auth, user => {
 });
 
 /* =====================
-   CREATE POST
+   CREATE POST (FIXED)
 ===================== */
 postBtn.onclick = async () => {
-  if (!auth.currentUser || !postInput.value.trim()) return;
+  const user = auth.currentUser;
+  if (!user) {
+    status.innerText = "Please login again";
+    return;
+  }
+
+  const text = postInput.value.trim();
+  if (!text) return;
 
   await addDoc(collection(db, "posts"), {
-    text: postInput.value.trim(),
-    uid: auth.currentUser.uid,
+    text,
+    uid: user.uid,
     createdAt: serverTimestamp(),
     likedBy: []
   });
@@ -146,7 +172,7 @@ postBtn.onclick = async () => {
    POSTS LISTENER
 ===================== */
 function listenToPosts(user) {
-  onSnapshot(
+  return onSnapshot(
     query(collection(db, "posts"), orderBy("createdAt", "desc")),
     async snapshot => {
       feed.innerHTML = "";
@@ -247,12 +273,13 @@ function listenToPosts(user) {
         );
 
         async function sendComment() {
-          if (!input.value.trim()) return;
+          const text = input.value.trim();
+          if (!text) return;
 
           await addDoc(
             collection(db, "posts", postSnap.id, "comments"),
             {
-              text: input.value.trim(),
+              text,
               uid: user.uid,
               createdAt: serverTimestamp()
             }
@@ -274,7 +301,7 @@ function listenToPosts(user) {
    NOTIFICATIONS
 ===================== */
 function listenToNotifications(user) {
-  onSnapshot(
+  return onSnapshot(
     query(collection(db, "notifications"), orderBy("createdAt", "desc")),
     snap => {
       notificationList.innerHTML = "";
