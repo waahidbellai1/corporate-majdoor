@@ -1581,6 +1581,42 @@ body.is-authenticated .profile-btn {
     z-index: 2;
   }
 }
+/* =========================
+   📱 iOS HEADER FINAL ALIGN FIX
+   PROFILE + LOGO + BELL INLINE
+========================= */
+
+@media (max-width: 768px) {
+
+  .header.app-bar {
+    display: flex !important;
+    align-items: center;
+  }
+
+  /* LEFT: profile */
+  .profile-btn {
+    width: 44px;
+    height: 44px;
+    flex: 0 0 44px;
+  }
+
+  /* RIGHT: notification */
+  #notifBell {
+    width: 44px;
+    height: 44px;
+    flex: 0 0 44px;
+  }
+
+  /* CENTER: logo container */
+  .header.app-bar span {
+    flex: 1 1 auto;
+    text-align: center;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+}
+
 
 
 
