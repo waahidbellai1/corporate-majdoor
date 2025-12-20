@@ -1475,6 +1475,79 @@ body.is-authenticated .profile-btn {
     min-height: -webkit-fill-available;
   }
 }
+/* =========================
+   📱 iOS FINAL FIX – REAL APP BAR
+   THIS FIXES THE ISSUE FOR REAL
+========================= */
+
+@media (max-width: 768px) {
+
+  /* Fix the header to the top (iOS app style) */
+  .header.app-bar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+
+    height: 72px;
+    padding-top: env(safe-area-inset-top);
+
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+
+    background: rgba(255, 255, 255, 0.65);
+    backdrop-filter: blur(18px) saturate(140%);
+    -webkit-backdrop-filter: blur(18px) saturate(140%);
+
+    border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+    z-index: 1000;
+  }
+
+  /* Dark mode app bar */
+  body.dark .header.app-bar {
+    background: rgba(2, 6, 23, 0.65);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  }
+
+  /* Center logo INSIDE fixed bar */
+  .header.app-bar span {
+    position: absolute !important;
+    left: 50%;
+    bottom: 12px;
+    transform: translateX(-50%);
+    line-height: 1;
+  }
+
+  /* Left profile button */
+  .profile-btn {
+    margin-left: 12px;
+    margin-bottom: 8px;
+  }
+
+  /* Right notification bell */
+  #notifBell {
+    margin-right: 12px;
+    margin-bottom: 8px;
+  }
+
+  /* Push content BELOW fixed header */
+  .container {
+    padding-top: calc(72px + env(safe-area-inset-top) + 12px);
+  }
+}
+
+/* =========================
+   🧠 SAFARI HEIGHT STABILITY
+========================= */
+
+@supports (-webkit-touch-callout: none) {
+  body {
+    min-height: 100vh;
+    min-height: -webkit-fill-available;
+  }
+}
+
 
 
 
