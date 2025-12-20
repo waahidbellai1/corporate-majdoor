@@ -872,6 +872,96 @@ body::after {
     opacity: 0.6;
   }
 }
+/* =========================
+   🧊 LIQUID GLASS LOGIN (APPLE-STYLE)
+   LOGIN SCREEN ONLY | APPEND-ONLY
+========================= */
+
+/* Glass base — LOGIN ONLY */
+#authSection {
+  position: relative;
+  background: rgba(255, 255, 255, 0.55);
+  backdrop-filter: blur(18px) saturate(140%);
+  -webkit-backdrop-filter: blur(18px) saturate(140%);
+  border-radius: 28px;
+  padding: 28px 22px;
+  box-shadow:
+    0 20px 60px rgba(0, 0, 0, 0.08),
+    inset 0 1px 0 rgba(255, 255, 255, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.35);
+}
+
+/* Subtle glass edge highlight */
+#authSection::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: linear-gradient(
+    180deg,
+    rgba(255,255,255,0.6),
+    rgba(255,255,255,0.15)
+  );
+  pointer-events: none;
+  opacity: 0.6;
+}
+
+/* Inputs sit nicely on glass */
+#authSection input {
+  background: rgba(255, 255, 255, 0.75);
+  backdrop-filter: blur(6px);
+}
+
+/* =========================
+   🌙 DARK MODE GLASS
+========================= */
+
+body.dark #authSection {
+  background: rgba(2, 6, 23, 0.55);
+  backdrop-filter: blur(18px) saturate(130%);
+  -webkit-backdrop-filter: blur(18px) saturate(130%);
+  box-shadow:
+    0 20px 60px rgba(0, 0, 0, 0.45),
+    inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+body.dark #authSection::before {
+  background: linear-gradient(
+    180deg,
+    rgba(255,255,255,0.12),
+    rgba(255,255,255,0.02)
+  );
+}
+
+body.dark #authSection input {
+  background: rgba(15, 23, 42, 0.65);
+}
+
+/* =========================
+   📱 MOBILE TUNING
+========================= */
+
+@media (max-width: 768px) {
+  #authSection {
+    padding: 24px 18px;
+    border-radius: 26px;
+  }
+}
+
+/* =========================
+   🧼 FALLBACK (NO BLUR SUPPORT)
+========================= */
+
+@supports not ((backdrop-filter: blur(1px))) {
+  #authSection {
+    background: rgba(255, 255, 255, 0.92);
+  }
+
+  body.dark #authSection {
+    background: rgba(2, 6, 23, 0.92);
+  }
+}
 
 
 
