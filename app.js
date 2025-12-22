@@ -340,4 +340,47 @@ if (bottomThemeBtn) bottomThemeBtn.onclick = toggleTheme;
 document.addEventListener("click", () => {
   profileMenu.classList.remove("open");
 });
+/* =====================
+   PROFILE BOTTOM SHEET
+===================== */
+const profileSheet = document.getElementById("profileSheet");
+const sheetOverlay = document.getElementById("profileSheetOverlay");
+const sheetThemeToggle = document.getElementById("sheetThemeToggle");
+const sheetLogoutBtn = document.getElementById("sheetLogoutBtn");
+
+/* Open sheet from bottom bar profile */
+if (bottomProfileBtn) {
+  bottomProfileBtn.onclick = () => {
+    profileSheet.classList.add("open");
+    sheetOverlay.classList.add("open");
+  };
+}
+
+/* Close sheet */
+function closeSheet() {
+  profileSheet.classList.remove("open");
+  sheetOverlay.classList.remove("open");
+}
+
+sheetOverlay.onclick = closeSheet;
+
+/* Dark mode toggle */
+if (sheetThemeToggle) {
+  sheetThemeToggle.onclick = () => {
+    document.body.classList.toggle("dark");
+    localStorage.setItem(
+      "theme",
+      document.body.classList.contains("dark") ? "dark" : "light"
+    );
+  };
+}
+
+/* Logout */
+if (sheetLogoutBtn) {
+  sheetLogoutBtn.onclick = () => {
+    closeSheet();
+    signOut(auth);
+  };
+}
+
 
