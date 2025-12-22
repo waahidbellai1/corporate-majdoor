@@ -1907,6 +1907,39 @@ body.dark {
 body:not(.is-authenticated):not(.is-logged-out) .bottom-bar {
   display: none !important;
 }
+/* =========================================================
+   ➕ ADD POST BUTTON (BOTTOM BAR)
+   APPEND ONLY
+========================================================= */
+
+.add-post-btn {
+  width: 54px;
+  height: 54px;
+  border-radius: 50%;
+  font-size: 30px;
+  font-weight: 500;
+
+  background: linear-gradient(135deg, #2563eb, #22d3ee);
+  color: #ffffff;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  box-shadow: 0 10px 30px rgba(37, 99, 235, 0.45);
+  transform: translateY(-18px);
+}
+
+.add-post-btn:active {
+  transform: translateY(-18px) scale(0.92);
+}
+
+/* Dark mode */
+body.dark .add-post-btn {
+  background: linear-gradient(135deg, #93c5fd, #67e8f9);
+  color: #020617;
+}
+
 
 
 
