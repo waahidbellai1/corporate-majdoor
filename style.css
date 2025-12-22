@@ -1939,6 +1939,93 @@ body.dark .add-post-btn {
   background: linear-gradient(135deg, #93c5fd, #67e8f9);
   color: #020617;
 }
+/* =========================================================
+   📱 PROFILE BOTTOM SHEET
+   APPEND ONLY
+========================================================= */
+
+/* Overlay */
+.sheet-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.4);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.25s ease;
+  z-index: 998;
+}
+
+/* Sheet container */
+.profile-sheet {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: -100%;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  border-radius: 22px 22px 0 0;
+  padding: 12px 16px 28px;
+  transition: bottom 0.35s ease;
+  z-index: 999;
+}
+
+/* Dark mode */
+body.dark .profile-sheet {
+  background: rgba(2, 6, 23, 0.96);
+}
+
+/* Open state */
+.profile-sheet.open {
+  bottom: 0;
+}
+
+.sheet-overlay.open {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+/* Handle */
+.sheet-handle {
+  width: 42px;
+  height: 5px;
+  border-radius: 999px;
+  background: #cbd5f5;
+  margin: 6px auto 14px;
+}
+
+body.dark .sheet-handle {
+  background: #334155;
+}
+
+/* Items */
+.sheet-item {
+  width: 100%;
+  background: none;
+  border: none;
+  padding: 14px 12px;
+  font-size: 16px;
+  text-align: left;
+  border-radius: 12px;
+  cursor: pointer;
+}
+
+.sheet-item:hover {
+  background: rgba(37, 99, 235, 0.08);
+}
+
+.sheet-item.logout {
+  color: #ef4444;
+}
+
+/* Desktop: disable completely */
+@media (min-width: 769px) {
+  .profile-sheet,
+  .sheet-overlay {
+    display: none !important;
+  }
+}
+
 
 
 
