@@ -2025,6 +2025,25 @@ body.dark .sheet-handle {
     display: none !important;
   }
 }
+/* =========================================================
+   ✅ BOTTOM BAR VISIBILITY — FINAL AUTH FIX
+   APPEND ONLY
+========================================================= */
+
+/* Mobile + logged in = show bottom bar */
+@media (max-width: 768px) {
+  body.is-authenticated .bottom-bar {
+    display: flex !important;
+    visibility: visible !important;
+    pointer-events: auto !important;
+  }
+}
+
+/* Logged out = NEVER show bottom bar */
+body.is-logged-out .bottom-bar {
+  display: none !important;
+}
+
 
 
 
