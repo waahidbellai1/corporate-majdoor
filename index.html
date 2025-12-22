@@ -21,7 +21,7 @@
   ====================== -->
   <div class="header app-bar">
 
-    <!-- Profile button (AUTH ONLY via JS) -->
+    <!-- Profile button (AUTH ONLY via JS, hidden on mobile) -->
     <button
       id="profileBtn"
       class="profile-btn"
@@ -34,7 +34,7 @@
     <!-- Center logo -->
     <span>Corporate Majdoor</span>
 
-    <!-- Notification Bell (AUTH ONLY via JS) -->
+    <!-- Notification Bell (AUTH ONLY via JS, hidden on mobile) -->
     <button
       id="notifBell"
       type="button"
@@ -46,7 +46,7 @@
   </div>
 
   <!-- =====================
-       PROFILE MENU
+       PROFILE MENU (DESKTOP)
   ====================== -->
   <div id="profileMenu" class="profile-menu">
     <button class="profile-item" type="button">My Profile</button>
@@ -149,29 +149,9 @@
 
   <!-- =====================
        MOBILE BOTTOM BAR
-       (SINGLE SOURCE OF TRUTH)
+       🔔  ➕  👤
   ====================== -->
   <div class="bottom-bar">
-
-    <!-- Profile -->
-    <button
-      id="bottomProfileBtn"
-      class="bottom-btn"
-      type="button"
-      aria-label="Profile"
-    >
-      <div class="bottom-avatar">W</div>
-    </button>
-
-    <!-- Dark mode -->
-    <button
-      id="bottomThemeBtn"
-      class="bottom-btn"
-      type="button"
-      aria-label="Toggle dark mode"
-    >
-      🌙
-    </button>
 
     <!-- Notifications -->
     <button
@@ -181,6 +161,26 @@
       aria-label="Notifications"
     >
       🔔
+    </button>
+
+    <!-- ADD POST (+) -->
+    <button
+      id="addPostBtn"
+      class="bottom-btn add-post-btn"
+      type="button"
+      aria-label="Create post"
+    >
+      +
+    </button>
+
+    <!-- Profile -->
+    <button
+      id="bottomProfileBtn"
+      class="bottom-btn"
+      type="button"
+      aria-label="Profile"
+    >
+      <div class="bottom-avatar">W</div>
     </button>
 
   </div>
