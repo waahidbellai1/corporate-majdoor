@@ -2142,6 +2142,82 @@ body.dark .header.app-bar {
     display: none !important;
   }
 }
+/* =========================================================
+   🎯 FINAL LOGO CENTER + SIZE PATCH
+   SINGLE AUTHORITY — APPEND ONLY
+========================================================= */
+
+/* Kill any leftover text-logo rules */
+.header span {
+  display: none !important;
+}
+
+/* ---------- HEADER GRID (TRUE CENTER) ---------- */
+.header.app-bar {
+  display: grid !important;
+  grid-template-columns: 48px 1fr 48px !important;
+  align-items: center !important;
+  justify-items: center !important;
+}
+
+/* LEFT: profile slot */
+.header.app-bar .profile-btn {
+  grid-column: 1 !important;
+  justify-self: start !important;
+}
+
+/* CENTER: LOGO (SOURCE OF TRUTH) */
+.header.app-bar .app-logo {
+  grid-column: 2 !important;
+  justify-self: center !important;
+  margin: 0 auto !important;
+
+  /* SIZE — DESKTOP */
+  height: 40px !important;
+  width: auto !important;
+  display: block !important;
+}
+
+/* RIGHT: notification bell */
+.header.app-bar #notifBell {
+  grid-column: 3 !important;
+  justify-self: end !important;
+}
+
+/* ---------- MOBILE — FIXED APP BAR ---------- */
+@media (max-width: 768px) {
+
+  .header.app-bar {
+    position: fixed !important;
+    top: 0;
+    left: 0;
+    right: 0;
+
+    height: 72px !important;
+    padding-top: env(safe-area-inset-top) !important;
+
+    grid-template-columns: 48px 1fr 48px !important;
+  }
+
+  /* MOBILE LOGO SIZE */
+  .header.app-bar .app-logo {
+    height: 34px !important;
+  }
+
+  /* Hide top controls (use bottom bar only) */
+  .header.app-bar .profile-btn,
+  .header.app-bar #notifBell {
+    display: none !important;
+  }
+}
+
+/* ---------- SAFARI / iOS STABILITY ---------- */
+@supports (-webkit-touch-callout: none) {
+  .header.app-bar .app-logo {
+    transform: translateZ(0);
+  }
+}
+
 
 
 
