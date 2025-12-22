@@ -340,3 +340,4 @@ if (bottomThemeBtn) bottomThemeBtn.onclick = toggleTheme;
 document.addEventListener("click", () => {
   profileMenu.classList.remove("open");
 });
+
