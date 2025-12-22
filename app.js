@@ -62,11 +62,20 @@ const profileLogout = document.getElementById("profileLogout");
 
 const themeToggle = document.getElementById("themeToggle");
 
-/* Mobile bottom bar (last one only) */
+/* Bottom bar */
 const bottomBar = document.querySelector(".bottom-bar:last-of-type");
 const bottomProfileBtn = document.getElementById("bottomProfileBtn");
 const bottomNotifBtn = document.getElementById("bottomNotifBtn");
-const bottomThemeBtn = document.getElementById("bottomThemeBtn");
+const addPostBtn = document.getElementById("addPostBtn");
+
+/* Bottom sheet */
+const profileSheet = document.getElementById("profileSheet");
+const sheetOverlay = document.getElementById("profileSheetOverlay");
+const sheetThemeToggle = document.getElementById("sheetThemeToggle");
+const sheetLogoutBtn = document.getElementById("sheetLogoutBtn");
+
+/* Logo */
+const appLogo = document.getElementById("appLogo");
 
 /* =====================
    THEME RESTORE
@@ -88,7 +97,7 @@ function timeAgo(ts) {
 }
 
 /* =====================
-   USERNAME CACHE
+   USER CACHE
 ===================== */
 const userCache = {};
 
@@ -138,9 +147,9 @@ onAuthStateChanged(auth, user => {
     postSection.style.display = "block";
     feed.style.display = "flex";
 
-    if (notifBell) notifBell.style.display = "block";
-    if (profileBtn) profileBtn.style.display = "block";
-    if (bottomBar) bottomBar.style.display = "flex";
+    notifBell.style.display = "block";
+    profileBtn.style.display = "block";
+    bottomBar.style.display = "flex";
 
     unsubPosts = listenToPosts(user);
     unsubNotifs = listenToNotifications(user);
@@ -153,10 +162,7 @@ onAuthStateChanged(auth, user => {
     postSection.style.display = "none";
     feed.style.display = "none";
     notifications.style.display = "none";
-
-    if (notifBell) notifBell.style.display = "none";
-    if (profileBtn) profileBtn.style.display = "none";
-    if (bottomBar) bottomBar.style.display = "none";
+    bottomBar.style.display = "none";
 
     profileMenu.classList.remove("open");
     feed.innerHTML = "";
@@ -164,7 +170,7 @@ onAuthStateChanged(auth, user => {
 });
 
 /* =====================
-   POST
+   CREATE POST
 ===================== */
 postBtn.onclick = async () => {
   const user = auth.currentUser;
@@ -192,16 +198,15 @@ function listenToPosts(user) {
       for (const docSnap of snap.docs) {
         const data = docSnap.data();
 
-        let name = "user";
-        if (userCache[data.uid]) {
-          name = userCache[data.uid];
-        } else {
+        const likedBy = Array.isArray(data.likedBy) ? data.likedBy : [];
+        const liked = likedBy.includes(user.uid);
+
+        let name = userCache[data.uid];
+        if (!name) {
           const u = await getDoc(doc(db, "users", data.uid));
           name = u.exists() ? u.data().username : "user";
           userCache[data.uid] = name;
         }
-
-        const liked = data.likedBy.includes(user.uid);
 
         const post = document.createElement("div");
         post.className = "post";
@@ -221,7 +226,7 @@ function listenToPosts(user) {
 
           <div class="post-actions">
             <button class="likeBtn ${liked ? "liked" : ""}">👍 Like</button>
-            ${data.likedBy.length ? `<span class="likeCount">${data.likedBy.length}</span>` : ""}
+            ${likedBy.length ? `<span class="likeCount">${likedBy.length}</span>` : ""}
           </div>
 
           <div class="comments">
@@ -298,32 +303,51 @@ function listenToNotifications(user) {
 /* =====================
    UI CONTROLS
 ===================== */
-if (notifBell) {
-  notifBell.onclick = () => {
-    notifications.style.display =
-      notifications.style.display === "block" ? "none" : "block";
+notifBell.onclick = () => {
+  notifications.style.display =
+    notifications.style.display === "block" ? "none" : "block";
+};
+
+profileBtn.onclick = e => {
+  e.stopPropagation();
+  profileMenu.classList.toggle("open");
+};
+
+document.addEventListener("click", () => {
+  profileMenu.classList.remove("open");
+});
+
+/* =====================
+   ADD POST (+) BUTTON
+===================== */
+if (addPostBtn) {
+  addPostBtn.onclick = () => {
+    postSection.scrollIntoView({ behavior: "smooth" });
+    postInput.focus();
   };
 }
 
-if (profileBtn) {
-  profileBtn.onclick = e => {
-    e.stopPropagation();
-    profileMenu.classList.toggle("open");
-  };
-}
+/* =====================
+   PROFILE BOTTOM SHEET
+===================== */
+bottomProfileBtn.onclick = () => {
+  profileSheet.classList.add("open");
+  sheetOverlay.classList.add("open");
+};
 
-if (bottomProfileBtn) {
-  bottomProfileBtn.onclick = e => {
-    e.stopPropagation();
-    profileMenu.classList.toggle("open");
-  };
-}
+sheetOverlay.onclick = () => {
+  profileSheet.classList.remove("open");
+  sheetOverlay.classList.remove("open");
+};
 
-if (bottomNotifBtn) {
-  bottomNotifBtn.onclick = () => {
-    notifications.style.display =
-      notifications.style.display === "block" ? "none" : "block";
-  };
+/* =====================
+   THEME TOGGLE + LOGO
+===================== */
+function updateLogo() {
+  if (!appLogo) return;
+  appLogo.src = document.body.classList.contains("dark")
+    ? "logo-dark.png"
+    : "logo-light.png";
 }
 
 function toggleTheme() {
@@ -332,77 +356,20 @@ function toggleTheme() {
     "theme",
     document.body.classList.contains("dark") ? "dark" : "light"
   );
+  updateLogo();
 }
 
-if (themeToggle) themeToggle.onclick = toggleTheme;
-if (bottomThemeBtn) bottomThemeBtn.onclick = toggleTheme;
+themeToggle.onclick = toggleTheme;
+sheetThemeToggle.onclick = toggleTheme;
 
-document.addEventListener("click", () => {
-  profileMenu.classList.remove("open");
-});
 /* =====================
-   PROFILE BOTTOM SHEET
+   LOGOUT (SHEET)
 ===================== */
-const profileSheet = document.getElementById("profileSheet");
-const sheetOverlay = document.getElementById("profileSheetOverlay");
-const sheetThemeToggle = document.getElementById("sheetThemeToggle");
-const sheetLogoutBtn = document.getElementById("sheetLogoutBtn");
-
-/* Open sheet from bottom bar profile */
-if (bottomProfileBtn) {
-  bottomProfileBtn.onclick = () => {
-    profileSheet.classList.add("open");
-    sheetOverlay.classList.add("open");
-  };
-}
-
-/* Close sheet */
-function closeSheet() {
+sheetLogoutBtn.onclick = () => {
   profileSheet.classList.remove("open");
   sheetOverlay.classList.remove("open");
-}
-
-sheetOverlay.onclick = closeSheet;
-
-/* Dark mode toggle */
-if (sheetThemeToggle) {
-  sheetThemeToggle.onclick = () => {
-    document.body.classList.toggle("dark");
-    localStorage.setItem(
-      "theme",
-      document.body.classList.contains("dark") ? "dark" : "light"
-    );
-  };
-}
-
-/* Logout */
-if (sheetLogoutBtn) {
-  sheetLogoutBtn.onclick = () => {
-    closeSheet();
-    signOut(auth);
-  };
-}
-/* =====================
-   LOGO DARK MODE SWITCH
-===================== */
-const appLogo = document.getElementById("appLogo");
-
-function updateLogo() {
-  if (!appLogo) return;
-  appLogo.src = document.body.classList.contains("dark")
-    ? "logo-dark.png"
-    : "logo-light.png";
-}
-
-// Run once on load
-updateLogo();
-
-// Update on theme toggle
-const originalToggleTheme = toggleTheme;
-toggleTheme = () => {
-  originalToggleTheme();
-  updateLogo();
+  signOut(auth);
 };
 
-
-
+/* Init logo */
+updateLogo();
