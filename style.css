@@ -1760,6 +1760,154 @@ body.is-logged-out .bottom-bar {
     display: none !important;
   }
 }
+/* =========================================================
+   🧱 FINAL AUTHORITY LAYER — CORPORATE MAJDOOR
+   DO NOT MOVE | DO NOT EDIT ABOVE THIS
+   This layer overrides all conflicting legacy rules
+========================================================= */
+
+/* -------------------------
+   GLOBAL STABILITY
+------------------------- */
+html, body {
+  width: 100%;
+  overflow-x: hidden;
+}
+
+/* -------------------------
+   HEADER — SINGLE SOURCE
+------------------------- */
+.header.app-bar {
+  display: grid !important;
+  grid-template-columns: auto 1fr auto !important;
+  align-items: center !important;
+  height: 64px !important;
+}
+
+/* Center logo ALWAYS */
+.header.app-bar span {
+  position: static !important;
+  transform: none !important;
+  grid-column: 2 !important;
+  justify-self: center !important;
+  pointer-events: auto !important;
+}
+
+/* Left profile */
+.header.app-bar .profile-btn {
+  grid-column: 1 !important;
+}
+
+/* Right bell */
+.header.app-bar #notifBell {
+  grid-column: 3 !important;
+  justify-self: end !important;
+}
+
+/* -------------------------
+   MOBILE HEADER LOCK
+------------------------- */
+@media (max-width: 768px) {
+
+  .header.app-bar {
+    position: fixed !important;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 72px !important;
+    padding-top: env(safe-area-inset-top) !important;
+    z-index: 1000 !important;
+  }
+
+  .container {
+    padding-top: calc(72px + env(safe-area-inset-top) + 12px) !important;
+  }
+
+  /* Hide top controls (bottom bar only) */
+  .header.app-bar .profile-btn,
+  .header.app-bar #notifBell,
+  .theme-toggle {
+    display: none !important;
+  }
+}
+
+/* -------------------------
+   BOTTOM BAR — ONE TRUE BAR
+------------------------- */
+
+/* Disable duplicate bottom bars */
+.bottom-bar:not(:last-of-type) {
+  display: none !important;
+}
+
+/* Only show when logged in + mobile */
+@media (max-width: 768px) {
+  body.is-authenticated .bottom-bar:last-of-type {
+    display: flex !important;
+  }
+}
+
+/* -------------------------
+   FOOTER — ALWAYS VISIBLE
+------------------------- */
+#footer {
+  position: relative !important;
+  z-index: 1 !important;
+  margin-bottom: 80px !important;
+}
+
+/* Prevent bottom bar overlap */
+@media (max-width: 768px) {
+  #footer {
+    margin-bottom: calc(160px + env(safe-area-inset-bottom)) !important;
+  }
+}
+
+/* -------------------------
+   AUTH STATE — HARD LOCK
+------------------------- */
+
+/* Logged out */
+body.is-logged-out .profile-btn,
+body.is-logged-out #profileMenu,
+body.is-logged-out .bottom-bar {
+  display: none !important;
+}
+
+/* Logged in */
+body.is-authenticated .profile-btn {
+  display: inline-flex !important;
+}
+
+/* -------------------------
+   PROFILE MENU SAFETY
+------------------------- */
+.profile-menu {
+  z-index: 1200 !important;
+}
+
+/* -------------------------
+   NOTIFICATIONS PANEL
+------------------------- */
+#notifications {
+  position: relative !important;
+  z-index: 1100 !important;
+}
+
+/* -------------------------
+   DARK MODE CONSISTENCY
+------------------------- */
+body.dark {
+  background-color: #020617 !important;
+}
+
+/* -------------------------
+   DEBUG SAFETY (NO FLASH)
+------------------------- */
+body:not(.is-authenticated):not(.is-logged-out) .bottom-bar {
+  display: none !important;
+}
+
 
 
 
