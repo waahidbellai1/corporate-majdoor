@@ -382,5 +382,27 @@ if (sheetLogoutBtn) {
     signOut(auth);
   };
 }
+/* =====================
+   LOGO DARK MODE SWITCH
+===================== */
+const appLogo = document.getElementById("appLogo");
+
+function updateLogo() {
+  if (!appLogo) return;
+  appLogo.src = document.body.classList.contains("dark")
+    ? "logo-dark.png"
+    : "logo-light.png";
+}
+
+// Run once on load
+updateLogo();
+
+// Update on theme toggle
+const originalToggleTheme = toggleTheme;
+toggleTheme = () => {
+  originalToggleTheme();
+  updateLogo();
+};
+
 
 
