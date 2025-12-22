@@ -4,7 +4,10 @@
   <meta charset="UTF-8" />
 
   <!-- Mobile & iPhone friendly viewport -->
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1, viewport-fit=cover"
+  />
 
   <title>Corporate Majdoor</title>
 
@@ -13,10 +16,12 @@
 
 <body class="is-logged-out">
 
-  <!-- HEADER / APP BAR -->
+  <!-- =====================
+       HEADER / APP BAR
+  ====================== -->
   <div class="header app-bar">
 
-    <!-- Profile button (left | AUTH ONLY via JS) -->
+    <!-- Profile button (AUTH ONLY via JS) -->
     <button
       id="profileBtn"
       class="profile-btn"
@@ -26,10 +31,10 @@
       <div class="profile-avatar">W</div>
     </button>
 
-    <!-- Center logo (TEXT UNCHANGED) -->
+    <!-- Center logo -->
     <span>Corporate Majdoor</span>
 
-    <!-- Notification Bell (right | AUTH ONLY via JS) -->
+    <!-- Notification Bell (AUTH ONLY via JS) -->
     <button
       id="notifBell"
       type="button"
@@ -40,22 +45,32 @@
 
   </div>
 
-  <!-- PROFILE MENU (AUTH ONLY) -->
+  <!-- =====================
+       PROFILE MENU
+  ====================== -->
   <div id="profileMenu" class="profile-menu">
     <button class="profile-item" type="button">My Profile</button>
     <button class="profile-item" type="button">Settings</button>
-    <button class="profile-item logout" type="button" id="profileLogout">
+    <button
+      class="profile-item logout"
+      type="button"
+      id="profileLogout"
+    >
       Logout
     </button>
   </div>
 
-  <!-- MAIN CONTAINER -->
+  <!-- =====================
+       MAIN CONTAINER
+  ====================== -->
   <div class="container">
 
     <!-- STATUS -->
     <div id="status" aria-live="polite"></div>
 
-    <!-- AUTH SECTION -->
+    <!-- =====================
+         AUTH SECTION
+    ====================== -->
     <div id="authSection">
       <input
         id="username"
@@ -84,34 +99,45 @@
     <!-- LOGOUT (fallback, kept) -->
     <button id="logoutBtn" type="button">Logout</button>
 
-    <!-- POST COMPOSER -->
+    <!-- =====================
+         POST COMPOSER
+    ====================== -->
     <div id="postSection">
       <textarea
         id="postInput"
-        placeholder="What corporate pain are you facing today?"
         rows="3"
+        maxlength="500"
+        placeholder="What corporate pain are you facing today?"
       ></textarea>
 
       <button id="postBtn" type="button">Post</button>
     </div>
 
-    <!-- FEED -->
+    <!-- =====================
+         FEED
+    ====================== -->
     <div id="feed"></div>
 
-    <!-- NOTIFICATIONS -->
+    <!-- =====================
+         NOTIFICATIONS
+    ====================== -->
     <div id="notifications">
       <h3>Notifications</h3>
-      <div id="notificationList"></div>
+      <div id="notificationList" aria-live="polite"></div>
     </div>
 
-    <!-- FOOTER -->
+    <!-- =====================
+         FOOTER
+    ====================== -->
     <div id="footer">
       Developed by <strong>Waahid Ishak</strong>
     </div>
 
   </div>
 
-  <!-- THEME TOGGLE (DESKTOP) -->
+  <!-- =====================
+       THEME TOGGLE (DESKTOP)
+  ====================== -->
   <button
     class="theme-toggle"
     id="themeToggle"
@@ -121,22 +147,25 @@
     🌙
   </button>
 
-  <!-- 📱 MOBILE BOTTOM BAR (INSTAGRAM STYLE) -->
+  <!-- =====================
+       MOBILE BOTTOM BAR
+       (SINGLE SOURCE OF TRUTH)
+  ====================== -->
   <div class="bottom-bar">
 
     <!-- Profile -->
     <button
-      id="profileBtnMobile"
-      class="bottom-btn profile-btn"
+      id="bottomProfileBtn"
+      class="bottom-btn"
       type="button"
       aria-label="Profile"
     >
-      <div class="profile-avatar">W</div>
+      <div class="bottom-avatar">W</div>
     </button>
 
-    <!-- Dark Mode -->
+    <!-- Dark mode -->
     <button
-      id="themeToggleMobile"
+      id="bottomThemeBtn"
       class="bottom-btn"
       type="button"
       aria-label="Toggle dark mode"
@@ -146,7 +175,7 @@
 
     <!-- Notifications -->
     <button
-      id="notifBellMobile"
+      id="bottomNotifBtn"
       class="bottom-btn"
       type="button"
       aria-label="Notifications"
@@ -156,39 +185,10 @@
 
   </div>
 
+  <!-- =====================
+       SCRIPT
+  ====================== -->
   <script type="module" src="app.js"></script>
-  <!-- BOTTOM APP BAR (MOBILE ONLY) -->
-<div class="bottom-bar">
-
-  <!-- Profile -->
-  <button
-    id="bottomProfileBtn"
-    class="bottom-btn"
-    aria-label="Profile"
-  >
-    <div class="bottom-avatar">W</div>
-  </button>
-
-  <!-- Dark mode -->
-  <button
-    id="bottomThemeBtn"
-    class="bottom-btn"
-    aria-label="Toggle dark mode"
-  >
-    🌙
-  </button>
-
-  <!-- Notifications -->
-  <button
-    id="bottomNotifBtn"
-    class="bottom-btn"
-    aria-label="Notifications"
-  >
-    🔔
-  </button>
-
-</div>
 
 </body>
 </html>
-
