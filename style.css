@@ -2061,6 +2061,88 @@ body.is-logged-out .bottom-bar {
     height: 30px;
   }
 }
+/* =========================================================
+   🩹 HEADER + LOGO OVERRIDE PATCH
+   SAFE APPEND — DO NOT REMOVE ABOVE CODE
+========================================================= */
+
+/* ---------- DISABLE LEGACY TEXT LOGO ---------- */
+.header span {
+  display: none !important;
+}
+
+/* ---------- SINGLE SOURCE APP BAR ---------- */
+.header.app-bar {
+  display: grid !important;
+  grid-template-columns: auto 1fr auto !important;
+  align-items: center !important;
+
+  height: 64px !important;
+  padding: 0 16px !important;
+
+  background: rgba(255, 255, 255, 0.75) !important;
+  backdrop-filter: blur(14px) saturate(140%) !important;
+  -webkit-backdrop-filter: blur(14px) saturate(140%) !important;
+
+  border-bottom: 1px solid rgba(0, 0, 0, 0.06) !important;
+  z-index: 1000 !important;
+}
+
+/* Dark mode bar */
+body.dark .header.app-bar {
+  background: rgba(2, 6, 23, 0.75) !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
+}
+
+/* ---------- LOGO IMAGE (FINAL AUTHORITY) ---------- */
+.app-logo {
+  height: 34px !important;
+  width: auto !important;
+  display: block !important;
+  justify-self: center !important;
+}
+
+/* ---------- HEADER BUTTONS ---------- */
+.header.app-bar .profile-btn {
+  grid-column: 1 !important;
+}
+
+.header.app-bar #notifBell {
+  grid-column: 3 !important;
+  justify-self: end !important;
+}
+
+/* ---------- MOBILE LOCK ---------- */
+@media (max-width: 768px) {
+
+  .header.app-bar {
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+
+    height: 72px !important;
+    padding-top: env(safe-area-inset-top) !important;
+  }
+
+  /* Mobile logo size */
+  .app-logo {
+    height: 30px !important;
+  }
+
+  /* Push content below fixed header */
+  .container {
+    padding-top: calc(72px + env(safe-area-inset-top) + 12px) !important;
+  }
+
+  /* Top controls OFF — bottom bar only */
+  .header.app-bar .profile-btn,
+  .header.app-bar #notifBell,
+  .theme-toggle {
+    display: none !important;
+  }
+}
+
 
 
 
