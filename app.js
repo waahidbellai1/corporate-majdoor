@@ -19,7 +19,8 @@ import {
   getDoc,
   updateDoc,
   arrayUnion,
-  arrayRemove
+  arrayRemove,
+  where
 } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
 /* =====================
@@ -61,11 +62,18 @@ const profileLogout = document.getElementById("profileLogout");
 
 const themeToggle = document.getElementById("themeToggle");
 
-/* Mobile bottom bar */
-const bottomBar = document.querySelector(".bottom-bar");
+/* Mobile bottom bar (last one only) */
+const bottomBar = document.querySelector(".bottom-bar:last-of-type");
 const bottomProfileBtn = document.getElementById("bottomProfileBtn");
 const bottomNotifBtn = document.getElementById("bottomNotifBtn");
 const bottomThemeBtn = document.getElementById("bottomThemeBtn");
+
+/* =====================
+   THEME RESTORE
+===================== */
+if (localStorage.getItem("theme") === "dark") {
+  document.body.classList.add("dark");
+}
 
 /* =====================
    HELPERS
@@ -78,6 +86,11 @@ function timeAgo(ts) {
   if (s < 86400) return `${Math.floor(s / 3600)}h ago`;
   return `${Math.floor(s / 86400)}d ago`;
 }
+
+/* =====================
+   USERNAME CACHE
+===================== */
+const userCache = {};
 
 /* =====================
    AUTH ACTIONS
@@ -107,7 +120,7 @@ signupBtn.onclick = async () => {
 profileLogout.onclick = () => signOut(auth);
 
 /* =====================
-   AUTH STATE — SINGLE SOURCE
+   AUTH STATE
 ===================== */
 let unsubPosts = null;
 let unsubNotifs = null;
@@ -178,8 +191,16 @@ function listenToPosts(user) {
 
       for (const docSnap of snap.docs) {
         const data = docSnap.data();
-        const u = await getDoc(doc(db, "users", data.uid));
-        const name = u.exists() ? u.data().username : "user";
+
+        let name = "user";
+        if (userCache[data.uid]) {
+          name = userCache[data.uid];
+        } else {
+          const u = await getDoc(doc(db, "users", data.uid));
+          name = u.exists() ? u.data().username : "user";
+          userCache[data.uid] = name;
+        }
+
         const liked = data.likedBy.includes(user.uid);
 
         const post = document.createElement("div");
@@ -259,14 +280,16 @@ function listenToPosts(user) {
 ===================== */
 function listenToNotifications(user) {
   return onSnapshot(
-    query(collection(db, "notifications"), orderBy("createdAt", "desc")),
+    query(
+      collection(db, "notifications"),
+      where("to", "==", user.uid),
+      orderBy("createdAt", "desc")
+    ),
     snap => {
       notificationList.innerHTML = "";
       snap.forEach(n => {
-        if (n.data().to === user.uid) {
-          notificationList.innerHTML +=
-            `<div class="notification">${n.data().text}</div>`;
-        }
+        notificationList.innerHTML +=
+          `<div class="notification">${n.data().text}</div>`;
       });
     }
   );
@@ -283,14 +306,14 @@ if (notifBell) {
 }
 
 if (profileBtn) {
-  profileBtn.onclick = (e) => {
+  profileBtn.onclick = e => {
     e.stopPropagation();
     profileMenu.classList.toggle("open");
   };
 }
 
 if (bottomProfileBtn) {
-  bottomProfileBtn.onclick = (e) => {
+  bottomProfileBtn.onclick = e => {
     e.stopPropagation();
     profileMenu.classList.toggle("open");
   };
@@ -303,17 +326,16 @@ if (bottomNotifBtn) {
   };
 }
 
-if (themeToggle) {
-  themeToggle.onclick = () => {
-    document.body.classList.toggle("dark");
-  };
+function toggleTheme() {
+  document.body.classList.toggle("dark");
+  localStorage.setItem(
+    "theme",
+    document.body.classList.contains("dark") ? "dark" : "light"
+  );
 }
 
-if (bottomThemeBtn) {
-  bottomThemeBtn.onclick = () => {
-    document.body.classList.toggle("dark");
-  };
-}
+if (themeToggle) themeToggle.onclick = toggleTheme;
+if (bottomThemeBtn) bottomThemeBtn.onclick = toggleTheme;
 
 document.addEventListener("click", () => {
   profileMenu.classList.remove("open");
