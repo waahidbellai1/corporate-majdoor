@@ -2044,6 +2044,24 @@ body.is-logged-out .bottom-bar {
   display: none !important;
 }
 
+/* =========================================================
+   🧠 HEADER LOGO IMAGE
+   APPEND ONLY
+========================================================= */
+
+.app-logo {
+  height: 34px;
+  width: auto;
+  display: block;
+}
+
+/* Mobile size */
+@media (max-width: 768px) {
+  .app-logo {
+    height: 30px;
+  }
+}
+
 
 
 
