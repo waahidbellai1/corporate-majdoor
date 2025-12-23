@@ -407,13 +407,35 @@ if (bottomNotifBtn && notifications) {
 // 🔐 FINAL AUTH STATE SYNC (MOBILE FIX)
 // =====================
 onAuthStateChanged(auth, user => {
+
+  // 🔥 ALWAYS RESET FIRST
+  document.body.classList.remove("is-logged-out", "is-authenticated");
+
   if (user) {
-    document.body.classList.remove("is-logged-out");
+    // ✅ LOGGED IN
     document.body.classList.add("is-authenticated");
+
+    authSection.style.display = "none";
+    postSection.style.display = "block";
+    feed.style.display = "flex";
+
+    notifBell.style.display = "block";
+    profileBtn.style.display = "block";
+
+    // bottom bar is CSS-controlled, do NOT toggle via JS
+    listenToPosts(user);
+    listenToNotifications(user);
+
   } else {
-    document.body.classList.remove("is-authenticated");
+    // ❌ LOGGED OUT
     document.body.classList.add("is-logged-out");
+
+    authSection.style.display = "block";
+    postSection.style.display = "none";
+    feed.style.display = "none";
+    notifications.style.display = "none";
+
+    profileMenu.classList.remove("open");
+    feed.innerHTML = "";
   }
 });
-
-
