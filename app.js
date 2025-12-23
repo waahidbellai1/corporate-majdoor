@@ -1,3 +1,6 @@
+/* =====================
+   IMPORTS
+===================== */
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
 import {
   getAuth,
@@ -18,9 +21,9 @@ import {
   setDoc,
   getDoc,
   updateDoc,
+  deleteDoc,
   arrayUnion,
-  arrayRemove,
-  where
+  arrayRemove
 } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
 /* =====================
@@ -36,50 +39,19 @@ const auth = getAuth(app);
 const db = getFirestore(app);
 
 /* =====================
-   SAFE DOM HELPERS
-===================== */
-const $ = id => document.getElementById(id);
-const show = (el, type = "block") => el && (el.style.display = type);
-const hide = el => el && (el.style.display = "none");
-
-/* =====================
    ELEMENTS
 ===================== */
-const feed = $("feed");
-const postInput = $("postInput");
-const postBtn = $("postBtn");
-const status = $("status");
-
-const loginBtn = $("loginBtn");
-const signupBtn = $("signupBtn");
-const email = $("email");
-const password = $("password");
-const username = $("username");
-
-const authSection = $("authSection");
-const postSection = $("postSection");
-
-const notifBell = $("notifBell");
-const notifications = $("notifications");
-const notificationList = $("notificationList");
-
-const profileBtn = $("profileBtn");
-const profileMenu = $("profileMenu");
-const profileLogout = $("profileLogout");
-
-const themeToggle = $("themeToggle");
-const appLogo = $("appLogo");
-
-/* Bottom bar */
-const bottomBar = document.querySelector(".bottom-bar:last-of-type");
-const addPostBtn = $("addPostBtn");
-
-/* =====================
-   THEME RESTORE
-===================== */
-if (localStorage.getItem("theme") === "dark") {
-  document.body.classList.add("dark");
-}
+const feed = document.getElementById("feed");
+const postInput = document.getElementById("postInput");
+const postBtn = document.getElementById("postBtn");
+const authSection = document.getElementById("authSection");
+const postSection = document.getElementById("postSection");
+const loginBtn = document.getElementById("loginBtn");
+const signupBtn = document.getElementById("signupBtn");
+const email = document.getElementById("email");
+const password = document.getElementById("password");
+const username = document.getElementById("username");
+const status = document.getElementById("status");
 
 /* =====================
    HELPERS
@@ -98,12 +70,12 @@ const userCache = {};
 /* =====================
    AUTH ACTIONS
 ===================== */
-loginBtn?.addEventListener("click", () => {
+loginBtn.onclick = () => {
   signInWithEmailAndPassword(auth, email.value, password.value)
     .catch(e => status.innerText = e.message);
-});
+};
 
-signupBtn?.addEventListener("click", async () => {
+signupBtn.onclick = async () => {
   if (!username.value.trim()) {
     status.innerText = "Username required";
     return;
@@ -118,54 +90,33 @@ signupBtn?.addEventListener("click", async () => {
   await setDoc(doc(db, "users", cred.user.uid), {
     username: username.value.trim()
   });
-});
-
-profileLogout?.addEventListener("click", () => signOut(auth));
+};
 
 /* =====================
    AUTH STATE
 ===================== */
 let unsubPosts = null;
-let unsubNotifs = null;
 
 onAuthStateChanged(auth, user => {
-
-  unsubPosts && unsubPosts();
-  unsubNotifs && unsubNotifs();
+  if (unsubPosts) unsubPosts();
 
   if (user) {
-    document.body.classList.add("is-authenticated");
-    document.body.classList.remove("is-logged-out");
-
-    hide(authSection);
-    show(postSection);
-    show(feed, "flex");
-
-    show(notifBell);
-    show(profileBtn);
-    show(bottomBar, "flex");
-
+    authSection.style.display = "none";
+    postSection.style.display = "block";
+    feed.style.display = "flex";
     unsubPosts = listenToPosts(user);
-    unsubNotifs = listenToNotifications(user);
-
   } else {
-    document.body.classList.add("is-logged-out");
-    document.body.classList.remove("is-authenticated");
-
-    show(authSection);
-    hide(postSection);
-    hide(feed);
-    hide(notifications);
-    hide(bottomBar);
-
-    if (feed) feed.innerHTML = "";
+    authSection.style.display = "block";
+    postSection.style.display = "none";
+    feed.style.display = "none";
+    feed.innerHTML = "";
   }
 });
 
 /* =====================
    CREATE POST
 ===================== */
-postBtn?.addEventListener("click", async () => {
+postBtn.onclick = async () => {
   const user = auth.currentUser;
   if (!user || !postInput.value.trim()) return;
 
@@ -177,10 +128,10 @@ postBtn?.addEventListener("click", async () => {
   });
 
   postInput.value = "";
-});
+};
 
 /* =====================
-   POSTS (FIXED)
+   POSTS + COMMENTS
 ===================== */
 function listenToPosts(user) {
   return onSnapshot(
@@ -190,7 +141,6 @@ function listenToPosts(user) {
 
       for (const docSnap of snap.docs) {
         const data = docSnap.data();
-
         const likedBy = Array.isArray(data.likedBy) ? data.likedBy : [];
         const liked = likedBy.includes(user.uid);
 
@@ -213,6 +163,15 @@ function listenToPosts(user) {
                 <div class="post-time">${timeAgo(data.createdAt)}</div>
               </div>
             </div>
+
+            ${data.uid === user.uid ? `
+              <div class="post-menu">
+                <button class="menu-btn">⋮</button>
+                <div class="menu-dropdown">
+                  <button class="deleteBtn">Delete</button>
+                </div>
+              </div>
+            ` : ""}
           </div>
 
           <div class="post-text">${data.text}</div>
@@ -221,8 +180,17 @@ function listenToPosts(user) {
             <button class="likeBtn ${liked ? "liked" : ""}">👍 Like</button>
             ${likedBy.length ? `<span class="likeCount">${likedBy.length}</span>` : ""}
           </div>
+
+          <div class="comments">
+            <div class="comment-box">
+              <input class="commentInput" placeholder="Add comment…" />
+              <button class="sendCommentBtn">Send</button>
+            </div>
+            <div class="commentList"></div>
+          </div>
         `;
 
+        /* LIKE */
         post.querySelector(".likeBtn").onclick = async () => {
           await updateDoc(doc(db, "posts", docSnap.id), {
             likedBy: liked
@@ -231,68 +199,46 @@ function listenToPosts(user) {
           });
         };
 
+        /* DELETE POST */
+        const deleteBtn = post.querySelector(".deleteBtn");
+        if (deleteBtn) {
+          deleteBtn.onclick = async () => {
+            if (!confirm("Delete this post?")) return;
+            await deleteDoc(doc(db, "posts", docSnap.id));
+          };
+        }
+
+        /* COMMENTS */
+        const commentInput = post.querySelector(".commentInput");
+        const sendBtn = post.querySelector(".sendCommentBtn");
+        const commentList = post.querySelector(".commentList");
+
+        onSnapshot(
+          query(
+            collection(db, "posts", docSnap.id, "comments"),
+            orderBy("createdAt", "asc")
+          ),
+          snap => {
+            commentList.innerHTML = "";
+            snap.forEach(c => {
+              commentList.innerHTML +=
+                `<div class="comment">${c.data().text}</div>`;
+            });
+          }
+        );
+
+        sendBtn.onclick = async () => {
+          if (!commentInput.value.trim()) return;
+          await addDoc(collection(db, "posts", docSnap.id, "comments"), {
+            text: commentInput.value.trim(),
+            uid: user.uid,
+            createdAt: serverTimestamp()
+          });
+          commentInput.value = "";
+        };
+
         feed.appendChild(post);
       }
     }
   );
 }
-
-/* =====================
-   NOTIFICATIONS
-===================== */
-function listenToNotifications(user) {
-  if (!notificationList) return null;
-
-  return onSnapshot(
-    query(
-      collection(db, "notifications"),
-      where("to", "==", user.uid),
-      orderBy("createdAt", "desc")
-    ),
-    snap => {
-      notificationList.innerHTML = "";
-      snap.forEach(n => {
-        notificationList.innerHTML +=
-          `<div class="notification">${n.data().text}</div>`;
-      });
-    }
-  );
-}
-
-/* =====================
-   UI CONTROLS
-===================== */
-notifBell?.addEventListener("click", () => {
-  notifications.style.display =
-    notifications.style.display === "block" ? "none" : "block";
-});
-
-profileBtn?.addEventListener("click", e => {
-  e.stopPropagation();
-  profileMenu?.classList.toggle("open");
-});
-
-document.addEventListener("click", () => {
-  profileMenu?.classList.remove("open");
-});
-
-/* =====================
-   THEME
-===================== */
-function updateLogo() {
-  if (!appLogo) return;
-  appLogo.src = document.body.classList.contains("dark")
-    ? "logo-dark.png"
-    : "logo-light.png";
-}
-
-themeToggle?.addEventListener("click", () => {
-  document.body.classList.toggle("dark");
-  localStorage.setItem(
-    "theme",
-    document.body.classList.contains("dark") ? "dark" : "light"
-  );
-  updateLogo();
-});
-
-updateLogo();
