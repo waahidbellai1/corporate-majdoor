@@ -2405,6 +2405,83 @@ body.is-authenticated #profileSheet .logout {
 body.is-authenticated .profile-sheet.open {
   display: block !important;
 }
+/* =========================================================
+   🧠 MASTER AUTHORITY LAYER (FINAL)
+   Purpose: stop duplicate rules fighting each other
+   Safe: does NOT remove earlier CSS
+========================================================= */
+
+/* ---------- GLOBAL RESET FOR VISIBILITY ---------- */
+.profile-btn,
+#notifBell,
+.bottom-bar,
+.profile-sheet,
+#profileMenu,
+#sheetLogoutBtn {
+  visibility: visible;
+  pointer-events: auto;
+}
+
+/* ---------- AUTH STATES ---------- */
+
+/* LOGGED OUT */
+body.is-logged-out .profile-btn,
+body.is-logged-out #notifBell,
+body.is-logged-out .bottom-bar,
+body.is-logged-out .profile-sheet,
+body.is-logged-out #profileMenu {
+  display: none !important;
+}
+
+/* LOGGED IN */
+body.is-authenticated .profile-btn {
+  display: inline-flex !important;
+}
+
+body.is-authenticated #notifBell {
+  display: inline-flex !important;
+}
+
+/* ---------- MOBILE BOTTOM BAR (SINGLE SOURCE) ---------- */
+@media (max-width: 768px) {
+
+  body.is-authenticated .bottom-bar {
+    display: flex !important;
+    position: fixed !important;
+    left: 0;
+    right: 0;
+    bottom: env(safe-area-inset-bottom) !important;
+    z-index: 9999 !important;
+  }
+
+  body.is-logged-out .bottom-bar {
+    display: none !important;
+  }
+}
+
+/* ---------- PROFILE SHEET ---------- */
+.profile-sheet {
+  display: none;
+}
+
+.profile-sheet.open {
+  display: block !important;
+}
+
+/* ---------- LOGOUT BUTTON (FINAL TRUTH) ---------- */
+body.is-authenticated #sheetLogoutBtn,
+body.is-authenticated #profileMenu .logout {
+  display: block !important;
+  visibility: visible !important;
+  pointer-events: auto !important;
+  color: #ef4444 !important;
+}
+
+/* ---------- PREVENT HEADER RULES FROM HIDING THINGS ---------- */
+.header.app-bar ~ .bottom-bar {
+  display: inherit !important;
+}
+
 
 
 
