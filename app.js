@@ -184,13 +184,17 @@ postBtn.onclick = async () => {
 ===================== */
 function listenToPosts(user) {
   return onSnapshot(
-    query(
-      collection(db, "posts"),
-      where("createdAt", "!=", null),
-      orderBy("createdAt", "desc")
-    ),
+    collection(db, "posts"),
     async snap => {
+      // 🔒 FORCE feed visible when data arrives
+      feed.style.display = "flex";
+
       feed.innerHTML = "";
+
+      if (snap.empty) {
+        feed.innerHTML = `<div class="post">No posts yet</div>`;
+        return;
+      }
 
       for (const docSnap of snap.docs) {
         const data = docSnap.data();
@@ -228,7 +232,8 @@ function listenToPosts(user) {
         `;
 
         post.querySelector(".likeBtn").onclick = async () => {
-          await updateDoc(doc(db, "posts", docSnap.id), {
+          const ref = doc(db, "posts", docSnap.id);
+          await updateDoc(ref, {
             likedBy: liked
               ? arrayRemove(user.uid)
               : arrayUnion(user.uid)
@@ -237,9 +242,13 @@ function listenToPosts(user) {
 
         feed.appendChild(post);
       }
+    },
+    err => {
+      console.error("POST LISTENER ERROR:", err);
     }
   );
 }
+
 
 /* =====================
    NOTIFICATIONS
@@ -307,3 +316,4 @@ sheetOverlay.onclick = () => {
 sheetLogoutBtn.onclick = () => {
   signOut(auth);
 };
+
