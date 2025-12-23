@@ -403,4 +403,17 @@ if (bottomNotifBtn && notifications) {
       notifications.style.display === "block" ? "none" : "block";
   };
 }
+// =====================
+// 🔐 FINAL AUTH STATE SYNC (MOBILE FIX)
+// =====================
+onAuthStateChanged(auth, user => {
+  if (user) {
+    document.body.classList.remove("is-logged-out");
+    document.body.classList.add("is-authenticated");
+  } else {
+    document.body.classList.remove("is-authenticated");
+    document.body.classList.add("is-logged-out");
+  }
+});
+
 
