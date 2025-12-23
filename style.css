@@ -2381,6 +2381,31 @@ body.dark .auth-or::after {
   }
 }
 
+/* =========================
+   🔐 FORCE LOGOUT VISIBILITY
+   MOBILE + DESKTOP (FINAL)
+========================= */
+
+/* Desktop menu logout */
+body.is-authenticated #profileMenu .logout {
+  display: block !important;
+  visibility: visible !important;
+  pointer-events: auto !important;
+}
+
+/* Mobile bottom sheet logout */
+body.is-authenticated #profileSheet .logout {
+  display: block !important;
+  visibility: visible !important;
+  pointer-events: auto !important;
+  color: #ef4444 !important;
+}
+
+/* Ensure sheet itself is visible */
+body.is-authenticated .profile-sheet.open {
+  display: block !important;
+}
+
 
 
 
