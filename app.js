@@ -1,3 +1,6 @@
+/* =====================
+   FIREBASE IMPORTS
+===================== */
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
 import {
   getAuth,
@@ -37,35 +40,44 @@ const auth = getAuth(app);
 const db = getFirestore(app);
 
 /* =====================
-   ELEMENTS
+   ELEMENTS (SAFE)
 ===================== */
-const feed = document.getElementById("feed");
-const postInput = document.getElementById("postInput");
-const postBtn = document.getElementById("postBtn");
-const status = document.getElementById("status");
+const $ = id => document.getElementById(id);
 
-const loginBtn = document.getElementById("loginBtn");
-const signupBtn = document.getElementById("signupBtn");
-const email = document.getElementById("email");
-const password = document.getElementById("password");
-const username = document.getElementById("username");
+const feed = $("feed");
+const postInput = $("postInput");
+const postBtn = $("postBtn");
+const status = $("status");
 
-const authSection = document.getElementById("authSection");
-const postSection = document.getElementById("postSection");
+const loginBtn = $("loginBtn");
+const signupBtn = $("signupBtn");
+const email = $("email");
+const password = $("password");
+const username = $("username");
 
-const notifBell = document.getElementById("notifBell");
-const notifications = document.getElementById("notifications");
-const notificationList = document.getElementById("notificationList");
+const authSection = $("authSection");
+const postSection = $("postSection");
 
-const profileBtn = document.getElementById("profileBtn");
-const profileMenu = document.getElementById("profileMenu");
-const profileLogout = document.getElementById("profileLogout");
+const notifBell = $("notifBell");
+const notifications = $("notifications");
+const notificationList = $("notificationList");
 
-const themeToggle = document.getElementById("themeToggle");
-const appLogo = document.getElementById("appLogo");
+const profileBtn = $("profileBtn");
+const profileMenu = $("profileMenu");
+const profileLogout = $("profileLogout");
 
-const bottomBar = document.querySelector(".bottom-bar:last-of-type");
-const addPostBtn = document.getElementById("addPostBtn");
+const bottomBar = document.querySelector(".bottom-bar");
+const bottomProfileBtn = $("bottomProfileBtn");
+const bottomNotifBtn = $("bottomNotifBtn");
+const addPostBtn = $("addPostBtn");
+
+const profileSheet = $("profileSheet");
+const sheetOverlay = $("profileSheetOverlay");
+const sheetThemeToggle = $("sheetThemeToggle");
+const sheetLogoutBtn = $("sheetLogoutBtn");
+
+const themeToggle = $("themeToggle");
+const appLogo = $("appLogo");
 
 /* =====================
    HELPERS
@@ -79,37 +91,34 @@ function timeAgo(ts) {
   return `${Math.floor(s / 86400)}d ago`;
 }
 
-/* =====================
-   USER CACHE
-===================== */
 const userCache = {};
 
 /* =====================
    AUTH ACTIONS
 ===================== */
-loginBtn.onclick = () => {
-  signInWithEmailAndPassword(auth, email.value, password.value)
-    .catch(e => status.innerText = e.message);
-};
+if (loginBtn) {
+  loginBtn.onclick = () =>
+    signInWithEmailAndPassword(auth, email.value, password.value)
+      .catch(e => status.innerText = e.message);
+}
 
-signupBtn.onclick = async () => {
-  if (!username.value.trim()) {
-    status.innerText = "Username required";
-    return;
-  }
+if (signupBtn) {
+  signupBtn.onclick = async () => {
+    if (!username.value.trim()) {
+      status.innerText = "Username required";
+      return;
+    }
+    const cred = await createUserWithEmailAndPassword(
+      auth, email.value, password.value
+    );
+    await setDoc(doc(db, "users", cred.user.uid), {
+      username: username.value.trim()
+    });
+  };
+}
 
-  const cred = await createUserWithEmailAndPassword(
-    auth,
-    email.value,
-    password.value
-  );
-
-  await setDoc(doc(db, "users", cred.user.uid), {
-    username: username.value.trim()
-  });
-};
-
-profileLogout.onclick = () => signOut(auth);
+if (profileLogout) profileLogout.onclick = () => signOut(auth);
+if (sheetLogoutBtn) sheetLogoutBtn.onclick = () => signOut(auth);
 
 /* =====================
    AUTH STATE
@@ -118,51 +127,46 @@ let unsubPosts = null;
 let unsubNotifs = null;
 
 onAuthStateChanged(auth, user => {
-
   if (unsubPosts) unsubPosts();
   if (unsubNotifs) unsubNotifs();
 
   if (user) {
-    document.body.classList.add("is-authenticated");
-    document.body.classList.remove("is-logged-out");
-
-    authSection.style.display = "none";
-    postSection.style.display = "block";
-    feed.style.display = "flex";
-    bottomBar.style.display = "flex";
+    authSection && (authSection.style.display = "none");
+    postSection && (postSection.style.display = "block");
+    feed && (feed.style.display = "block");
+    bottomBar && (bottomBar.style.display = "flex");
+    notifBell && (notifBell.style.display = "block");
+    profileBtn && (profileBtn.style.display = "block");
 
     unsubPosts = listenToPosts(user);
     unsubNotifs = listenToNotifications(user);
-
   } else {
-    document.body.classList.remove("is-authenticated");
-    document.body.classList.add("is-logged-out");
-
-    authSection.style.display = "block";
-    postSection.style.display = "none";
-    feed.style.display = "none";
-    notifications.style.display = "none";
-    bottomBar.style.display = "none";
-    feed.innerHTML = "";
+    authSection && (authSection.style.display = "block");
+    postSection && (postSection.style.display = "none");
+    feed && (feed.style.display = "none");
+    notifications && (notifications.style.display = "none");
+    bottomBar && (bottomBar.style.display = "none");
+    if (feed) feed.innerHTML = "";
   }
 });
 
 /* =====================
    CREATE POST
 ===================== */
-postBtn.onclick = async () => {
-  const user = auth.currentUser;
-  if (!user || !postInput.value.trim()) return;
+if (postBtn) {
+  postBtn.onclick = async () => {
+    const user = auth.currentUser;
+    if (!user || !postInput.value.trim()) return;
 
-  await addDoc(collection(db, "posts"), {
-    text: postInput.value.trim(),
-    uid: user.uid,
-    createdAt: serverTimestamp(),
-    likedBy: []
-  });
-
-  postInput.value = "";
-};
+    await addDoc(collection(db, "posts"), {
+      text: postInput.value.trim(),
+      uid: user.uid,
+      createdAt: serverTimestamp(),
+      likedBy: []
+    });
+    postInput.value = "";
+  };
+}
 
 /* =====================
    POSTS + COMMENTS
@@ -171,12 +175,10 @@ function listenToPosts(user) {
   return onSnapshot(
     query(collection(db, "posts"), orderBy("createdAt", "desc")),
     async snap => {
-
       feed.innerHTML = "";
 
-      for (const docSnap of snap.docs) {
-        const data = docSnap.data();
-
+      for (const d of snap.docs) {
+        const data = d.data();
         const likedBy = Array.isArray(data.likedBy) ? data.likedBy : [];
         const liked = likedBy.includes(user.uid);
 
@@ -199,21 +201,14 @@ function listenToPosts(user) {
                 <div class="post-time">${timeAgo(data.createdAt)}</div>
               </div>
             </div>
-
-            ${data.uid === user.uid ? `
-              <div class="post-menu">
-                <button class="menu-btn">⋮</button>
-                <div class="menu-dropdown">
-                  <button class="deleteBtn">Delete post</button>
-                </div>
-              </div>` : ""}
+            ${data.uid === user.uid ? `<button class="delete-post">⋮</button>` : ""}
           </div>
 
           <div class="post-text">${data.text}</div>
 
           <div class="post-actions">
             <button class="likeBtn ${liked ? "liked" : ""}">👍 Like</button>
-            ${likedBy.length ? `<span class="likeCount">${likedBy.length}</span>` : ""}
+            ${likedBy.length ? `<span>${likedBy.length}</span>` : ""}
           </div>
 
           <div class="comments">
@@ -225,87 +220,54 @@ function listenToPosts(user) {
           </div>
         `;
 
-        /* LIKE */
         post.querySelector(".likeBtn").onclick = async () => {
-          await updateDoc(doc(db, "posts", docSnap.id), {
-            likedBy: liked
-              ? arrayRemove(user.uid)
-              : arrayUnion(user.uid)
+          await updateDoc(doc(db, "posts", d.id), {
+            likedBy: liked ? arrayRemove(user.uid) : arrayUnion(user.uid)
           });
         };
 
-        /* POST MENU */
-        const menuBtn = post.querySelector(".menu-btn");
-        const postMenu = post.querySelector(".post-menu");
-        const deletePostBtn = post.querySelector(".deleteBtn");
-
-        if (menuBtn) {
-          menuBtn.onclick = e => {
-            e.stopPropagation();
-            postMenu.classList.toggle("open");
+        const delBtn = post.querySelector(".delete-post");
+        if (delBtn) {
+          delBtn.onclick = async () => {
+            if (confirm("Delete post?")) {
+              await deleteDoc(doc(db, "posts", d.id));
+            }
           };
         }
 
-        if (deletePostBtn) {
-          deletePostBtn.onclick = async () => {
-            if (!confirm("Delete this post?")) return;
-            await deleteDoc(doc(db, "posts", docSnap.id));
-          };
-        }
-
-        /* COMMENTS */
         const list = post.querySelector(".commentList");
-        const input = post.querySelector(".commentInput");
-        const sendBtn = post.querySelector(".sendCommentBtn");
-
         onSnapshot(
-          query(
-            collection(db, "posts", docSnap.id, "comments"),
-            orderBy("createdAt", "asc")
-          ),
-          async snap => {
+          query(collection(db, "posts", d.id, "comments"), orderBy("createdAt")),
+          async cs => {
             list.innerHTML = "";
-
-            for (const c of snap.docs) {
-              const cData = c.data();
-
-              let cName = userCache[cData.uid];
-              if (!cName) {
-                const u = await getDoc(doc(db, "users", cData.uid));
-                cName = u.exists() ? u.data().username : "user";
-                userCache[cData.uid] = cName;
+            for (const c of cs.docs) {
+              const cd = c.data();
+              let cn = userCache[cd.uid];
+              if (!cn) {
+                const cu = await getDoc(doc(db, "users", cd.uid));
+                cn = cu.exists() ? cu.data().username : "user";
+                userCache[cd.uid] = cn;
               }
 
-              const comment = document.createElement("div");
-              comment.className = "comment";
-
-              comment.innerHTML = `
-                <div class="comment-row">
-                  <strong>${cName}</strong>: ${cData.text}
-                  ${cData.uid === user.uid
-                    ? `<button class="deleteCommentBtn">✕</button>`
-                    : ""}
+              list.innerHTML += `
+                <div class="comment">
+                  <strong>${cn}</strong>: ${cd.text}
+                  ${cd.uid === user.uid ? `<button data-id="${c.id}" class="del-comment">×</button>` : ""}
                 </div>
               `;
-
-              const delBtn = comment.querySelector(".deleteCommentBtn");
-              if (delBtn) {
-                delBtn.onclick = async () => {
-                  if (!confirm("Delete this comment?")) return;
-                  await deleteDoc(
-                    doc(db, "posts", docSnap.id, "comments", c.id)
-                  );
-                };
-              }
-
-              list.appendChild(comment);
             }
+
+            list.querySelectorAll(".del-comment").forEach(b => {
+              b.onclick = () =>
+                deleteDoc(doc(db, "posts", d.id, "comments", b.dataset.id));
+            });
           }
         );
 
-        sendBtn.onclick = async () => {
+        post.querySelector(".sendCommentBtn").onclick = async () => {
+          const input = post.querySelector(".commentInput");
           if (!input.value.trim()) return;
-          await addDoc(collection(db, "posts", docSnap.id, "comments"), {
+          await addDoc(collection(db, "posts", d.id, "comments"), {
             text: input.value.trim(),
             uid: user.uid,
             createdAt: serverTimestamp()
@@ -323,6 +285,7 @@ function listenToPosts(user) {
    NOTIFICATIONS
 ===================== */
 function listenToNotifications(user) {
+  if (!notificationList) return;
   return onSnapshot(
     query(
       collection(db, "notifications"),
@@ -331,15 +294,15 @@ function listenToNotifications(user) {
     ),
     snap => {
       notificationList.innerHTML = "";
-      snap.forEach(n => {
-        notificationList.innerHTML += `<div>${n.data().text}</div>`;
-      });
+      snap.forEach(n =>
+        notificationList.innerHTML += `<div>${n.data().text}</div>`
+      );
     }
   );
 }
 
 /* =====================
-   ADD POST (+)
+   UI CONTROLS (SAFE)
 ===================== */
 if (addPostBtn) {
   addPostBtn.onclick = () => {
@@ -348,9 +311,20 @@ if (addPostBtn) {
   };
 }
 
-/* =====================
-   THEME + LOGO
-===================== */
+if (bottomProfileBtn) {
+  bottomProfileBtn.onclick = () => {
+    profileSheet.classList.add("open");
+    sheetOverlay.classList.add("open");
+  };
+}
+
+if (sheetOverlay) {
+  sheetOverlay.onclick = () => {
+    profileSheet.classList.remove("open");
+    sheetOverlay.classList.remove("open");
+  };
+}
+
 function updateLogo() {
   if (!appLogo) return;
   appLogo.src = document.body.classList.contains("dark")
@@ -360,12 +334,13 @@ function updateLogo() {
 
 function toggleTheme() {
   document.body.classList.toggle("dark");
-  localStorage.setItem(
-    "theme",
+  localStorage.setItem("theme",
     document.body.classList.contains("dark") ? "dark" : "light"
   );
   updateLogo();
 }
 
-themeToggle.onclick = toggleTheme;
+themeToggle && (themeToggle.onclick = toggleTheme);
+sheetThemeToggle && (sheetThemeToggle.onclick = toggleTheme);
+
 updateLogo();
