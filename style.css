@@ -2481,6 +2481,37 @@ body.is-authenticated #profileMenu .logout {
 .header.app-bar ~ .bottom-bar {
   display: inherit !important;
 }
+/* =========================================================
+   ✅ FINAL iOS BOTTOM BAR FIX (SAFE)
+   Single source of truth
+========================================================= */
+
+/* Mobile only */
+@media (max-width: 768px) {
+
+  /* Show bottom bar ONLY when logged in */
+  body.is-authenticated .bottom-bar {
+    display: flex !important;
+    position: fixed !important;
+    left: 0;
+    right: 0;
+    bottom: env(safe-area-inset-bottom) !important;
+    height: 64px !important;
+
+    visibility: visible !important;
+    pointer-events: auto !important;
+    opacity: 1 !important;
+
+    z-index: 9999 !important;
+  }
+
+  /* Never show when logged out */
+  body.is-logged-out .bottom-bar {
+    display: none !important;
+  }
+}
+
+
 
 
 
