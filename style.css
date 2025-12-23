@@ -2217,6 +2217,66 @@ body.dark .header.app-bar {
     transform: translateZ(0);
   }
 }
+/* =========================================================
+   🔐 LOGIN PAGE — OR DIVIDER + BUTTON STACK
+   APPEND ONLY
+========================================================= */
+
+/* Divider */
+.auth-divider {
+  display: flex;
+  align-items: center;
+  text-align: center;
+  margin: 18px 0;
+  font-size: 13px;
+  color: #64748b;
+}
+
+/* Lines on both sides */
+.auth-divider::before,
+.auth-divider::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background: #e2e8f0;
+}
+
+.auth-divider::before {
+  margin-right: 12px;
+}
+
+.auth-divider::after {
+  margin-left: 12px;
+}
+
+/* Dark mode divider */
+body.dark .auth-divider {
+  color: #94a3b8;
+}
+
+body.dark .auth-divider::before,
+body.dark .auth-divider::after {
+  background: #1e293b;
+}
+
+/* Login stays primary */
+#loginBtn {
+  margin-top: 8px;
+}
+
+/* Sign up becomes secondary but clear */
+#signupBtn {
+  margin-top: 8px;
+  background: transparent !important;
+  color: #16a34a !important;
+  border: 2px solid #16a34a !important;
+}
+
+/* Hover / tap */
+#signupBtn:hover {
+  background: rgba(22, 163, 74, 0.08) !important;
+}
+
 
 
 
