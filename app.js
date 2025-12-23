@@ -373,3 +373,98 @@ sheetLogoutBtn.onclick = () => {
 
 /* Init logo */
 updateLogo();
+/* =========================================================
+   🔥 POST VISIBILITY HARD FIX
+   APPEND ONLY — SAFE
+========================================================= */
+
+/* Override timeAgo safely */
+window.timeAgo = function (ts) {
+  if (!ts || typeof ts.toMillis !== "function") return "Just now";
+  const s = Math.floor((Date.now() - ts.toMillis()) / 1000);
+  if (s < 60) return "Just now";
+  if (s < 3600) return `${Math.floor(s / 60)}m ago`;
+  if (s < 86400) return `${Math.floor(s / 3600)}h ago`;
+  return `${Math.floor(s / 86400)}d ago`;
+};
+
+/* Force feed visibility when posts arrive */
+const _originalListenToPosts = listenToPosts;
+
+listenToPosts = function (user) {
+  return onSnapshot(
+    query(collection(db, "posts"), orderBy("createdAt", "desc")),
+    async snap => {
+
+      if (!feed) return;
+
+      feed.style.display = "flex";
+      feed.innerHTML = "";
+
+      if (snap.empty) {
+        feed.innerHTML =
+          `<div style="text-align:center;color:#64748b;margin-top:20px">
+            No posts yet
+          </div>`;
+        return;
+      }
+
+      for (const docSnap of snap.docs) {
+        const data = docSnap.data();
+        if (!data || !data.text) continue;
+
+        const likedBy = Array.isArray(data.likedBy) ? data.likedBy : [];
+        const liked = likedBy.includes(user.uid);
+
+        let name = userCache[data.uid];
+        if (!name) {
+          const u = await getDoc(doc(db, "users", data.uid));
+          name = u.exists() ? u.data().username : "user";
+          userCache[data.uid] = name;
+        }
+
+        const post = document.createElement("div");
+        post.className = "post";
+
+        post.innerHTML = `
+          <div class="post-header">
+            <div class="post-header-left">
+              <div class="avatar">${name[0]}</div>
+              <div>
+                <div class="post-username">${name}</div>
+                <div class="post-time">${timeAgo(data.createdAt)}</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="post-text">${data.text}</div>
+
+          <div class="post-actions">
+            <button class="likeBtn ${liked ? "liked" : ""}">👍 Like</button>
+            ${likedBy.length ? `<span class="likeCount">${likedBy.length}</span>` : ""}
+          </div>
+
+          <div class="comments">
+            <div class="comment-box">
+              <input class="commentInput" placeholder="Add comment…" />
+              <button class="sendCommentBtn">Send</button>
+            </div>
+            <div class="commentList"></div>
+          </div>
+        `;
+
+        post.querySelector(".likeBtn").onclick = async () => {
+          const ref = doc(db, "posts", docSnap.id);
+          await updateDoc(ref, {
+            likedBy: liked
+              ? arrayRemove(user.uid)
+              : arrayUnion(user.uid)
+          });
+        };
+
+        feed.appendChild(post);
+      }
+    }
+  );
+};
+
