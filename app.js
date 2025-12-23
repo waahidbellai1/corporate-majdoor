@@ -36,45 +36,43 @@ const auth = getAuth(app);
 const db = getFirestore(app);
 
 /* =====================
+   SAFE DOM HELPERS
+===================== */
+const $ = id => document.getElementById(id);
+const show = (el, type = "block") => el && (el.style.display = type);
+const hide = el => el && (el.style.display = "none");
+
+/* =====================
    ELEMENTS
 ===================== */
-const feed = document.getElementById("feed");
-const postInput = document.getElementById("postInput");
-const postBtn = document.getElementById("postBtn");
-const status = document.getElementById("status");
+const feed = $("feed");
+const postInput = $("postInput");
+const postBtn = $("postBtn");
+const status = $("status");
 
-const loginBtn = document.getElementById("loginBtn");
-const signupBtn = document.getElementById("signupBtn");
-const email = document.getElementById("email");
-const password = document.getElementById("password");
-const username = document.getElementById("username");
+const loginBtn = $("loginBtn");
+const signupBtn = $("signupBtn");
+const email = $("email");
+const password = $("password");
+const username = $("username");
 
-const authSection = document.getElementById("authSection");
-const postSection = document.getElementById("postSection");
+const authSection = $("authSection");
+const postSection = $("postSection");
 
-const notifBell = document.getElementById("notifBell");
-const notifications = document.getElementById("notifications");
-const notificationList = document.getElementById("notificationList");
+const notifBell = $("notifBell");
+const notifications = $("notifications");
+const notificationList = $("notificationList");
 
-const profileBtn = document.getElementById("profileBtn");
-const profileMenu = document.getElementById("profileMenu");
+const profileBtn = $("profileBtn");
+const profileMenu = $("profileMenu");
+const profileLogout = $("profileLogout");
 
-const themeToggle = document.getElementById("themeToggle");
+const themeToggle = $("themeToggle");
+const appLogo = $("appLogo");
 
 /* Bottom bar */
 const bottomBar = document.querySelector(".bottom-bar:last-of-type");
-const bottomProfileBtn = document.getElementById("bottomProfileBtn");
-const bottomNotifBtn = document.getElementById("bottomNotifBtn");
-const addPostBtn = document.getElementById("addPostBtn");
-
-/* Bottom sheet */
-const profileSheet = document.getElementById("profileSheet");
-const sheetOverlay = document.getElementById("profileSheetOverlay");
-const sheetThemeToggle = document.getElementById("sheetThemeToggle");
-const sheetLogoutBtn = document.getElementById("sheetLogoutBtn");
-
-/* Logo */
-const appLogo = document.getElementById("appLogo");
+const addPostBtn = $("addPostBtn");
 
 /* =====================
    THEME RESTORE
@@ -95,20 +93,17 @@ function timeAgo(ts) {
   return `${Math.floor(s / 86400)}d ago`;
 }
 
-/* =====================
-   USER CACHE
-===================== */
 const userCache = {};
 
 /* =====================
    AUTH ACTIONS
 ===================== */
-loginBtn.onclick = () => {
+loginBtn?.addEventListener("click", () => {
   signInWithEmailAndPassword(auth, email.value, password.value)
     .catch(e => status.innerText = e.message);
-};
+});
 
-signupBtn.onclick = async () => {
+signupBtn?.addEventListener("click", async () => {
   if (!username.value.trim()) {
     status.innerText = "Username required";
     return;
@@ -123,7 +118,9 @@ signupBtn.onclick = async () => {
   await setDoc(doc(db, "users", cred.user.uid), {
     username: username.value.trim()
   });
-};
+});
+
+profileLogout?.addEventListener("click", () => signOut(auth));
 
 /* =====================
    AUTH STATE
@@ -133,17 +130,20 @@ let unsubNotifs = null;
 
 onAuthStateChanged(auth, user => {
 
-  if (unsubPosts) unsubPosts();
-  if (unsubNotifs) unsubNotifs();
+  unsubPosts && unsubPosts();
+  unsubNotifs && unsubNotifs();
 
   if (user) {
     document.body.classList.add("is-authenticated");
     document.body.classList.remove("is-logged-out");
 
-    authSection.style.display = "none";
-    postSection.style.display = "block";
-    feed.style.display = "flex";
-    bottomBar.style.display = "flex";
+    hide(authSection);
+    show(postSection);
+    show(feed, "flex");
+
+    show(notifBell);
+    show(profileBtn);
+    show(bottomBar, "flex");
 
     unsubPosts = listenToPosts(user);
     unsubNotifs = listenToNotifications(user);
@@ -152,20 +152,20 @@ onAuthStateChanged(auth, user => {
     document.body.classList.add("is-logged-out");
     document.body.classList.remove("is-authenticated");
 
-    authSection.style.display = "block";
-    postSection.style.display = "none";
-    feed.style.display = "none";
-    notifications.style.display = "none";
-    bottomBar.style.display = "none";
+    show(authSection);
+    hide(postSection);
+    hide(feed);
+    hide(notifications);
+    hide(bottomBar);
 
-    feed.innerHTML = "";
+    if (feed) feed.innerHTML = "";
   }
 });
 
 /* =====================
    CREATE POST
 ===================== */
-postBtn.onclick = async () => {
+postBtn?.addEventListener("click", async () => {
   const user = auth.currentUser;
   if (!user || !postInput.value.trim()) return;
 
@@ -177,24 +177,16 @@ postBtn.onclick = async () => {
   });
 
   postInput.value = "";
-};
+});
 
 /* =====================
-   POSTS (🔥 FIXED)
+   POSTS (FIXED)
 ===================== */
 function listenToPosts(user) {
   return onSnapshot(
-    collection(db, "posts"),
+    query(collection(db, "posts"), orderBy("createdAt", "desc")),
     async snap => {
-      // 🔒 FORCE feed visible when data arrives
-      feed.style.display = "flex";
-
       feed.innerHTML = "";
-
-      if (snap.empty) {
-        feed.innerHTML = `<div class="post">No posts yet</div>`;
-        return;
-      }
 
       for (const docSnap of snap.docs) {
         const data = docSnap.data();
@@ -215,7 +207,7 @@ function listenToPosts(user) {
         post.innerHTML = `
           <div class="post-header">
             <div class="post-header-left">
-              <div class="avatar">${name[0]}</div>
+              <div class="avatar">${name[0].toUpperCase()}</div>
               <div>
                 <div class="post-username">${name}</div>
                 <div class="post-time">${timeAgo(data.createdAt)}</div>
@@ -232,8 +224,7 @@ function listenToPosts(user) {
         `;
 
         post.querySelector(".likeBtn").onclick = async () => {
-          const ref = doc(db, "posts", docSnap.id);
-          await updateDoc(ref, {
+          await updateDoc(doc(db, "posts", docSnap.id), {
             likedBy: liked
               ? arrayRemove(user.uid)
               : arrayUnion(user.uid)
@@ -242,18 +233,16 @@ function listenToPosts(user) {
 
         feed.appendChild(post);
       }
-    },
-    err => {
-      console.error("POST LISTENER ERROR:", err);
     }
   );
 }
-
 
 /* =====================
    NOTIFICATIONS
 ===================== */
 function listenToNotifications(user) {
+  if (!notificationList) return null;
+
   return onSnapshot(
     query(
       collection(db, "notifications"),
@@ -271,49 +260,39 @@ function listenToNotifications(user) {
 }
 
 /* =====================
-   ADD POST (+)
+   UI CONTROLS
 ===================== */
-addPostBtn.onclick = () => {
-  postSection.scrollIntoView({ behavior: "smooth" });
-  postInput.focus();
-};
+notifBell?.addEventListener("click", () => {
+  notifications.style.display =
+    notifications.style.display === "block" ? "none" : "block";
+});
+
+profileBtn?.addEventListener("click", e => {
+  e.stopPropagation();
+  profileMenu?.classList.toggle("open");
+});
+
+document.addEventListener("click", () => {
+  profileMenu?.classList.remove("open");
+});
 
 /* =====================
-   THEME + LOGO
+   THEME
 ===================== */
 function updateLogo() {
+  if (!appLogo) return;
   appLogo.src = document.body.classList.contains("dark")
     ? "logo-dark.png"
     : "logo-light.png";
 }
 
-function toggleTheme() {
+themeToggle?.addEventListener("click", () => {
   document.body.classList.toggle("dark");
   localStorage.setItem(
     "theme",
     document.body.classList.contains("dark") ? "dark" : "light"
   );
   updateLogo();
-}
+});
 
-themeToggle.onclick = toggleTheme;
-sheetThemeToggle.onclick = toggleTheme;
 updateLogo();
-
-/* =====================
-   PROFILE SHEET
-===================== */
-bottomProfileBtn.onclick = () => {
-  profileSheet.classList.add("open");
-  sheetOverlay.classList.add("open");
-};
-
-sheetOverlay.onclick = () => {
-  profileSheet.classList.remove("open");
-  sheetOverlay.classList.remove("open");
-};
-
-sheetLogoutBtn.onclick = () => {
-  signOut(auth);
-};
-
