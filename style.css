@@ -2276,6 +2276,78 @@ body.dark .auth-divider::after {
 #signupBtn:hover {
   background: rgba(22, 163, 74, 0.08) !important;
 }
+/* =========================================================
+   🔐 LOGIN BUTTON LAYOUT FIX
+   Login → OR → Sign Up
+   APPEND ONLY – SAFE
+========================================================= */
+
+/* Wrap login buttons visually */
+#authSection {
+  display: flex;
+  flex-direction: column;
+}
+
+/* Login button spacing */
+#loginBtn {
+  margin-top: 10px;
+  margin-bottom: 14px;
+}
+
+/* OR separator */
+.auth-or {
+  text-align: center;
+  font-size: 14px;
+  color: #64748b;
+  margin: 6px 0 14px;
+  position: relative;
+}
+
+/* Optional subtle lines beside "or" */
+.auth-or::before,
+.auth-or::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  width: 40%;
+  height: 1px;
+  background: #e2e8f0;
+}
+
+.auth-or::before {
+  left: 0;
+}
+
+.auth-or::after {
+  right: 0;
+}
+
+/* Dark mode */
+body.dark .auth-or {
+  color: #94a3b8;
+}
+
+body.dark .auth-or::before,
+body.dark .auth-or::after {
+  background: #1e293b;
+}
+
+/* Signup button spacing */
+#signupBtn {
+  margin-top: 0;
+}
+
+/* Mobile breathing room */
+@media (max-width: 768px) {
+  #loginBtn {
+    margin-bottom: 16px;
+  }
+
+  .auth-or {
+    margin: 8px 0 16px;
+  }
+}
+
 
 
 
