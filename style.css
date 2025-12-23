@@ -2405,6 +2405,29 @@ body.is-authenticated #profileSheet .logout {
 body.is-authenticated .profile-sheet.open {
   display: block !important;
 }
+/* =========================================================
+   📱 PROFILE SHEET HEIGHT + SAFE AREA FIX
+   FIXES CUT-OFF LOGOUT BUTTON
+========================================================= */
+
+.profile-sheet {
+  max-height: calc(100vh - 120px);
+  overflow-y: auto;
+  padding-bottom: calc(32px + env(safe-area-inset-bottom));
+}
+
+/* Ensure logout is never clipped */
+.profile-sheet .sheet-item.logout {
+  margin-bottom: 12px;
+}
+
+/* iOS Safari momentum scrolling */
+@supports (-webkit-touch-callout: none) {
+  .profile-sheet {
+    -webkit-overflow-scrolling: touch;
+  }
+}
+
 
 
 
