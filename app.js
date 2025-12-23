@@ -344,3 +344,63 @@ themeToggle && (themeToggle.onclick = toggleTheme);
 sheetThemeToggle && (sheetThemeToggle.onclick = toggleTheme);
 
 updateLogo();
+/* =====================
+   MOBILE BOTTOM BAR FIX
+   (SAFE PATCH)
+===================== */
+
+// Force bottom bar visible on mobile after auth
+function ensureBottomBarVisible() {
+  if (!bottomBar) return;
+
+  // Only on small screens
+  if (window.innerWidth <= 768) {
+    bottomBar.style.display = "flex";
+    bottomBar.style.pointerEvents = "auto";
+  }
+}
+
+// Run after auth settles
+onAuthStateChanged(auth, user => {
+  if (user) {
+    setTimeout(ensureBottomBarVisible, 100);
+  }
+});
+
+// Re-check on resize (iPhone rotation etc.)
+window.addEventListener("resize", ensureBottomBarVisible);
+
+/* =====================
+   MOBILE LOGOUT SAFETY
+===================== */
+
+if (sheetLogoutBtn) {
+  sheetLogoutBtn.onclick = () => {
+    profileSheet?.classList.remove("open");
+    sheetOverlay?.classList.remove("open");
+    signOut(auth);
+  };
+}
+
+/* =====================
+   MOBILE PROFILE OPEN
+===================== */
+
+if (bottomProfileBtn) {
+  bottomProfileBtn.onclick = () => {
+    profileSheet?.classList.add("open");
+    sheetOverlay?.classList.add("open");
+  };
+}
+
+/* =====================
+   MOBILE NOTIFICATION
+===================== */
+
+if (bottomNotifBtn && notifications) {
+  bottomNotifBtn.onclick = () => {
+    notifications.style.display =
+      notifications.style.display === "block" ? "none" : "block";
+  };
+}
+
