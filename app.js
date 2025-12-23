@@ -58,7 +58,6 @@ const notificationList = document.getElementById("notificationList");
 
 const profileBtn = document.getElementById("profileBtn");
 const profileMenu = document.getElementById("profileMenu");
-const profileLogout = document.getElementById("profileLogout");
 
 const themeToggle = document.getElementById("themeToggle");
 
@@ -126,8 +125,6 @@ signupBtn.onclick = async () => {
   });
 };
 
-profileLogout.onclick = () => signOut(auth);
-
 /* =====================
    AUTH STATE
 ===================== */
@@ -140,15 +137,12 @@ onAuthStateChanged(auth, user => {
   if (unsubNotifs) unsubNotifs();
 
   if (user) {
-    document.body.classList.remove("is-logged-out");
     document.body.classList.add("is-authenticated");
+    document.body.classList.remove("is-logged-out");
 
     authSection.style.display = "none";
     postSection.style.display = "block";
     feed.style.display = "flex";
-
-    notifBell.style.display = "block";
-    profileBtn.style.display = "block";
     bottomBar.style.display = "flex";
 
     unsubPosts = listenToPosts(user);
@@ -164,7 +158,6 @@ onAuthStateChanged(auth, user => {
     notifications.style.display = "none";
     bottomBar.style.display = "none";
 
-    profileMenu.classList.remove("open");
     feed.innerHTML = "";
   }
 });
@@ -187,11 +180,15 @@ postBtn.onclick = async () => {
 };
 
 /* =====================
-   POSTS
+   POSTS (🔥 FIXED)
 ===================== */
 function listenToPosts(user) {
   return onSnapshot(
-    query(collection(db, "posts"), orderBy("createdAt", "desc")),
+    query(
+      collection(db, "posts"),
+      where("createdAt", "!=", null),
+      orderBy("createdAt", "desc")
+    ),
     async snap => {
       feed.innerHTML = "";
 
@@ -228,50 +225,14 @@ function listenToPosts(user) {
             <button class="likeBtn ${liked ? "liked" : ""}">👍 Like</button>
             ${likedBy.length ? `<span class="likeCount">${likedBy.length}</span>` : ""}
           </div>
-
-          <div class="comments">
-            <div class="comment-box">
-              <input class="commentInput" placeholder="Add comment…" />
-              <button class="sendCommentBtn">Send</button>
-            </div>
-            <div class="commentList"></div>
-          </div>
         `;
 
         post.querySelector(".likeBtn").onclick = async () => {
-          const ref = doc(db, "posts", docSnap.id);
-          await updateDoc(ref, {
+          await updateDoc(doc(db, "posts", docSnap.id), {
             likedBy: liked
               ? arrayRemove(user.uid)
               : arrayUnion(user.uid)
           });
-        };
-
-        const input = post.querySelector(".commentInput");
-        const btn = post.querySelector(".sendCommentBtn");
-        const list = post.querySelector(".commentList");
-
-        onSnapshot(
-          query(
-            collection(db, "posts", docSnap.id, "comments"),
-            orderBy("createdAt", "asc")
-          ),
-          snap => {
-            list.innerHTML = "";
-            snap.forEach(c => {
-              list.innerHTML += `<div class="comment">${c.data().text}</div>`;
-            });
-          }
-        );
-
-        btn.onclick = async () => {
-          if (!input.value.trim()) return;
-          await addDoc(collection(db, "posts", docSnap.id, "comments"), {
-            text: input.value.trim(),
-            uid: user.uid,
-            createdAt: serverTimestamp()
-          });
-          input.value = "";
         };
 
         feed.appendChild(post);
@@ -301,50 +262,17 @@ function listenToNotifications(user) {
 }
 
 /* =====================
-   UI CONTROLS
+   ADD POST (+)
 ===================== */
-notifBell.onclick = () => {
-  notifications.style.display =
-    notifications.style.display === "block" ? "none" : "block";
-};
-
-profileBtn.onclick = e => {
-  e.stopPropagation();
-  profileMenu.classList.toggle("open");
-};
-
-document.addEventListener("click", () => {
-  profileMenu.classList.remove("open");
-});
-
-/* =====================
-   ADD POST (+) BUTTON
-===================== */
-if (addPostBtn) {
-  addPostBtn.onclick = () => {
-    postSection.scrollIntoView({ behavior: "smooth" });
-    postInput.focus();
-  };
-}
-
-/* =====================
-   PROFILE BOTTOM SHEET
-===================== */
-bottomProfileBtn.onclick = () => {
-  profileSheet.classList.add("open");
-  sheetOverlay.classList.add("open");
-};
-
-sheetOverlay.onclick = () => {
-  profileSheet.classList.remove("open");
-  sheetOverlay.classList.remove("open");
+addPostBtn.onclick = () => {
+  postSection.scrollIntoView({ behavior: "smooth" });
+  postInput.focus();
 };
 
 /* =====================
-   THEME TOGGLE + LOGO
+   THEME + LOGO
 ===================== */
 function updateLogo() {
-  if (!appLogo) return;
   appLogo.src = document.body.classList.contains("dark")
     ? "logo-dark.png"
     : "logo-light.png";
@@ -361,110 +289,21 @@ function toggleTheme() {
 
 themeToggle.onclick = toggleTheme;
 sheetThemeToggle.onclick = toggleTheme;
+updateLogo();
 
 /* =====================
-   LOGOUT (SHEET)
+   PROFILE SHEET
 ===================== */
-sheetLogoutBtn.onclick = () => {
+bottomProfileBtn.onclick = () => {
+  profileSheet.classList.add("open");
+  sheetOverlay.classList.add("open");
+};
+
+sheetOverlay.onclick = () => {
   profileSheet.classList.remove("open");
   sheetOverlay.classList.remove("open");
+};
+
+sheetLogoutBtn.onclick = () => {
   signOut(auth);
 };
-
-/* Init logo */
-updateLogo();
-/* =========================================================
-   🔥 POST VISIBILITY HARD FIX
-   APPEND ONLY — SAFE
-========================================================= */
-
-/* Override timeAgo safely */
-window.timeAgo = function (ts) {
-  if (!ts || typeof ts.toMillis !== "function") return "Just now";
-  const s = Math.floor((Date.now() - ts.toMillis()) / 1000);
-  if (s < 60) return "Just now";
-  if (s < 3600) return `${Math.floor(s / 60)}m ago`;
-  if (s < 86400) return `${Math.floor(s / 3600)}h ago`;
-  return `${Math.floor(s / 86400)}d ago`;
-};
-
-/* Force feed visibility when posts arrive */
-const _originalListenToPosts = listenToPosts;
-
-listenToPosts = function (user) {
-  return onSnapshot(
-    query(collection(db, "posts"), orderBy("createdAt", "desc")),
-    async snap => {
-
-      if (!feed) return;
-
-      feed.style.display = "flex";
-      feed.innerHTML = "";
-
-      if (snap.empty) {
-        feed.innerHTML =
-          `<div style="text-align:center;color:#64748b;margin-top:20px">
-            No posts yet
-          </div>`;
-        return;
-      }
-
-      for (const docSnap of snap.docs) {
-        const data = docSnap.data();
-        if (!data || !data.text) continue;
-
-        const likedBy = Array.isArray(data.likedBy) ? data.likedBy : [];
-        const liked = likedBy.includes(user.uid);
-
-        let name = userCache[data.uid];
-        if (!name) {
-          const u = await getDoc(doc(db, "users", data.uid));
-          name = u.exists() ? u.data().username : "user";
-          userCache[data.uid] = name;
-        }
-
-        const post = document.createElement("div");
-        post.className = "post";
-
-        post.innerHTML = `
-          <div class="post-header">
-            <div class="post-header-left">
-              <div class="avatar">${name[0]}</div>
-              <div>
-                <div class="post-username">${name}</div>
-                <div class="post-time">${timeAgo(data.createdAt)}</div>
-              </div>
-            </div>
-          </div>
-
-          <div class="post-text">${data.text}</div>
-
-          <div class="post-actions">
-            <button class="likeBtn ${liked ? "liked" : ""}">👍 Like</button>
-            ${likedBy.length ? `<span class="likeCount">${likedBy.length}</span>` : ""}
-          </div>
-
-          <div class="comments">
-            <div class="comment-box">
-              <input class="commentInput" placeholder="Add comment…" />
-              <button class="sendCommentBtn">Send</button>
-            </div>
-            <div class="commentList"></div>
-          </div>
-        `;
-
-        post.querySelector(".likeBtn").onclick = async () => {
-          const ref = doc(db, "posts", docSnap.id);
-          await updateDoc(ref, {
-            likedBy: liked
-              ? arrayRemove(user.uid)
-              : arrayUnion(user.uid)
-          });
-        };
-
-        feed.appendChild(post);
-      }
-    }
-  );
-};
-
