@@ -2454,6 +2454,62 @@ body.is-authenticated .profile-sheet.open {
     -webkit-overflow-scrolling: touch;
   }
 }
+/* =========================================================
+   🔔 NOTIFICATION CENTER (FINAL)
+========================================================= */
+
+#notifications {
+  position: fixed;
+  top: 72px;
+  right: 16px;
+
+  width: min(360px, calc(100vw - 32px));
+  max-height: 60vh;
+  overflow-y: auto;
+
+  background: rgba(255,255,255,0.96);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+
+  border-radius: 18px;
+  padding: 12px;
+  display: none;
+
+  box-shadow: 0 25px 60px rgba(0,0,0,0.18);
+  z-index: 1500;
+}
+
+/* Dark mode */
+body.dark #notifications {
+  background: rgba(2,6,23,0.96);
+}
+
+/* Individual notification */
+.notification {
+  padding: 12px 14px;
+  font-size: 14px;
+  border-radius: 12px;
+  background: rgba(37,99,235,0.06);
+  margin-bottom: 8px;
+}
+
+/* Empty state */
+.notification.empty {
+  text-align: center;
+  background: transparent;
+  color: #64748b;
+  font-size: 13px;
+}
+@media (max-width: 768px) {
+  #notifications {
+    top: auto;
+    bottom: calc(64px + env(safe-area-inset-bottom) + 12px);
+    right: 12px;
+    left: 12px;
+    width: auto;
+  }
+}
+
 
 
 
