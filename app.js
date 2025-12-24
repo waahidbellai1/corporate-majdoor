@@ -62,11 +62,12 @@ const profileBtn = $("profileBtn");
 const profileMenu = $("profileMenu");
 const profileLogout = $("profileLogout");
 const notifBell = $("notifBell");
+
+/* Notifications */
 const notifications = $("notifications");
 const notificationList = $("notificationList");
 
 /* Bottom bar */
-const bottomBar = document.querySelector(".bottom-bar");
 const bottomProfileBtn = $("bottomProfileBtn");
 const bottomNotifBtn = $("bottomNotifBtn");
 const addPostBtn = $("addPostBtn");
@@ -84,20 +85,6 @@ const postBtn = $("postBtn");
 /* Theme */
 const themeToggle = $("themeToggle");
 const appLogo = $("appLogo");
-
-/* =====================
-   HELPERS
-===================== */
-function timeAgo(ts) {
-  if (!ts) return "";
-  const s = Math.floor((Date.now() - ts.toMillis()) / 1000);
-  if (s < 60) return "Just now";
-  if (s < 3600) return `${Math.floor(s / 60)}m ago`;
-  if (s < 86400) return `${Math.floor(s / 3600)}h ago`;
-  return `${Math.floor(s / 86400)}d ago`;
-}
-
-const userCache = {};
 
 /* =====================
    THEME
@@ -155,6 +142,39 @@ profileLogout && (profileLogout.onclick = () => signOut(auth));
 sheetLogoutBtn && (sheetLogoutBtn.onclick = () => signOut(auth));
 
 /* =====================
+   DESKTOP PROFILE DROPDOWN (FIXED)
+===================== */
+if (profileBtn && profileMenu) {
+  profileBtn.onclick = (e) => {
+    e.stopPropagation();
+    profileMenu.classList.toggle("open");
+  };
+
+  document.addEventListener("click", (e) => {
+    if (
+      !profileMenu.contains(e.target) &&
+      !profileBtn.contains(e.target)
+    ) {
+      profileMenu.classList.remove("open");
+    }
+  });
+}
+
+/* =====================
+   HELPERS
+===================== */
+function timeAgo(ts) {
+  if (!ts) return "";
+  const s = Math.floor((Date.now() - ts.toMillis()) / 1000);
+  if (s < 60) return "Just now";
+  if (s < 3600) return `${Math.floor(s / 60)}m ago`;
+  if (s < 86400) return `${Math.floor(s / 3600)}h ago`;
+  return `${Math.floor(s / 86400)}d ago`;
+}
+
+const userCache = {};
+
+/* =====================
    POSTS
 ===================== */
 function listenToPosts(user) {
@@ -187,9 +207,7 @@ function listenToPosts(user) {
                 <div class="post-time">${timeAgo(data.createdAt)}</div>
               </div>
             </div>
-            ${data.uid === user.uid
-              ? `<button class="delete-post">🗑</button>`
-              : ""}
+            ${data.uid === user.uid ? `<button class="delete-post">🗑</button>` : ""}
           </div>
 
           <div class="post-text">${data.text}</div>
@@ -208,7 +226,6 @@ function listenToPosts(user) {
           </div>
         `;
 
-        /* Like */
         post.querySelector(".likeBtn").onclick = () =>
           updateDoc(doc(db, "posts", d.id), {
             likedBy: liked
@@ -216,7 +233,6 @@ function listenToPosts(user) {
               : arrayUnion(user.uid)
           });
 
-        /* Delete post */
         const delPost = post.querySelector(".delete-post");
         if (delPost) {
           delPost.onclick = () => {
@@ -225,51 +241,6 @@ function listenToPosts(user) {
             }
           };
         }
-
-        /* Comments */
-        const list = post.querySelector(".commentList");
-        onSnapshot(
-          query(collection(db, "posts", d.id, "comments"), orderBy("createdAt")),
-          async cs => {
-            list.innerHTML = "";
-            for (const c of cs.docs) {
-              const cd = c.data();
-              let cn = userCache[cd.uid];
-              if (!cn) {
-                const cu = await getDoc(doc(db, "users", cd.uid));
-                cn = cu.exists() ? cu.data().username : "user";
-                userCache[cd.uid] = cn;
-              }
-
-              list.innerHTML += `
-                <div class="comment">
-                  <strong>${cn}</strong>: ${cd.text}
-                  ${cd.uid === user.uid
-                    ? `<button class="del-comment" data-id="${c.id}">×</button>`
-                    : ""}
-                </div>
-              `;
-            }
-
-            list.querySelectorAll(".del-comment").forEach(b => {
-              b.onclick = () =>
-                deleteDoc(doc(db, "posts", d.id, "comments", b.dataset.id));
-            });
-          }
-        );
-
-        post.querySelector(".sendCommentBtn").onclick = () => {
-          const input = post.querySelector(".commentInput");
-          if (!input.value.trim()) return;
-
-          addDoc(collection(db, "posts", d.id, "comments"), {
-            text: input.value.trim(),
-            uid: user.uid,
-            createdAt: serverTimestamp()
-          });
-
-          input.value = "";
-        };
 
         feed.appendChild(post);
       }
@@ -338,7 +309,7 @@ bottomNotifBtn.onclick = () => {
 };
 
 /* =====================
-   🔐 SINGLE AUTH STATE (FINAL)
+   AUTH STATE (FINAL)
 ===================== */
 let unsubPosts = null;
 let unsubNotifs = null;
