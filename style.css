@@ -2427,6 +2427,34 @@ body.is-authenticated .profile-sheet.open {
     -webkit-overflow-scrolling: touch;
   }
 }
+/* =========================================================
+   📱 MOBILE PROFILE SHEET – SIZE & SAFETY FIX
+========================================================= */
+
+@media (max-width: 768px) {
+
+  .profile-sheet {
+    max-height: calc(100vh - 96px);
+    overflow-y: auto;
+
+    padding-bottom: calc(
+      48px + env(safe-area-inset-bottom)
+    );
+  }
+
+  /* Never let logout hide behind bottom bar */
+  .profile-sheet .sheet-item.logout {
+    margin-bottom: 24px;
+  }
+}
+
+/* iOS momentum scroll */
+@supports (-webkit-touch-callout: none) {
+  .profile-sheet {
+    -webkit-overflow-scrolling: touch;
+  }
+}
+
 
 
 
