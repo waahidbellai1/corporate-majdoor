@@ -2509,6 +2509,65 @@ body.dark #notifications {
     width: auto;
   }
 }
+/* =========================================================
+   🔔 DESKTOP NOTIFICATION BELL — TOP RIGHT CORNER (FINAL)
+========================================================= */
+
+@media (min-width: 769px) {
+
+  /* Make header the positioning context */
+  .header.app-bar {
+    position: relative !important;
+  }
+
+  /* Force bell to top-right corner */
+  #notifBell {
+    position: absolute !important;
+    top: 50%;
+    right: 16px;
+
+    transform: translateY(-50%);
+
+    display: flex !important;
+    align-items: center;
+    justify-content: center;
+
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+
+    background: rgba(255,255,255,0.9);
+    border: 1px solid #e2e8f0;
+    cursor: pointer;
+    z-index: 2000;
+  }
+
+  body.dark #notifBell {
+    background: rgba(2,6,23,0.9);
+    border-color: #1e293b;
+    color: #e5e7eb;
+  }
+}
+/* =========================================================
+   📱 MOBILE NOTIFICATION PANEL — VISIBLE & CLEAR
+========================================================= */
+
+@media (max-width: 768px) {
+  #notifications {
+    position: fixed !important;
+    left: 12px;
+    right: 12px;
+
+    bottom: calc(64px + env(safe-area-inset-bottom) + 12px);
+    top: auto !important;
+
+    max-height: 50vh;
+    overflow-y: auto;
+
+    z-index: 2000 !important;
+  }
+}
+
 
 
 
