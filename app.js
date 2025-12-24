@@ -40,7 +40,7 @@ const auth = getAuth(app);
 const db = getFirestore(app);
 
 /* =====================
-   ELEMENT HELPERS
+   HELPERS
 ===================== */
 const $ = id => document.getElementById(id);
 
@@ -142,12 +142,13 @@ profileLogout && (profileLogout.onclick = () => signOut(auth));
 sheetLogoutBtn && (sheetLogoutBtn.onclick = () => signOut(auth));
 
 /* =====================
-   DESKTOP PROFILE DROPDOWN (FIXED)
+   DESKTOP PROFILE DROPDOWN
 ===================== */
 if (profileBtn && profileMenu) {
   profileBtn.onclick = (e) => {
     e.stopPropagation();
     profileMenu.classList.toggle("open");
+    notifications.style.display = "none";
   };
 
   document.addEventListener("click", (e) => {
@@ -159,6 +160,38 @@ if (profileBtn && profileMenu) {
     }
   });
 }
+
+/* =====================
+   NOTIFICATION CENTER
+===================== */
+function toggleNotifications() {
+  if (!notifications) return;
+
+  const open = notifications.style.display === "block";
+  notifications.style.display = open ? "none" : "block";
+
+  profileMenu?.classList.remove("open");
+}
+
+notifBell && (notifBell.onclick = (e) => {
+  e.stopPropagation();
+  toggleNotifications();
+});
+
+bottomNotifBtn && (bottomNotifBtn.onclick = () => {
+  toggleNotifications();
+});
+
+document.addEventListener("click", (e) => {
+  if (
+    notifications &&
+    !notifications.contains(e.target) &&
+    !notifBell?.contains(e.target) &&
+    !bottomNotifBtn?.contains(e.target)
+  ) {
+    notifications.style.display = "none";
+  }
+});
 
 /* =====================
    HELPERS
@@ -216,14 +249,6 @@ function listenToPosts(user) {
             <button class="likeBtn ${liked ? "liked" : ""}">👍 Like</button>
             ${likedBy.length ? `<span class="likeCount">${likedBy.length}</span>` : ""}
           </div>
-
-          <div class="comments">
-            <div class="comment-box">
-              <input class="commentInput" placeholder="Add comment…" />
-              <button class="sendCommentBtn">Send</button>
-            </div>
-            <div class="commentList"></div>
-          </div>
         `;
 
         post.querySelector(".likeBtn").onclick = () =>
@@ -249,7 +274,7 @@ function listenToPosts(user) {
 }
 
 /* =====================
-   NOTIFICATIONS
+   NOTIFICATIONS LISTENER
 ===================== */
 function listenToNotifications(user) {
   return onSnapshot(
@@ -260,9 +285,22 @@ function listenToNotifications(user) {
     ),
     snap => {
       notificationList.innerHTML = "";
+
+      if (snap.empty) {
+        notificationList.innerHTML = `
+          <div class="notification empty">
+            🎉 You're all caught up
+          </div>
+        `;
+        return;
+      }
+
       snap.forEach(n => {
-        notificationList.innerHTML +=
-          `<div class="notification">${n.data().text}</div>`;
+        notificationList.innerHTML += `
+          <div class="notification">
+            ${n.data().text}
+          </div>
+        `;
       });
     }
   );
@@ -303,11 +341,6 @@ sheetOverlay.onclick = () => {
   sheetOverlay.classList.remove("open");
 };
 
-bottomNotifBtn.onclick = () => {
-  notifications.style.display =
-    notifications.style.display === "block" ? "none" : "block";
-};
-
 /* =====================
    AUTH STATE (FINAL)
 ===================== */
@@ -318,8 +351,8 @@ onAuthStateChanged(auth, user => {
 
   document.body.className = "";
 
-  if (unsubPosts) unsubPosts();
-  if (unsubNotifs) unsubNotifs();
+  unsubPosts && unsubPosts();
+  unsubNotifs && unsubNotifs();
 
   if (user) {
     document.body.classList.add("is-authenticated");
