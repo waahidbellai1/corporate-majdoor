@@ -33,11 +33,11 @@
 
     <!-- Center logo -->
     <img
-  src="logo-light.png"
-  alt="Corporate Majdoor"
-  class="app-logo"
-  id="appLogo"
-/>
+      src="logo-light.png"
+      alt="Corporate Majdoor"
+      class="app-logo"
+      id="appLogo"
+    />
 
     <!-- Notification Bell (AUTH ONLY via JS, hidden on mobile) -->
     <button
@@ -48,6 +48,15 @@
       🔔
     </button>
 
+  </div>
+
+  <!-- =====================
+       🔔 NOTIFICATIONS (OVERLAY FIX)
+       ⬆ MOVED OUT OF .container
+  ====================== -->
+  <div id="notifications">
+    <h3>Notifications</h3>
+    <div id="notificationList" aria-live="polite"></div>
   </div>
 
   <!-- =====================
@@ -125,14 +134,6 @@
     <div id="feed"></div>
 
     <!-- =====================
-         NOTIFICATIONS
-    ====================== -->
-    <div id="notifications">
-      <h3>Notifications</h3>
-      <div id="notificationList" aria-live="polite"></div>
-    </div>
-
-    <!-- =====================
          FOOTER
     ====================== -->
     <div id="footer">
@@ -195,33 +196,30 @@
        SCRIPT
   ====================== -->
   <script type="module" src="app.js"></script>
+
   <!-- =====================
-     PROFILE BOTTOM SHEET
-     MOBILE ONLY
-====================== -->
-<div id="profileSheetOverlay" class="sheet-overlay"></div>
+       PROFILE BOTTOM SHEET
+       MOBILE ONLY
+  ====================== -->
+  <div id="profileSheetOverlay" class="sheet-overlay"></div>
 
-<div id="profileSheet" class="profile-sheet">
+  <div id="profileSheet" class="profile-sheet">
 
-  <div class="sheet-handle"></div>
+    <div class="sheet-handle"></div>
 
-  <button class="sheet-item" id="sheetProfileBtn">
-    👤 My Profile
-  </button>
+    <button class="sheet-item" id="sheetProfileBtn">
+      👤 My Profile
+    </button>
 
-  <button class="sheet-item" id="sheetThemeToggle">
-    🌙 Toggle Dark Mode
-  </button>
+    <button class="sheet-item" id="sheetThemeToggle">
+      🌙 Toggle Dark Mode
+    </button>
 
-  <button class="sheet-item logout" id="sheetLogoutBtn">
-    🚪 Logout
-  </button>
+    <button class="sheet-item logout" id="sheetLogoutBtn">
+      🚪 Logout
+    </button>
 
-</div>
+  </div>
 
 </body>
 </html>
-
-
-
-
