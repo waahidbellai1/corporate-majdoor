@@ -2567,6 +2567,370 @@ body.dark #notifications {
     z-index: 2000 !important;
   }
 }
+/* =========================================================
+   🔔 DESKTOP BELL — PERFECT VERTICAL ALIGNMENT WITH AVATAR
+========================================================= */
+
+@media (min-width: 769px) {
+
+  /* Ensure header uses same alignment baseline */
+  .header.app-bar {
+    display: flex !important;
+    align-items: center !important;
+  }
+
+  /* Profile avatar baseline */
+  .profile-btn {
+    display: flex;
+    align-items: center;
+  }
+
+  /* Bell baseline — MATCH avatar */
+  #notifBell {
+    position: absolute !important;
+    right: 16px;
+    top: 50%;
+
+    transform: translateY(-50%); /* true center */
+
+    display: flex !important;
+    align-items: center;
+    justify-content: center;
+
+    width: 42px;
+    height: 42px;
+    line-height: 1; /* IMPORTANT: fixes tilt */
+  }
+}
+/* =========================================================
+   🔔 DESKTOP NOTIFICATION BELL
+   - Perfectly aligned with profile avatar
+   - Hidden on login page
+   FINAL AUTHORITY
+========================================================= */
+
+@media (min-width: 769px) {
+
+  /* Header baseline */
+  .header.app-bar {
+    display: flex !important;
+    align-items: center !important;
+    position: relative !important;
+  }
+
+  /* Profile avatar baseline */
+  .profile-btn {
+    display: flex;
+    align-items: center;
+  }
+
+  /* Notification bell */
+  body.is-authenticated #notifBell {
+    position: absolute !important;
+    right: 16px;
+    top: 50%;
+    transform: translateY(-50%);
+
+    display: flex !important;
+    align-items: center;
+    justify-content: center;
+
+    width: 38px;
+    height: 38px;
+    padding: 0;
+
+    font-size: 18px;
+    line-height: 1; /* 🔑 removes emoji vertical offset */
+
+    background: rgba(255,255,255,0.9);
+    border: 1px solid #e2e8f0;
+    border-radius: 50%;
+    cursor: pointer;
+    z-index: 2000;
+  }
+
+  /* Dark mode */
+  body.dark.is-authenticated #notifBell {
+    background: rgba(2,6,23,0.9);
+    border-color: #1e293b;
+    color: #e5e7eb;
+  }
+
+  /* 🚫 LOGGED OUT — HIDE COMPLETELY */
+  body.is-logged-out #notifBell {
+    display: none !important;
+    visibility: hidden !important;
+    pointer-events: none !important;
+  }
+/* =========================================================
+   🔔 DESKTOP BELL — TRUE ALIGNMENT (STRUCTURAL FIX)
+   Same row, same baseline as profile avatar
+========================================================= */
+
+@media (min-width: 769px) {
+
+  /* Header becomes a 3-slot flex row */
+  .header.app-bar {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    position: relative !important;
+  }
+
+  /* LEFT: profile */
+  .header.app-bar .profile-btn {
+    display: flex;
+    align-items: center;
+  }
+
+  /* CENTER: logo */
+  .header.app-bar .app-logo {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+  }
+
+  /* RIGHT: notification bell — SAME FLEX BASELINE */
+  body.is-authenticated #notifBell {
+    position: static !important;   /* 🔥 KEY LINE */
+    transform: none !important;
+
+    display: flex !important;
+    align-items: center;
+    justify-content: center;
+
+    width: 38px;
+    height: 38px;
+
+    font-size: 18px;
+    line-height: 1;               /* emoji fix */
+
+    background: rgba(255,255,255,0.9);
+    border: 1px solid #e2e8f0;
+    border-radius: 50%;
+    cursor: pointer;
+  }
+
+  body.dark.is-authenticated #notifBell {
+    background: rgba(2,6,23,0.9);
+    border-color: #1e293b;
+    color: #e5e7eb;
+  }
+
+  /* Logged out = never show */
+  body.is-logged-out #notifBell {
+    display: none !important;
+  }
+}
+}
+/* =========================
+   💬 FACEBOOK STYLE COMMENTS
+========================= */
+
+.comments {
+  margin-top: 12px;
+}
+
+.comment-bubble {
+  background: #f1f5f9;
+  padding: 8px 12px;
+  border-radius: 16px;
+  display: inline-block;
+  max-width: 90%;
+}
+
+body.dark .comment-bubble {
+  background: #020617;
+  border: 1px solid #1e293b;
+}
+
+.comment-actions {
+  display: flex;
+  gap: 10px;
+  font-size: 12px;
+  margin-left: 10px;
+  margin-top: 4px;
+}
+
+.comment-actions button {
+  background: none;
+  border: none;
+  color: #2563eb;
+  cursor: pointer;
+}
+
+.comment-like.liked {
+  color: #dc2626;
+  font-weight: 600;
+}
+
+.comment-box {
+  display: flex;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.comment-box input {
+  flex: 1;
+}
+
+.view-more-comments {
+  background: none;
+  border: none;
+  color: #2563eb;
+  margin-top: 8px;
+  cursor: pointer;
+}
+
+.hidden {
+  display: none;
+}
+/* =========================
+   🔔 NOTIFICATION BELL FIX
+   FORCE INTERACTION
+========================= */
+
+#notifBell {
+  pointer-events: auto !important;
+  cursor: pointer !important;
+  z-index: 2000 !important;
+}
+
+/* Ensure header allows interaction */
+.header.app-bar {
+  pointer-events: auto !important;
+}
+
+/* Logo should not block clicks */
+.app-logo {
+  pointer-events: none !important;
+}
+/* ==================================================
+   🔔 HEADER INTERACTION FIX — FINAL & SAFE
+   Fixes notification bell + profile click issues
+================================================== */
+
+/* Logo must NEVER capture clicks (it overlays header) */
+.app-logo {
+  pointer-events: none !important;
+}
+
+/* Header must allow pointer interaction */
+.header,
+.header.app-bar {
+  pointer-events: auto !important;
+}
+
+/* Ensure header buttons are above all invisible layers */
+#notifBell,
+.profile-btn {
+  position: relative;
+  z-index: 9999 !important;
+  pointer-events: auto !important;
+  cursor: pointer !important;
+}
+
+/* Safety: prevent any header pseudo-elements from blocking clicks */
+.header::before,
+.header::after {
+  pointer-events: none !important;
+}
+/* =========================
+   🔔 NOTIFICATIONS PANEL
+========================= */
+
+#notifications {
+  position: fixed;
+  top: 72px; /* below header */
+  right: 16px;
+  width: 320px;
+  max-height: 60vh;
+  overflow-y: auto;
+  background: var(--card-bg, #ffffff);
+  border-radius: 14px;
+  box-shadow: 0 12px 40px rgba(0,0,0,0.18);
+  z-index: 9999;
+
+  display: none; /* default hidden */
+}
+
+/* Show when open */
+#notifications.open {
+  display: block;
+}
+
+/* Dark mode */
+body.dark #notifications {
+  background: #020617;
+  border: 1px solid #1e293b;
+}
+/* =========================
+   🔔 NOTIFICATIONS VISIBILITY FIX
+========================= */
+
+#notifications {
+  display: none;
+}
+
+#notifications.open {
+  display: block;
+}
+/* =========================
+   🔔 NOTIFICATIONS LAYER FIX
+========================= */
+
+#notifications {
+  position: fixed !important;
+  top: 72px !important;
+  right: 16px !important;
+
+  max-height: 60vh;
+  overflow-y: auto;
+
+  z-index: 10000 !important;
+
+  display: none;
+}
+
+#notifications.open {
+  display: block;
+}
+/* =========================
+   🗑 DELETE POST BUTTON FIX
+   APPEND ONLY — SAFE
+========================= */
+
+.delete-post {
+  background: transparent;
+  border: none;
+  font-size: 18px;
+  cursor: pointer;
+
+  color: #94a3b8;
+
+  padding: 6px;
+  margin-left: 8px;
+
+  line-height: 1;
+}
+
+.delete-post:hover {
+  color: #ef4444;
+}
+
+/* Ensure it stays visible in header */
+.post-header {
+  align-items: center;
+}
+
+/* Dark mode */
+body.dark .delete-post {
+  color: #64748b;
+}
+
+body.dark .delete-post:hover {
+  color: #f87171;
+}
 
 
 
