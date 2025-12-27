@@ -155,7 +155,7 @@
 <div id="profilePage" class="profile-page">
 
   <!-- COVER -->
-  <div class="profile-cover">
+  <div class="profile-cover" id="profileCover">
     <div class="cover-placeholder"></div>
   </div>
 
@@ -163,8 +163,9 @@
   <div class="profile-info">
 
     <!-- AVATAR -->
-    <div class="profile-avatar-large">
-      <span id="profileAvatarLetter">W</span>
+    <div class="profile-avatar-large" id="profileAvatar">
+
+      <span id="profileAvatarLetter">👤</span>
     </div>
 
     <!-- NAME -->
@@ -270,6 +271,19 @@
     </button>
 
   </div>
+  <input
+  type="file"
+  id="avatarInput"
+  accept="image/*"
+  hidden
+/>
+
+<input
+  type="file"
+  id="coverInput"
+  accept="image/*"
+  hidden
+/>
 
 </body>
 </html>
