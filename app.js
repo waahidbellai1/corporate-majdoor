@@ -1,6 +1,13 @@
 /* =====================
    FIREBASE IMPORTS
 ===================== */
+import {
+  getStorage,
+  ref,
+  uploadBytes,
+  getDownloadURL
+} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-storage.js";
+
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
 import {
   getAuth,
@@ -545,3 +552,158 @@ switchAuthBtn?.addEventListener("click", () => {
 
 // Initialize on load
 setLoginMode();
+/* =========================================================
+   ✅ FINAL APPEND-ONLY FIXES
+   Profile Page + Avatar + Cover Upload
+   (SAFE TO ADD AT BOTTOM)
+========================================================= */
+
+/* ---------- STORAGE SAFETY ---------- */
+if (typeof storage === "undefined") {
+  console.error("❌ Firebase Storage not initialized");
+}
+
+/* ---------- ELEMENT SAFETY ---------- */
+const __profileAvatar = document.getElementById("profileAvatar");
+const __profileCover = document.getElementById("profileCover");
+const __avatarInput = document.getElementById("avatarInput");
+const __coverInput = document.getElementById("coverInput");
+
+/* ---------- OPEN FILE PICKERS ---------- */
+__profileAvatar?.addEventListener("click", () => __avatarInput?.click());
+__profileCover?.addEventListener("click", () => __coverInput?.click());
+
+/* ---------- AVATAR UPLOAD ---------- */
+__avatarInput?.addEventListener("change", async e => {
+  try {
+    const file = e.target.files[0];
+    const user = auth.currentUser;
+    if (!file || !user) return;
+
+    const avatarRef = ref(storage, `avatars/${user.uid}`);
+    await uploadBytes(avatarRef, file);
+    const url = await getDownloadURL(avatarRef);
+
+    await updateDoc(doc(db, "users", user.uid), { photoURL: url });
+
+    // Live UI update
+    __profileAvatar.style.backgroundImage = `url(${url})`;
+    __profileAvatar.innerHTML = "";
+  } catch (err) {
+    console.error("Avatar upload failed", err);
+  }
+});
+
+/* ---------- COVER UPLOAD ---------- */
+__coverInput?.addEventListener("change", async e => {
+  try {
+    const file = e.target.files[0];
+    const user = auth.currentUser;
+    if (!file || !user) return;
+
+    const coverRef = ref(storage, `covers/${user.uid}`);
+    await uploadBytes(coverRef, file);
+    const url = await getDownloadURL(coverRef);
+
+    await updateDoc(doc(db, "users", user.uid), { coverURL: url });
+
+    // Live UI update
+    __profileCover.style.backgroundImage = `url(${url})`;
+  } catch (err) {
+    console.error("Cover upload failed", err);
+  }
+});
+
+/* ---------- PROFILE LOAD PATCH ---------- */
+async function __refreshProfileImages() {
+  const user = auth.currentUser;
+  if (!user) return;
+
+  const snap = await getDoc(doc(db, "users", user.uid));
+  if (!snap.exists()) return;
+
+  const data = snap.data();
+
+  if (data.photoURL && __profileAvatar) {
+    __profileAvatar.style.backgroundImage = `url(${data.photoURL})`;
+    __profileAvatar.innerHTML = "";
+  }
+
+  if (data.coverURL && __profileCover) {
+    __profileCover.style.backgroundImage = `url(${data.coverURL})`;
+  }
+}
+
+/* ---------- AUTO-REFRESH WHEN PROFILE OPENS ---------- */
+document
+  .querySelector("#profileMenu .profile-item")
+  ?.addEventListener("click", () => {
+    setTimeout(__refreshProfileImages, 100);
+  });
+
+document
+  .getElementById("sheetProfileBtn")
+  ?.addEventListener("click", () => {
+    setTimeout(__refreshProfileImages, 100);
+  });
+
+/* =========================================================
+   ✅ END OF APPEND-ONLY FIX
+========================================================= */
+/* =========================================================
+   🔙 BACK TO FEED FIX (APPEND ONLY)
+========================================================= */
+
+/* ---------- CREATE BACK BUTTON (ONCE) ---------- */
+(function addBackButton() {
+  const profilePage = document.getElementById("profilePage");
+  if (!profilePage) return;
+
+  // Prevent duplicate button
+  if (document.getElementById("backToFeedBtn")) return;
+
+  const btn = document.createElement("button");
+  btn.id = "backToFeedBtn";
+  btn.innerText = "← Back to Feed";
+  btn.style.cssText = `
+    margin: 12px 16px;
+    padding: 8px 14px;
+    border-radius: 999px;
+    border: 1px solid #e5e7eb;
+    background: white;
+    font-weight: 600;
+    cursor: pointer;
+  `;
+
+  profilePage.prepend(btn);
+
+  btn.addEventListener("click", () => {
+    goBackToFeed();
+  });
+})();
+
+/* ---------- NAVIGATION LOGIC ---------- */
+function goBackToFeed() {
+  const profilePage = document.getElementById("profilePage");
+  if (!profilePage) return;
+
+  profilePage.style.display = "none";
+
+  // Restore feed
+  feed.style.display = "flex";
+  postSection.style.display = "block";
+
+  // Close any open overlays
+  profileMenu?.classList.remove("open");
+  profileSheet?.classList.remove("open");
+  sheetOverlay?.classList.remove("open");
+
+  // Scroll nicely
+  feed.scrollIntoView({ behavior: "smooth", block: "start" });
+}
+
+/* =========================================================
+   ✅ END BACK TO FEED FIX
+========================================================= */
+
+
