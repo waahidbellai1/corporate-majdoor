@@ -70,6 +70,7 @@ const username = $("username");
 
 const postInput = $("postInput");
 const postBtn = $("postBtn");
+const addPostBtn = $("addPostBtn");
 
 /* Menus */
 const profileBtn = $("profileBtn");
@@ -77,6 +78,8 @@ const profileMenu = $("profileMenu");
 const profileLogout = $("profileLogout");
 
 const bottomProfileBtn = $("bottomProfileBtn");
+const bottomNotifBtn = $("bottomNotifBtn");
+
 const profileSheet = $("profileSheet");
 const sheetOverlay = $("profileSheetOverlay");
 const sheetLogoutBtn = $("sheetLogoutBtn");
@@ -153,9 +156,8 @@ sheetLogoutBtn?.addEventListener("click", () => signOut(auth));
 profileBtn?.addEventListener("click", e => {
   e.stopPropagation();
   profileMenu?.classList.toggle("open");
-  notifications.classList.remove("open"); // ✅ FIXED
+  notifications?.classList.remove("open");
 });
-
 
 bottomProfileBtn?.addEventListener("click", () => {
   profileSheet?.classList.add("open");
@@ -172,10 +174,22 @@ sheetOverlay?.addEventListener("click", () => {
 ===================== */
 function toggleNotifications() {
   if (!notifications) return;
-  notifications.classList.toggle("open");
-  profileMenu?.classList.remove("open");
-}
 
+  const isOpen = notifications.classList.contains("open");
+  profileMenu?.classList.remove("open");
+
+  if (isOpen) {
+    notifications.classList.remove("open");
+  } else {
+    notifications.classList.add("open");
+    setTimeout(() => {
+      notifications.scrollIntoView({
+        behavior: "smooth",
+        block: "start"
+      });
+    }, 50);
+  }
+}
 
 notifBell?.addEventListener("click", e => {
   e.stopPropagation();
@@ -187,19 +201,26 @@ bottomNotifBtn?.addEventListener("click", e => {
   toggleNotifications();
 });
 
-
 document.addEventListener("click", e => {
-  if (!notifications?.classList.contains("open")) return;
-
   if (
+    notifications?.classList.contains("open") &&
     !notifications.contains(e.target) &&
-    !notifBell.contains(e.target)
+    !notifBell?.contains(e.target)
   ) {
     notifications.classList.remove("open");
   }
 });
+
 notifications?.addEventListener("click", e => e.stopPropagation());
 
+/* =====================
+   MOBILE ➕ ADD POST
+===================== */
+addPostBtn?.addEventListener("click", () => {
+  postSection.style.display = "block";
+  postSection.scrollIntoView({ behavior: "smooth", block: "center" });
+  setTimeout(() => postInput?.focus(), 300);
+});
 
 /* =====================
    POSTS + COMMENTS
@@ -233,12 +254,8 @@ function listenToPosts(user) {
                 <div class="post-time">${timeAgo(data.createdAt)}</div>
               </div>
             </div>
+            ${data.uid === user.uid ? `<button class="delete-post">🗑</button>` : ""}
           </div>
-
-           ${auth.currentUser && data.uid === auth.currentUser.uid
-      ? `<button class="delete-post" title="Delete post">🗑</button>`
-      : ""}
-  </div>
 
           <div class="post-text">${data.text}</div>
 
@@ -256,36 +273,18 @@ function listenToPosts(user) {
           </div>
         `;
 
-        /* LIKE POST + NOTIFICATION */
-        post.querySelector(".likeBtn")?.addEventListener("click", async () => {
-          await updateDoc(doc(db, "posts", d.id), {
+        post.querySelector(".likeBtn")?.addEventListener("click", () =>
+          updateDoc(doc(db, "posts", d.id), {
             likedBy: liked ? arrayRemove(user.uid) : arrayUnion(user.uid)
-          });
+          })
+        );
 
-          if (!liked && data.uid !== user.uid) {
-            await addDoc(collection(db, "notifications"), {
-              to: data.uid,
-              from: user.uid,
-              type: "like",
-              postId: d.id,
-              text: `${name} liked your post`,
-              createdAt: serverTimestamp(),
-              read: false
-            });
+        post.querySelector(".delete-post")?.addEventListener("click", async () => {
+          if (confirm("Delete this post?")) {
+            await deleteDoc(doc(db, "posts", d.id));
           }
         });
 
-        /* DELETE POST */
-const delBtn = post.querySelector(".delete-post");
-delBtn?.addEventListener("click", async e => {
-  e.stopPropagation();
-  if (confirm("Delete this post?")) {
-    await deleteDoc(doc(db, "posts", d.id));
-  }
-});
-
-
-        /* COMMENTS */
         const list = post.querySelector(".comment-list");
         const input = post.querySelector(".comment-input");
         const sendBtn = post.querySelector(".send-comment");
@@ -307,9 +306,15 @@ delBtn?.addEventListener("click", async e => {
                 userCache[cd.uid] = cn;
               }
 
+              const canDelete =
+                cd.uid === user.uid || data.uid === user.uid;
+
               return `
                 <div class="comment-item">
-                  <div class="comment-bubble"><strong>${cn}</strong> ${cd.text}</div>
+                  <div class="comment-bubble">
+                    <strong>${cn}</strong> ${cd.text}
+                    ${canDelete ? `<button class="delete-comment" data-id="${c.id}">🗑</button>` : ""}
+                  </div>
                 </div>
               `;
             }
@@ -323,8 +328,18 @@ delBtn?.addEventListener("click", async e => {
             }
 
             list.querySelector(".view-more-comments")?.addEventListener("click", e => {
-              list.querySelector(".hidden-comments").classList.remove("hidden");
+              list.querySelector(".hidden-comments")?.classList.remove("hidden");
+              list.scrollIntoView({ behavior: "smooth", block: "nearest" });
               e.target.remove();
+            });
+
+            list.querySelectorAll(".delete-comment").forEach(btn => {
+              btn.addEventListener("click", async e => {
+                e.stopPropagation();
+                if (confirm("Delete this comment?")) {
+                  await deleteDoc(doc(db, "posts", d.id, "comments", btn.dataset.id));
+                }
+              });
             });
           }
         );
@@ -338,18 +353,6 @@ delBtn?.addEventListener("click", async e => {
             createdAt: serverTimestamp()
           });
 
-          if (data.uid !== user.uid) {
-            await addDoc(collection(db, "notifications"), {
-              to: data.uid,
-              from: user.uid,
-              type: "comment",
-              postId: d.id,
-              text: `${name} commented on your post`,
-              createdAt: serverTimestamp(),
-              read: false
-            });
-          }
-
           input.value = "";
         });
 
@@ -360,7 +363,7 @@ delBtn?.addEventListener("click", async e => {
 }
 
 /* =====================
-   NOTIFICATION LISTENER
+   NOTIFICATIONS LISTENER
 ===================== */
 function listenToNotifications(user) {
   return onSnapshot(
@@ -373,16 +376,14 @@ function listenToNotifications(user) {
       notificationList.innerHTML = "";
 
       if (snap.empty) {
-        notificationList.innerHTML = `
-          <div class="notification empty">🎉 You're all caught up</div>
-        `;
+        notificationList.innerHTML =
+          `<div class="notification empty">🎉 You're all caught up</div>`;
         return;
       }
 
       snap.forEach(d => {
-        notificationList.innerHTML += `
-          <div class="notification">${d.data().text}</div>
-        `;
+        notificationList.innerHTML +=
+          `<div class="notification">${d.data().text}</div>`;
       });
     }
   );
@@ -393,14 +394,67 @@ function listenToNotifications(user) {
 ===================== */
 postBtn?.addEventListener("click", async () => {
   if (!postInput.value.trim()) return;
+
   await addDoc(collection(db, "posts"), {
     text: postInput.value.trim(),
     uid: auth.currentUser.uid,
     createdAt: serverTimestamp(),
     likedBy: []
   });
+
   postInput.value = "";
 });
+
+/* =====================
+   👤 PROFILE PAGE LOGIC
+===================== */
+
+const profilePage = $("profilePage");
+const profileUsername = $("profileUsername");
+const profileAvatarLetter = $("profileAvatarLetter");
+const editProfileBtn = $("editProfileBtn");
+
+// Open profile page
+function openProfile(user) {
+  if (!user) return;
+
+  // Hide feed + composer
+  feed.style.display = "none";
+  postSection.style.display = "none";
+
+  // Show profile
+  profilePage.style.display = "block";
+
+  loadProfile(user);
+}
+
+// Load profile data
+async function loadProfile(user) {
+  const snap = await getDoc(doc(db, "users", user.uid));
+  if (!snap.exists()) return;
+
+  const data = snap.data();
+
+  profileUsername.innerText = data.username || "User";
+  profileAvatarLetter.innerText =
+    data.username?.[0]?.toUpperCase() || "U";
+}
+
+// Desktop menu → My Profile (FIRST item)
+document
+  .querySelector("#profileMenu .profile-item")
+  ?.addEventListener("click", () => {
+    openProfile(auth.currentUser);
+    profileMenu.classList.remove("open");
+  });
+
+// Mobile bottom sheet → My Profile
+$("sheetProfileBtn")?.addEventListener("click", () => {
+  openProfile(auth.currentUser);
+  profileSheet.classList.remove("open");
+  sheetOverlay.classList.remove("open");
+});
+
 
 /* =====================
    AUTH STATE
@@ -415,25 +469,79 @@ onAuthStateChanged(auth, user => {
   unsubNotifs?.();
 
   if (user) {
+    profilePage.style.display = "none";
     document.body.classList.add("is-authenticated");
     authSection.style.display = "none";
     postSection.style.display = "block";
     feed.style.display = "flex";
-    notifications.classList.remove("open");
 
     unsubPosts = listenToPosts(user);
     unsubNotifs = listenToNotifications(user);
 
   } else {
+    profilePage.style.display = "none";
     document.body.classList.add("is-logged-out");
     authSection.style.display = "block";
     postSection.style.display = "none";
     feed.innerHTML = "";
-    notifications.classList.remove("open");
     notificationList.innerHTML = "";
 
     profileMenu?.classList.remove("open");
     profileSheet?.classList.remove("open");
     sheetOverlay?.classList.remove("open");
+    notifications?.classList.remove("open");
   }
 });
+/* =====================
+   🔐 AUTH TOGGLE (LOGIN ↔ SIGNUP)
+   APPEND ONLY
+===================== */
+
+const authTitle = $("authTitle");
+const authSubtitle = $("authSubtitle");
+const switchAuthBtn = $("switchAuthBtn");
+const switchText = $("switchText");
+
+let isSignupMode = false;
+
+// Default state: LOGIN
+function setLoginMode() {
+  isSignupMode = false;
+
+  authTitle.innerText = "Welcome back";
+  authSubtitle.innerText = "Login to continue";
+
+  switchText.innerText = "Don’t have an account?";
+  switchAuthBtn.innerText = "Sign up";
+
+  loginBtn.style.display = "block";
+  signupBtn.style.display = "none";
+  username.style.display = "none";
+
+  status.innerText = "";
+}
+
+// Signup state
+function setSignupMode() {
+  isSignupMode = true;
+
+  authTitle.innerText = "Create your account";
+  authSubtitle.innerText = "Join Corporate Majdoor";
+
+  switchText.innerText = "Already have an account?";
+  switchAuthBtn.innerText = "Login";
+
+  loginBtn.style.display = "none";
+  signupBtn.style.display = "block";
+  username.style.display = "block";
+
+  status.innerText = "";
+}
+
+// Toggle handler
+switchAuthBtn?.addEventListener("click", () => {
+  isSignupMode ? setLoginMode() : setSignupMode();
+});
+
+// Initialize on load
+setLoginMode();
