@@ -51,8 +51,7 @@
   </div>
 
   <!-- =====================
-       🔔 NOTIFICATIONS (OVERLAY FIX)
-       ⬆ MOVED OUT OF .container
+       🔔 NOTIFICATIONS
   ====================== -->
   <div id="notifications">
     <h3>Notifications</h3>
@@ -86,9 +85,17 @@
          AUTH SECTION
     ====================== -->
     <div id="authSection">
+
+      <!-- 🔐 AUTH HEADER (NEW) -->
+      <div class="auth-header">
+        <h2 id="authTitle">Welcome back</h2>
+        <p id="authSubtitle">Login to continue</p>
+      </div>
+
+      <!-- USERNAME (signup only, controlled by JS) -->
       <input
         id="username"
-        placeholder="Username (signup only)"
+        placeholder="Username"
         autocomplete="username"
       />
 
@@ -107,8 +114,17 @@
       />
 
       <button id="loginBtn" type="button">Login</button>
+
       <div class="auth-or">or</div>
+
       <button id="signupBtn" type="button">Sign Up</button>
+
+      <!-- 🔁 AUTH SWITCH (NEW) -->
+      <div class="auth-switch">
+        <span id="switchText">Don’t have an account?</span>
+        <button id="switchAuthBtn" type="button">Sign up</button>
+      </div>
+
     </div>
 
     <!-- LOGOUT (fallback, kept) -->
@@ -132,6 +148,40 @@
          FEED
     ====================== -->
     <div id="feed"></div>
+
+    <!-- =====================
+     👤 PROFILE PAGE
+===================== -->
+<div id="profilePage" class="profile-page">
+
+  <!-- COVER -->
+  <div class="profile-cover">
+    <div class="cover-placeholder"></div>
+  </div>
+
+  <!-- PROFILE INFO -->
+  <div class="profile-info">
+
+    <!-- AVATAR -->
+    <div class="profile-avatar-large">
+      <span id="profileAvatarLetter">W</span>
+    </div>
+
+    <!-- NAME -->
+    <h2 id="profileUsername">Username</h2>
+
+    <!-- META -->
+    <p class="profile-meta">Corporate Majdoor</p>
+
+    <!-- ACTIONS -->
+    <button id="editProfileBtn" class="edit-profile-btn">
+      Edit Profile
+    </button>
+
+  </div>
+
+</div>
+
 
     <!-- =====================
          FOOTER
