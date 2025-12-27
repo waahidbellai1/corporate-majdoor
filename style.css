@@ -3226,6 +3226,101 @@ body.dark .edit-profile-btn {
   color: #e5e7eb;
   border-color: #1e293b;
 }
+/* =========================
+   📸 PROFILE IMAGE UPLOAD
+========================= */
+
+.profile-avatar-large {
+  cursor: pointer;
+  position: relative;
+}
+
+.profile-avatar-large::after {
+  content: "Change";
+  position: absolute;
+  bottom: -22px;
+  font-size: 12px;
+  color: #2563eb;
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+
+.profile-avatar-large:hover::after {
+  opacity: 1;
+}
+
+.profile-cover {
+  cursor: pointer;
+  position: relative;
+}
+
+.profile-cover::after {
+  content: "Change cover";
+  position: absolute;
+  bottom: 12px;
+  right: 12px;
+  font-size: 12px;
+  background: rgba(0,0,0,0.6);
+  color: #fff;
+  padding: 4px 8px;
+  border-radius: 6px;
+  opacity: 0;
+}
+
+.profile-cover:hover::after {
+  opacity: 1;
+}
+/* =====================
+   📸 PROFILE IMAGE UPLOAD
+===================== */
+
+const profileAvatar = $("profileAvatar");
+const profileCover = $("profileCover");
+const avatarInput = $("avatarInput");
+const coverInput = $("coverInput");
+
+// Open file picker
+profileAvatar?.addEventListener("click", () => avatarInput.click());
+profileCover?.addEventListener("click", () => coverInput.click());
+
+// Upload avatar
+avatarInput?.addEventListener("change", async e => {
+  const file = e.target.files[0];
+  if (!file || !auth.currentUser) return;
+
+  const uid = auth.currentUser.uid;
+  const avatarRef = ref(storage, `avatars/${uid}.jpg`);
+
+  await uploadBytes(avatarRef, file);
+  const url = await getDownloadURL(avatarRef);
+
+  await updateDoc(doc(db, "users", uid), {
+    photoURL: url
+  });
+
+  // Update UI immediately
+  profileAvatar.style.backgroundImage = `url(${url})`;
+  profileAvatar.innerHTML = "";
+});
+
+// Upload cover
+coverInput?.addEventListener("change", async e => {
+  const file = e.target.files[0];
+  if (!file || !auth.currentUser) return;
+
+  const uid = auth.currentUser.uid;
+  const coverRef = ref(storage, `covers/${uid}.jpg`);
+
+  await uploadBytes(coverRef, file);
+  const url = await getDownloadURL(coverRef);
+
+  await updateDoc(doc(db, "users", uid), {
+    coverURL: url
+  });
+
+  profileCover.style.backgroundImage = `url(${url})`;
+});
+
 
 
 
