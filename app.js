@@ -45,6 +45,7 @@ const app = initializeApp({
 
 const auth = getAuth(app);
 const db = getFirestore(app);
+const storage = getStorage(app);
 
 /* =====================
    HELPERS
@@ -61,6 +62,15 @@ function timeAgo(ts) {
   return `${Math.floor(s / 86400)}d ago`;
 }
 
+function escapeHtml(value = "") {
+  return value
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#39;");
+}
+
 /* =====================
    ELEMENTS
 ===================== */
@@ -71,6 +81,7 @@ const status = $("status");
 
 const loginBtn = $("loginBtn");
 const signupBtn = $("signupBtn");
+const logoutBtn = $("logoutBtn");
 const email = $("email");
 const password = $("password");
 const username = $("username");
@@ -140,6 +151,12 @@ loginBtn?.addEventListener("click", () => {
     .catch(e => status.innerText = e.message);
 });
 
+password?.addEventListener("keydown", e => {
+  if (e.key === "Enter") {
+    (isSignupMode ? signupBtn : loginBtn)?.click();
+  }
+});
+
 signupBtn?.addEventListener("click", async () => {
   if (!username.value.trim()) return status.innerText = "Username required";
 
@@ -156,6 +173,7 @@ signupBtn?.addEventListener("click", async () => {
 
 profileLogout?.addEventListener("click", () => signOut(auth));
 sheetLogoutBtn?.addEventListener("click", () => signOut(auth));
+logoutBtn?.addEventListener("click", () => signOut(auth));
 
 /* =====================
    MENUS
@@ -233,9 +251,15 @@ addPostBtn?.addEventListener("click", () => {
    POSTS + COMMENTS
 ===================== */
 function listenToPosts(user) {
+  const commentUnsubs = [];
+
   return onSnapshot(
     query(collection(db, "posts"), orderBy("createdAt", "desc")),
     async snap => {
+      while (commentUnsubs.length) {
+        commentUnsubs.pop()?.();
+      }
+
       feed.innerHTML = "";
 
       for (const d of snap.docs) {
@@ -257,14 +281,14 @@ function listenToPosts(user) {
             <div class="post-header-left">
               <div class="avatar">${name[0]}</div>
               <div>
-                <div class="post-username">${name}</div>
+                <div class="post-username">${escapeHtml(name)}</div>
                 <div class="post-time">${timeAgo(data.createdAt)}</div>
               </div>
             </div>
             ${data.uid === user.uid ? `<button class="delete-post">🗑</button>` : ""}
           </div>
 
-          <div class="post-text">${data.text}</div>
+          <div class="post-text">${escapeHtml(data.text)}</div>
 
           <div class="post-actions">
             <button class="likeBtn ${liked ? "liked" : ""}">👍 Like</button>
@@ -280,11 +304,19 @@ function listenToPosts(user) {
           </div>
         `;
 
-        post.querySelector(".likeBtn")?.addEventListener("click", () =>
-          updateDoc(doc(db, "posts", d.id), {
+        post.querySelector(".likeBtn")?.addEventListener("click", async () => {
+          await updateDoc(doc(db, "posts", d.id), {
             likedBy: liked ? arrayRemove(user.uid) : arrayUnion(user.uid)
-          })
-        );
+          });
+
+          if (!liked && data.uid !== user.uid) {
+            await addDoc(collection(db, "notifications"), {
+              to: data.uid,
+              text: `${name} liked your post`,
+              createdAt: serverTimestamp()
+            });
+          }
+        });
 
         post.querySelector(".delete-post")?.addEventListener("click", async () => {
           if (confirm("Delete this post?")) {
@@ -296,7 +328,7 @@ function listenToPosts(user) {
         const input = post.querySelector(".comment-input");
         const sendBtn = post.querySelector(".send-comment");
 
-        onSnapshot(
+        const commentsUnsub = onSnapshot(
           query(collection(db, "posts", d.id, "comments"), orderBy("createdAt")),
           async snap => {
             list.innerHTML = "";
@@ -319,7 +351,7 @@ function listenToPosts(user) {
               return `
                 <div class="comment-item">
                   <div class="comment-bubble">
-                    <strong>${cn}</strong> ${cd.text}
+                    <strong>${escapeHtml(cn)}</strong> ${escapeHtml(cd.text)}
                     ${canDelete ? `<button class="delete-comment" data-id="${c.id}">🗑</button>` : ""}
                   </div>
                 </div>
@@ -351,16 +383,35 @@ function listenToPosts(user) {
           }
         );
 
+        commentUnsubs.push(commentsUnsub);
+
         sendBtn?.addEventListener("click", async () => {
           if (!input.value.trim()) return;
 
+          const commentText = input.value.trim();
+
           await addDoc(collection(db, "posts", d.id, "comments"), {
-            text: input.value.trim(),
+            text: commentText,
             uid: user.uid,
             createdAt: serverTimestamp()
           });
 
+          if (data.uid !== user.uid) {
+            await addDoc(collection(db, "notifications"), {
+              to: data.uid,
+              text: `${name} commented on your post`,
+              createdAt: serverTimestamp()
+            });
+          }
+
           input.value = "";
+        });
+
+        input?.addEventListener("keydown", e => {
+          if (e.key === "Enter") {
+            e.preventDefault();
+            sendBtn?.click();
+          }
         });
 
         feed.appendChild(post);
@@ -390,7 +441,7 @@ function listenToNotifications(user) {
 
       snap.forEach(d => {
         notificationList.innerHTML +=
-          `<div class="notification">${d.data().text}</div>`;
+          `<div class="notification">${escapeHtml(d.data().text || "")}</div>`;
       });
     }
   );
@@ -410,6 +461,13 @@ postBtn?.addEventListener("click", async () => {
   });
 
   postInput.value = "";
+});
+
+postInput?.addEventListener("keydown", e => {
+  if (e.key === "Enter" && (e.ctrlKey || e.metaKey)) {
+    e.preventDefault();
+    postBtn?.click();
+  }
 });
 
 /* =====================
@@ -470,7 +528,7 @@ let unsubPosts = null;
 let unsubNotifs = null;
 
 onAuthStateChanged(auth, user => {
-  document.body.className = "";
+  document.body.classList.remove("is-authenticated", "is-logged-out");
 
   unsubPosts?.();
   unsubNotifs?.();
@@ -559,9 +617,7 @@ setLoginMode();
 ========================================================= */
 
 /* ---------- STORAGE SAFETY ---------- */
-if (typeof storage === "undefined") {
-  console.error("❌ Firebase Storage not initialized");
-}
+if (!storage) console.error("❌ Firebase Storage not initialized");
 
 /* ---------- ELEMENT SAFETY ---------- */
 const __profileAvatar = document.getElementById("profileAvatar");
