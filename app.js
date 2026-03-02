@@ -28,7 +28,8 @@ import {
   deleteDoc,
   arrayUnion,
   arrayRemove,
-  where
+  where,
+  getDocs
 } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
 const app = initializeApp({
@@ -90,6 +91,7 @@ const profileCover = $("profileCover");
 const profileAvatar = $("profileAvatar");
 const profileAvatarLetter = $("profileAvatarLetter");
 const profileUsername = $("profileUsername");
+const profilePostCount = $("profilePostCount");
 const avatarInput = $("avatarInput");
 const coverInput = $("coverInput");
 const downloadAvatarBtn = $("downloadAvatarBtn");
@@ -409,8 +411,15 @@ async function loadProfile(user) {
   const snap = await getDoc(doc(db, "users", user.uid));
   if (!snap.exists()) return;
   const data = snap.data();
-  profileUsername.innerText = data.username || "User";
-  profileAvatarLetter.innerText = (data.username || "U")[0].toUpperCase();
+  const usernameText = data.username || "User";
+  const userInitial = usernameText[0].toUpperCase();
+
+  profileUsername.innerText = usernameText;
+  profileAvatarLetter.innerText = userInitial;
+
+  document.querySelectorAll(".profile-avatar, .bottom-avatar").forEach(avatarEl => {
+    avatarEl.textContent = userInitial;
+  });
 
   if (data.photoURL) {
     profileAvatar.style.backgroundImage = `url(${data.photoURL})`;
@@ -430,9 +439,12 @@ async function loadProfile(user) {
     profileCover.classList.remove("has-image");
   }
 
-  downloadAvatarBtn.onclick = () => data.photoURL && window.open(data.photoURL, "_blank");
-  downloadCoverBtn.onclick = () => data.coverURL && window.open(data.coverURL, "_blank");
+  const userPosts = await getDocs(query(collection(db, "posts"), where("uid", "==", user.uid)));
+  profilePostCount.textContent = String(userPosts.size);
 }
+
+downloadAvatarBtn?.addEventListener("click", () => avatarInput?.click());
+downloadCoverBtn?.addEventListener("click", () => coverInput?.click());
 
 profileAvatar?.addEventListener("click", () => avatarInput?.click());
 profileCover?.addEventListener("click", () => coverInput?.click());
