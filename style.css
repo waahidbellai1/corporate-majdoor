@@ -3326,3 +3326,175 @@ body.dark .chat-msg.mine .chat-text { background: #1e3a8a; border-color: #1d4ed8
 body.dark .bottom-bar { background: rgba(2,6,23,.95); border-color: #1e293b; }
 
 @media (max-width: 768px) { .theme-toggle { display: none; } }
+
+/* ===== 2026 iOS-friendly feed/profile refresh ===== */
+:root {
+  --ios-blue: #1877f2;
+  --ios-muted: #e9eef5;
+}
+
+button {
+  border-radius: 12px;
+}
+
+#postBtn,
+#sendChatBtn,
+#loginBtn,
+#signupBtn,
+#switchAuthBtn {
+  min-height: 44px;
+}
+
+#feed {
+  gap: 14px;
+}
+
+.post {
+  border-radius: 18px;
+  border: 1px solid #dde5ef;
+  box-shadow: 0 6px 20px rgba(15, 23, 42, 0.05);
+}
+
+.post-actions button,
+.comment-actions button,
+.send-comment,
+.delete-post {
+  min-height: 38px;
+}
+
+.profile-page {
+  margin-top: 12px;
+  border-radius: 18px;
+  border: 1px solid #d9e1ec;
+  overflow: hidden;
+}
+
+.profile-topbar {
+  padding: 12px;
+  background: #fff;
+  position: sticky;
+  top: 60px;
+  z-index: 2;
+}
+
+.ios-pill-btn {
+  border: none;
+  background: var(--ios-muted);
+  padding: 10px 14px;
+  font-weight: 600;
+}
+
+.profile-cover {
+  height: 210px;
+  background: linear-gradient(170deg, #bcd8ff, #c1cffd);
+}
+
+.profile-info {
+  margin-top: -60px;
+  background: #fff;
+  border-top-left-radius: 20px;
+  border-top-right-radius: 20px;
+  padding-top: 0;
+}
+
+.profile-avatar-large {
+  width: 122px;
+  height: 122px;
+  margin-top: -42px;
+  border: 5px solid #fff;
+}
+
+.profile-social-stats {
+  display: flex;
+  justify-content: space-around;
+  margin: 14px 0 8px;
+}
+
+.profile-social-stats div {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.profile-social-stats span {
+  color: #64748b;
+  font-size: 12px;
+}
+
+.profile-actions-row {
+  gap: 10px;
+}
+
+.ios-btn-primary,
+.ios-btn-muted {
+  border: none;
+  min-height: 42px;
+  padding: 0 14px;
+  font-weight: 600;
+}
+
+.ios-btn-primary {
+  background: var(--ios-blue);
+  color: #fff;
+}
+
+.ios-btn-muted {
+  background: var(--ios-muted);
+  color: #1e293b;
+}
+
+.profile-tabs {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  padding: 14px;
+  border-top: 1px solid #e2e8f0;
+}
+
+.profile-tabs button {
+  border: none;
+  background: #f1f5f9;
+  min-height: 40px;
+}
+
+.profile-tabs .active {
+  background: #dbeafe;
+  color: #1d4ed8;
+  font-weight: 700;
+}
+
+.profile-card {
+  margin: 0 14px 18px;
+  border: 1px solid #e2e8f0;
+  border-radius: 14px;
+  background: #fff;
+  padding: 14px;
+}
+
+@media (max-width: 768px) {
+  .header.app-bar {
+    padding-top: max(8px, env(safe-area-inset-top));
+  }
+
+  .profile-page {
+    margin-bottom: 88px;
+  }
+}
+
+body.dark .profile-info,
+body.dark .profile-topbar,
+body.dark .profile-card {
+  background: #0f172a;
+}
+
+body.dark .ios-pill-btn,
+body.dark .ios-btn-muted,
+body.dark .profile-tabs button {
+  background: #1e293b;
+  color: #e2e8f0;
+}
+
+body.dark .profile-tabs .active {
+  background: #1d4ed8;
+  color: #fff;
+}

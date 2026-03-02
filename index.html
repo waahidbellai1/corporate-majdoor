@@ -61,20 +61,42 @@
     <div id="feed"></div>
 
     <div id="profilePage" class="profile-page">
-      <button id="backToFeedBtn" type="button">← Back to Feed</button>
-      <div class="profile-cover" id="profileCover">
-        <div class="cover-placeholder">Tap to upload cover</div>
+      <div class="profile-topbar">
+        <button id="backToFeedBtn" type="button" class="ios-pill-btn">← Feed</button>
       </div>
+
+      <div class="profile-cover" id="profileCover">
+        <div class="cover-placeholder">Tap to upload cover photo</div>
+      </div>
+
       <div class="profile-info">
         <div class="profile-avatar-large" id="profileAvatar">
           <span id="profileAvatarLetter">👤</span>
         </div>
         <h2 id="profileUsername">Username</h2>
-        <p class="profile-meta">Corporate Majdoor</p>
-        <div class="profile-actions-row">
-          <button id="downloadAvatarBtn" class="edit-profile-btn" type="button">Download Avatar</button>
-          <button id="downloadCoverBtn" class="edit-profile-btn" type="button">Download Cover</button>
+        <p class="profile-meta">Corporate Majdoor · Works here</p>
+
+        <div class="profile-social-stats" id="profileStats">
+          <div><strong id="profilePostCount">0</strong><span>Posts</span></div>
+          <div><strong>1.2K</strong><span>Friends</span></div>
+          <div><strong>148</strong><span>Photos</span></div>
         </div>
+
+        <div class="profile-actions-row">
+          <button id="downloadAvatarBtn" class="ios-btn-primary" type="button">Edit profile photo</button>
+          <button id="downloadCoverBtn" class="ios-btn-muted" type="button">Edit cover</button>
+        </div>
+      </div>
+
+      <div class="profile-tabs" role="tablist" aria-label="Profile tabs">
+        <button class="active" type="button">Posts</button>
+        <button type="button">About</button>
+        <button type="button">Photos</button>
+      </div>
+
+      <div class="profile-card">
+        <h3>Intro</h3>
+        <p>iOS friendly profile layout with quick actions and clean spacing.</p>
       </div>
     </div>
 
