@@ -45,6 +45,7 @@ const app = initializeApp({
 
 const auth = getAuth(app);
 const db = getFirestore(app);
+const storage = getStorage(app);
 
 /* =====================
    HELPERS
@@ -135,23 +136,37 @@ sheetThemeToggle?.addEventListener("click", () => {
 /* =====================
    AUTH
 ===================== */
-loginBtn?.addEventListener("click", () => {
-  signInWithEmailAndPassword(auth, email.value, password.value)
-    .catch(e => status.innerText = e.message);
+loginBtn?.addEventListener("click", async () => {
+  status.innerText = "";
+
+  try {
+    await signInWithEmailAndPassword(auth, email.value, password.value);
+  } catch (e) {
+    status.innerText = e.message;
+  }
 });
 
 signupBtn?.addEventListener("click", async () => {
-  if (!username.value.trim()) return status.innerText = "Username required";
+  status.innerText = "";
 
-  const cred = await createUserWithEmailAndPassword(
-    auth,
-    email.value,
-    password.value
-  );
+  if (!username.value.trim()) {
+    status.innerText = "Username required";
+    return;
+  }
 
-  await setDoc(doc(db, "users", cred.user.uid), {
-    username: username.value.trim()
-  });
+  try {
+    const cred = await createUserWithEmailAndPassword(
+      auth,
+      email.value,
+      password.value
+    );
+
+    await setDoc(doc(db, "users", cred.user.uid), {
+      username: username.value.trim()
+    });
+  } catch (e) {
+    status.innerText = e.message;
+  }
 });
 
 profileLogout?.addEventListener("click", () => signOut(auth));
@@ -470,7 +485,7 @@ let unsubPosts = null;
 let unsubNotifs = null;
 
 onAuthStateChanged(auth, user => {
-  document.body.className = "";
+  document.body.classList.remove("is-authenticated", "is-logged-out");
 
   unsubPosts?.();
   unsubNotifs?.();
