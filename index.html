@@ -2,288 +2,119 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-
-  <!-- Mobile & iPhone friendly viewport -->
-  <meta
-    name="viewport"
-    content="width=device-width, initial-scale=1, viewport-fit=cover"
-  />
-
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <title>Corporate Majdoor</title>
-
   <link rel="stylesheet" href="style.css" />
 </head>
-
 <body class="is-logged-out">
-
-  <!-- =====================
-       HEADER / APP BAR
-  ====================== -->
   <div class="header app-bar">
-
-    <!-- Profile button (AUTH ONLY via JS, hidden on mobile) -->
-    <button
-      id="profileBtn"
-      class="profile-btn"
-      type="button"
-      aria-label="Profile menu"
-    >
+    <button id="profileBtn" class="profile-btn" type="button" aria-label="Profile menu">
       <div class="profile-avatar">W</div>
     </button>
-
-    <!-- Center logo -->
-    <img
-      src="logo-light.png"
-      alt="Corporate Majdoor"
-      class="app-logo"
-      id="appLogo"
-    />
-
-    <!-- Notification Bell (AUTH ONLY via JS, hidden on mobile) -->
-    <button
-      id="notifBell"
-      type="button"
-      aria-label="Notifications"
-    >
-      🔔
-    </button>
-
+    <img src="logo-light.png" alt="Corporate Majdoor" class="app-logo" id="appLogo" />
+    <button id="notifBell" type="button" aria-label="Notifications">🔔</button>
   </div>
 
-  <!-- =====================
-       🔔 NOTIFICATIONS
-  ====================== -->
   <div id="notifications">
     <h3>Notifications</h3>
     <div id="notificationList" aria-live="polite"></div>
   </div>
 
-  <!-- =====================
-       PROFILE MENU (DESKTOP)
-  ====================== -->
   <div id="profileMenu" class="profile-menu">
     <button class="profile-item" type="button">My Profile</button>
     <button class="profile-item" type="button">Settings</button>
-    <button
-      class="profile-item logout"
-      type="button"
-      id="profileLogout"
-    >
-      Logout
-    </button>
+    <button class="profile-item logout" type="button" id="profileLogout">Logout</button>
   </div>
 
-  <!-- =====================
-       MAIN CONTAINER
-  ====================== -->
   <div class="container">
-
-    <!-- STATUS -->
     <div id="status" aria-live="polite"></div>
 
-    <!-- =====================
-         AUTH SECTION
-    ====================== -->
     <div id="authSection">
-
-      <!-- 🔐 AUTH HEADER (NEW) -->
       <div class="auth-header">
         <h2 id="authTitle">Welcome back</h2>
         <p id="authSubtitle">Login to continue</p>
       </div>
-
-      <!-- USERNAME (signup only, controlled by JS) -->
-      <input
-        id="username"
-        placeholder="Username"
-        autocomplete="username"
-      />
-
-      <input
-        id="email"
-        placeholder="Email"
-        type="email"
-        autocomplete="email"
-      />
-
-      <input
-        id="password"
-        type="password"
-        placeholder="Password"
-        autocomplete="current-password"
-      />
-
+      <input id="username" placeholder="Username" autocomplete="username" />
+      <input id="email" placeholder="Email" type="email" autocomplete="email" />
+      <input id="password" type="password" placeholder="Password" autocomplete="current-password" />
       <button id="loginBtn" type="button">Login</button>
-
       <div class="auth-or">or</div>
-
       <button id="signupBtn" type="button">Sign Up</button>
-
-      <!-- 🔁 AUTH SWITCH (NEW) -->
       <div class="auth-switch">
         <span id="switchText">Don’t have an account?</span>
         <button id="switchAuthBtn" type="button">Sign up</button>
       </div>
-
     </div>
 
-    <!-- LOGOUT (fallback, kept) -->
     <button id="logoutBtn" type="button">Logout</button>
 
-    <!-- =====================
-         POST COMPOSER
-    ====================== -->
     <div id="postSection">
-      <textarea
-        id="postInput"
-        rows="3"
-        maxlength="500"
-        placeholder="What corporate pain are you facing today?"
-      ></textarea>
-
+      <textarea id="postInput" rows="3" maxlength="500" placeholder="Write a caption..."></textarea>
+      <div class="composer-row">
+        <label class="video-upload-label" for="postVideoInput">🎥 Add Video</label>
+        <input id="postVideoInput" type="file" accept="video/*" hidden />
+        <span id="postVideoName"></span>
+      </div>
       <button id="postBtn" type="button">Post</button>
     </div>
 
-    <!-- =====================
-         FEED
-    ====================== -->
     <div id="feed"></div>
 
-    <!-- =====================
-     👤 PROFILE PAGE
-===================== -->
-<div id="profilePage" class="profile-page">
-
-  <!-- COVER -->
-  <div class="profile-cover" id="profileCover">
-    <div class="cover-placeholder"></div>
-  </div>
-
-  <!-- PROFILE INFO -->
-  <div class="profile-info">
-
-    <!-- AVATAR -->
-    <div class="profile-avatar-large" id="profileAvatar">
-
-      <span id="profileAvatarLetter">👤</span>
+    <div id="profilePage" class="profile-page">
+      <button id="backToFeedBtn" type="button">← Back to Feed</button>
+      <div class="profile-cover" id="profileCover">
+        <div class="cover-placeholder">Tap to upload cover</div>
+      </div>
+      <div class="profile-info">
+        <div class="profile-avatar-large" id="profileAvatar">
+          <span id="profileAvatarLetter">👤</span>
+        </div>
+        <h2 id="profileUsername">Username</h2>
+        <p class="profile-meta">Corporate Majdoor</p>
+        <div class="profile-actions-row">
+          <button id="downloadAvatarBtn" class="edit-profile-btn" type="button">Download Avatar</button>
+          <button id="downloadCoverBtn" class="edit-profile-btn" type="button">Download Cover</button>
+        </div>
+      </div>
     </div>
 
-    <!-- NAME -->
-    <h2 id="profileUsername">Username</h2>
-
-    <!-- META -->
-    <p class="profile-meta">Corporate Majdoor</p>
-
-    <!-- ACTIONS -->
-    <button id="editProfileBtn" class="edit-profile-btn">
-      Edit Profile
-    </button>
-
-  </div>
-
-</div>
-
-
-    <!-- =====================
-         FOOTER
-    ====================== -->
-    <div id="footer">
-      Developed by <strong>Waahid Ishak</strong>
+    <div id="chatPanel" class="chat-panel">
+      <div class="chat-header">
+        <h3>DM / Team Chat</h3>
+        <button id="closeChatBtn" type="button">✕</button>
+      </div>
+      <div id="chatList" class="chat-list"></div>
+      <div class="chat-compose">
+        <input id="chatInput" placeholder="Message..." />
+        <button id="sendChatBtn" type="button">Send</button>
+      </div>
     </div>
 
+    <div id="footer">Developed by <strong>Waahid Ishak</strong></div>
   </div>
 
-  <!-- =====================
-       THEME TOGGLE (DESKTOP)
-  ====================== -->
-  <button
-    class="theme-toggle"
-    id="themeToggle"
-    type="button"
-    aria-label="Toggle dark mode"
-  >
-    🌙
-  </button>
+  <button class="theme-toggle" id="themeToggle" type="button" aria-label="Toggle dark mode">🌙</button>
 
-  <!-- =====================
-       MOBILE BOTTOM BAR
-       🔔  ➕  👤
-  ====================== -->
   <div class="bottom-bar">
-
-    <!-- Notifications -->
-    <button
-      id="bottomNotifBtn"
-      class="bottom-btn"
-      type="button"
-      aria-label="Notifications"
-    >
-      🔔
-    </button>
-
-    <!-- ADD POST (+) -->
-    <button
-      id="addPostBtn"
-      class="bottom-btn add-post-btn"
-      type="button"
-      aria-label="Create post"
-    >
-      +
-    </button>
-
-    <!-- Profile -->
-    <button
-      id="bottomProfileBtn"
-      class="bottom-btn"
-      type="button"
-      aria-label="Profile"
-    >
+    <button id="bottomNotifBtn" class="bottom-btn" type="button" aria-label="Notifications">🔔</button>
+    <button id="addPostBtn" class="bottom-btn add-post-btn" type="button" aria-label="Create post">+</button>
+    <button id="bottomChatBtn" class="bottom-btn" type="button" aria-label="Chat">💬</button>
+    <button id="bottomProfileBtn" class="bottom-btn" type="button" aria-label="Profile">
       <div class="bottom-avatar">W</div>
     </button>
-
   </div>
 
-  <!-- =====================
-       SCRIPT
-  ====================== -->
-  <script type="module" src="app.js"></script>
-
-  <!-- =====================
-       PROFILE BOTTOM SHEET
-       MOBILE ONLY
-  ====================== -->
   <div id="profileSheetOverlay" class="sheet-overlay"></div>
-
   <div id="profileSheet" class="profile-sheet">
-
     <div class="sheet-handle"></div>
-
-    <button class="sheet-item" id="sheetProfileBtn">
-      👤 My Profile
-    </button>
-
-    <button class="sheet-item" id="sheetThemeToggle">
-      🌙 Toggle Dark Mode
-    </button>
-
-    <button class="sheet-item logout" id="sheetLogoutBtn">
-      🚪 Logout
-    </button>
-
+    <button class="sheet-item" id="sheetProfileBtn">👤 My Profile</button>
+    <button class="sheet-item" id="sheetThemeToggle">🌙 Toggle Dark Mode</button>
+    <button class="sheet-item logout" id="sheetLogoutBtn">🚪 Logout</button>
   </div>
-  <input
-  type="file"
-  id="avatarInput"
-  accept="image/*"
-  hidden
-/>
 
-<input
-  type="file"
-  id="coverInput"
-  accept="image/*"
-  hidden
-/>
+  <input type="file" id="avatarInput" accept="image/*" hidden />
+  <input type="file" id="coverInput" accept="image/*" hidden />
 
+  <script type="module" src="app.js"></script>
 </body>
 </html>
